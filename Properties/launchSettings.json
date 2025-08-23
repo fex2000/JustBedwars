@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "JustBedwars (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "JustBedwars (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
