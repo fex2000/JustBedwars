@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="JustBedwars.Views.StatsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:JustBedwars.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="50, 0, 50, 50" MaxWidth="1000">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Height="60" Padding="13" ColumnSpacing="8" VerticalAlignment="Top" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="UsernameTextBox" PlaceholderText="Username" Grid.Column="0"/>
+            <Button x:Name="SearchButton" Click="SearchButton_Click" Grid.Column="1">
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE721;"/>
+            </Button>
+        </Grid>
+        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="{ThemeResource ControlCornerRadius}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                Grid.Row="1"
+                MaxHeight="450">
+            <Grid x:Name="StatsGrid" Padding="12" ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <ProgressRing x:Name="LoadingIndicator" IsActive="False" Grid.RowSpan="6" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+
+                <StackPanel>
+                    <TextBlock x:Name="UsernameLabel" Text="Username:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="UsernameTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="StarLabel" Text="Stars:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="StarTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1">
+                    <TextBlock x:Name="FkdrLabel" Text="FKDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="FkdrTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                    <TextBlock x:Name="WlrLabel" Text="WLR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="WlrTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock x:Name="FinalsLabel" Text="Finals:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="FinalsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="1">
+                    <TextBlock x:Name="WinsLabel" Text="Wins:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="WinsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="0">
+                    <TextBlock x:Name="KdrLabel" Text="KDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="KdrTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+                <StackPanel Grid.Row="3" Grid.Column="1">
+                    <TextBlock x:Name="FirstLoginLabel" Text="First Login:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="FirstLoginTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

@@ -1,4 +1,6 @@
 
+using Microsoft.UI.Xaml;
+using System;
 using System.ComponentModel;
 
 namespace JustBedwars.Models
@@ -35,6 +37,33 @@ namespace JustBedwars.Models
             }
         }
 
+        private long _firstlogin;
+        public long FirstLogin
+        {
+            get => _firstlogin;
+            set
+            {
+                if (_firstlogin != value)
+                {
+                    _firstlogin = value;
+                    OnPropertyChanged(nameof(FirstLogin));
+                    OnPropertyChanged(nameof(FirstLoginDate));
+                }
+            }
+        }
+
+        public string FirstLoginDate
+        {
+            get
+            {
+                if (_firstlogin == 0)
+                {
+                    return string.Empty;
+                }
+                return DateTimeOffset.FromUnixTimeMilliseconds(_firstlogin).ToString("dd.MM.yyyy");
+            }
+        }
+
         private double _fkdr;
         public double FKDR
         {
@@ -58,6 +87,20 @@ namespace JustBedwars.Models
                 if (_wlr != value)
                 {
                     _wlr = value;
+                    OnPropertyChanged(nameof(WLR));
+                }
+            }
+        }
+
+        private double _kdr;
+        public double KDR
+        {
+            get => _kdr;
+            set
+            {
+                if (_kdr != value)
+                {
+                    _kdr = value;
                     OnPropertyChanged(nameof(WLR));
                 }
             }
@@ -102,6 +145,28 @@ namespace JustBedwars.Models
                     _isLoading = value;
                     OnPropertyChanged(nameof(IsLoading));
                 }
+            }
+        }
+
+        public Visibility IsLoaderVisible
+        {
+            get
+            {
+                if (_isLoading == false)
+                    return Visibility.Collapsed;
+                else
+                    return Visibility.Visible;
+            }
+        }
+
+        public Visibility IsContentVisible
+        {
+            get
+            {
+                if (_isLoading == false)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
             }
         }
 

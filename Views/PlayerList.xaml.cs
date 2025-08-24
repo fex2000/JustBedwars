@@ -78,6 +78,7 @@ namespace JustBedwars.Views
                             Finals = stats.Finals,
                             Wins = stats.Wins,
                             IsLoading = false // Set to false as stats are loaded
+                            
                         };
 
                         // Find the index of the existing player and replace it

@@ -50,7 +50,15 @@ namespace JustBedwars.Services
                     await Task.Delay(250 - (int)_apiStopwatch.ElapsedMilliseconds);
                 }
 
-                var url = $"https://api.hypixel.net/player?key={_apiKey}&name={username}";
+                // Get UUID from Mojang API
+                var uuid = await GetUuidFromUsername(username);
+                if (uuid == null)
+                {
+                    DebugService.Instance.Log($"[HypixelApi] Couldn't find UUID for {username}.");
+                    return null;
+                }
+
+                var url = $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
                 DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
 
                 var response = await _httpClient.GetStringAsync(url);
@@ -78,8 +86,10 @@ namespace JustBedwars.Services
                     Star = (int?)json["player"]?["achievements"]?["bedwars_level"] ?? 0,
                     FKDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 1), 2),
                     WLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 1), 2),
+                    KDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 1), 2),
                     Finals = (int?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0,
-                    Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0
+                    Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
+                    FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
                 };
 
                 // Add to cache
@@ -102,6 +112,22 @@ namespace JustBedwars.Services
             finally
             {
                 _apiSemaphore.Release();
+            }
+        }
+
+        private async Task<string?> GetUuidFromUsername(string username)
+        {
+            try
+            {
+                var url = $"https://api.mojang.com/users/profiles/minecraft/{username}";
+                var response = await _httpClient.GetStringAsync(url);
+                var json = JObject.Parse(response);
+                return (string?)json["id"];
+            }
+            catch (HttpRequestException)
+            {
+                // This could happen if the user doesn't exist
+                return null;
             }
         }
 

@@ -40,6 +40,7 @@
                                 Margin="0, 32, 0, 0">
                     <NavigationView.MenuItems>
                         <NavigationViewItem Icon="Play" Content="Current Game" Tag="JustBedwars.Views.PlayerList"/>
+                        <NavigationViewItem Icon="OtherUser" Content="Player Lookup" Tag="JustBedwars.Views.StatsPage"/>
                     </NavigationView.MenuItems>
                     <NavigationView.Content>
                         <Frame x:Name="ContentFrame"/>
