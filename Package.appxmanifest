@@ -9,8 +9,8 @@
 
   <Identity
     Name="fc1d43d3-dfd8-471e-afd2-4ebc511c1ceb"
-    Publisher="CN=felix"
-    Version="1.0.0.0" />
+    Publisher="CN=Felix GmbH und Co KG"
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="fc1d43d3-dfd8-471e-afd2-4ebc511c1ceb" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
