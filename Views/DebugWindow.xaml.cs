@@ -15,6 +15,7 @@ namespace JustBedwars.Views
             presenter.PreferredMinimumWidth = 500;
             presenter.PreferredMinimumHeight = 400;
             AppWindow.SetPresenter(presenter);
+            AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         }
 
         private void OnLogAdded(string log)
