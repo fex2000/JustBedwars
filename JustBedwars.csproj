@@ -84,7 +84,7 @@
     <PackageCertificateThumbprint>D4621757A5B282FF09A0094AE55C141BE58AFB4A</PackageCertificateThumbprint>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>D:\Code\JustBedwars\pages\</AppxPackageDir>
+    <AppxPackageDir>D:\Code\JustBedwars\docs\</AppxPackageDir>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
