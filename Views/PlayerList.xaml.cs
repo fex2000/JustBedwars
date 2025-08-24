@@ -96,6 +96,7 @@ namespace JustBedwars.Views
                         DebugService.Instance.Log($"[PlayerList] No stats received for {username}. Set IsLoading to false.");
                     }
                 }
+                SortPlayers();
             });
         }
 
@@ -121,6 +122,16 @@ namespace JustBedwars.Views
             foreach (var player in players)
             {
                 OnPlayerJoined(player);
+            }
+        }
+
+        private void SortPlayers()
+        {
+            var sortedPlayers = _players.OrderByDescending(p => p.FKDR).ToList();
+            _players.Clear();
+            foreach (var p in sortedPlayers)
+            {
+                _players.Add(p);
             }
         }
     }

@@ -45,9 +45,9 @@ namespace JustBedwars.Services
             await _apiSemaphore.WaitAsync();
             try
             {
-                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 250)
+                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 100)
                 {
-                    await Task.Delay(250 - (int)_apiStopwatch.ElapsedMilliseconds);
+                    await Task.Delay(100 - (int)_apiStopwatch.ElapsedMilliseconds);
                 }
 
                 // Get UUID from Mojang API
@@ -90,6 +90,7 @@ namespace JustBedwars.Services
                     Finals = (int?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0,
                     Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
                     FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
+                    PlayerTag = "-",
                 };
 
                 // Add to cache
@@ -102,7 +103,12 @@ namespace JustBedwars.Services
             catch (HttpRequestException ex)
             {
                 DebugService.Instance.Log($"[HypixelApi] HTTP request failed: {ex.Message}");
-                return null;
+                var player = new Player
+                {
+                    Username = username,
+                    PlayerTag = "NICK",
+                };
+                return player;
             }
             catch (Exception ex)
             {

@@ -10,7 +10,7 @@
   <Identity
     Name="fc1d43d3-dfd8-471e-afd2-4ebc511c1ceb"
     Publisher="CN=Felix GmbH und Co KG"
-    Version="1.1.0.0" />
+    Version="1.1.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="fc1d43d3-dfd8-471e-afd2-4ebc511c1ceb" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

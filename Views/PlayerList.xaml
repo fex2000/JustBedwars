@@ -18,6 +18,7 @@
             <Grid VerticalAlignment="Center" Padding="15, 0" ColumnSpacing="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -25,20 +26,22 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Player" Grid.Column="0"/>
-                <TextBlock Text="FKDR" Grid.Column="1" TextAlignment="Center"/>
-                <TextBlock Text="WLR" Grid.Column="2" TextAlignment="Center"/>
-                <TextBlock Text="Finals" Grid.Column="3" TextAlignment="Center"/>
-                <TextBlock Text="Wins" Grid.Column="4" TextAlignment="Center"/>
-                <TextBlock Text="Stars" Grid.Column="5" TextAlignment="Center"/>
+                <TextBlock Text="Tag" Grid.Column="1"/>
+                <TextBlock Text="FKDR" Grid.Column="2" TextAlignment="Center"/>
+                <TextBlock Text="WLR" Grid.Column="3" TextAlignment="Center"/>
+                <TextBlock Text="Finals" Grid.Column="4" TextAlignment="Center"/>
+                <TextBlock Text="Wins" Grid.Column="5" TextAlignment="Center"/>
+                <TextBlock Text="Stars" Grid.Column="6" TextAlignment="Center"/>
             </Grid>
         </Border>
         <!-- Players -->
-        <ListView x:Name="PlayersListView" Grid.Row="1">
+        <ListView x:Name="PlayersListView" Grid.Row="1" SelectionMode="None">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:Player">
                     <Grid Padding="0, 10" ColumnSpacing="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="60"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -46,12 +49,13 @@
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}"/>
-                        <TextBlock Text="{x:Bind FKDR}" Grid.Column="1" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                        <TextBlock Text="{x:Bind WLR}" Grid.Column="2" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Finals}" Grid.Column="3" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Wins}" Grid.Column="4" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Star}" Grid.Column="5" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                        <ProgressBar Grid.ColumnSpan="5" Grid.Column="1" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
+                        <TextBlock Text="{x:Bind PlayerTag}" Grid.Column="1" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <TextBlock Text="{x:Bind FKDR}" Grid.Column="2" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <TextBlock Text="{x:Bind WLR}" Grid.Column="3" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Finals}" Grid.Column="4" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Wins}" Grid.Column="5" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Star}" Grid.Column="6" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
+                        <ProgressBar Grid.ColumnSpan="5" Grid.Column="3" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

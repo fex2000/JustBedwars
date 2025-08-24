@@ -148,6 +148,20 @@ namespace JustBedwars.Models
             }
         }
 
+        private string? _playerTag;
+        public string? PlayerTag
+        {
+            get => _playerTag;
+            set
+            {
+                if (_playerTag != value)
+                {
+                    _playerTag = value;
+                    OnPropertyChanged(nameof(PlayerTag));
+                }
+            }
+        }
+
         public Visibility IsLoaderVisible
         {
             get

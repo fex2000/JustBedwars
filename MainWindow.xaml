@@ -11,7 +11,7 @@
     Title="JustBedwars">
 
     <Window.SystemBackdrop>
-        <DesktopAcrylicBackdrop />
+        <MicaBackdrop />
     </Window.SystemBackdrop>
     <Window.Content>
         <Page>
