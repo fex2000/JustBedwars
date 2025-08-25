@@ -49,9 +49,11 @@ namespace JustBedwars.Views
             _logReader.PlayerLeft += OnPlayerLeft;
             _logReader.WhoResult += OnWhoResult;
             _logReader.Start();
+            DebugService.Instance.EmulatePlayerJoined += OnPlayerJoined;
+            DebugService.Instance.EmulatePlayerLeft += OnPlayerLeft;
         }
 
-        private async void OnPlayerJoined(string username)
+        public async void OnPlayerJoined(string username)
         {
             var player = new Player { Username = username, IsLoading = true };
             DispatcherQueue.TryEnqueue(() =>
@@ -77,6 +79,7 @@ namespace JustBedwars.Views
                             WLR = stats.WLR,
                             Finals = stats.Finals,
                             Wins = stats.Wins,
+                            PlayerTag = stats.PlayerTag,
                             IsLoading = false // Set to false as stats are loaded
                             
                         };
@@ -100,7 +103,7 @@ namespace JustBedwars.Views
             });
         }
 
-        private void OnPlayerLeft(string username)
+        public void OnPlayerLeft(string username)
         {
             DispatcherQueue.TryEnqueue(() =>
             {

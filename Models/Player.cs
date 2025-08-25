@@ -120,6 +120,48 @@ namespace JustBedwars.Models
             }
         }
 
+        private int _finaldeaths;
+        public int FinalDeaths
+        {
+            get => _finaldeaths;
+            set
+            {
+                if (_finaldeaths != value)
+                {
+                    _finaldeaths = value;
+                    OnPropertyChanged(nameof(FinalDeaths));
+                }
+            }
+        }
+
+        private int _kills;
+        public int Kills
+        {
+            get => _kills;
+            set
+            {
+                if (_kills != value)
+                {
+                    _kills = value;
+                    OnPropertyChanged(nameof(Kills));
+                }
+            }
+        }
+
+        private int _deaths;
+        public int Deaths
+        {
+            get => _deaths;
+            set
+            {
+                if (_deaths != value)
+                {
+                    _deaths = value;
+                    OnPropertyChanged(nameof(Deaths));
+                }
+            }
+        }
+
         private int _wins;
         public int Wins
         {
@@ -130,6 +172,20 @@ namespace JustBedwars.Models
                 {
                     _wins = value;
                     OnPropertyChanged(nameof(Wins));
+                }
+            }
+        }
+
+        private int _losses;
+        public int Losses
+        {
+            get => _losses;
+            set
+            {
+                if (_losses != value)
+                {
+                    _losses = value;
+                    OnPropertyChanged(nameof(Losses));
                 }
             }
         }
@@ -158,6 +214,20 @@ namespace JustBedwars.Models
                 {
                     _playerTag = value;
                     OnPropertyChanged(nameof(PlayerTag));
+                }
+            }
+        }
+
+        private string? _playeruuid;
+        public string? PlayerUUID
+        {
+            get => _playeruuid;
+            set
+            {
+                if (_playeruuid != value)
+                {
+                    _playeruuid = value;
+                    OnPropertyChanged(nameof(PlayerUUID));
                 }
             }
         }

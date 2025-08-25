@@ -112,7 +112,7 @@ namespace JustBedwars.Services
             match = Regex.Match(line, @"(\w+) reconnected");
             if (match.Success)
             {
-                PlayerLeft?.Invoke(match.Groups[1].Value);
+                PlayerJoined?.Invoke(match.Groups[1].Value);
                 return;
             }
 

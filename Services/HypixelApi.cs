@@ -55,7 +55,12 @@ namespace JustBedwars.Services
                 if (uuid == null)
                 {
                     DebugService.Instance.Log($"[HypixelApi] Couldn't find UUID for {username}.");
-                    return null;
+                    var nickplayer = new Player
+                    {
+                        Username = username,
+                        PlayerTag = (string?)"NICK",
+                    };
+                    return nickplayer;
                 }
 
                 var url = $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
@@ -71,13 +76,23 @@ namespace JustBedwars.Services
                 if (json["success"] != null && !(bool)json["success"])
                 {
                     DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
-                    return null;
+                    var errorplayer = new Player
+                    {
+                        Username = username,
+                        PlayerTag = (string?)"ERROR",
+                    };
+                    return errorplayer;
                 }
 
                 if (json["player"] == null)
                 {
                     DebugService.Instance.Log("[HypixelApi] Player not found.");
-                    return null;
+                    var nickplayer = new Player
+                    {
+                        Username = username,
+                        PlayerTag = (string?)"NICK",
+                    };
+                    return nickplayer;
                 }
 
                 var player = new Player
@@ -88,9 +103,14 @@ namespace JustBedwars.Services
                     WLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 1), 2),
                     KDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 1), 2),
                     Finals = (int?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0,
-                    Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
+                    FinalDeaths = (int?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 0,
+                    Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 0,
+                    Losses = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
+                    Kills = (int?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0,
+                    Deaths = (int?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 0,
                     FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
-                    PlayerTag = "-",
+                    PlayerTag = (string?)"-",
+                    PlayerUUID = uuid,
                 };
 
                 // Add to cache
@@ -103,12 +123,12 @@ namespace JustBedwars.Services
             catch (HttpRequestException ex)
             {
                 DebugService.Instance.Log($"[HypixelApi] HTTP request failed: {ex.Message}");
-                var player = new Player
+                var errorplayer = new Player
                 {
                     Username = username,
-                    PlayerTag = "NICK",
+                    PlayerTag = (string?)"ERROR",
                 };
-                return player;
+                return errorplayer;
             }
             catch (Exception ex)
             {

@@ -32,52 +32,83 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <ProgressRing x:Name="LoadingIndicator" IsActive="False" Grid.RowSpan="6" Grid.ColumnSpan="2" VerticalAlignment="Center"/>
+                <Image x:Name="PlayerImage" ImageOpened="PlayerImage_ImageOpened" ImageFailed="PlayerImage_ImageFailed" Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="1" Grid.RowSpan="3"/>
 
-                <StackPanel>
+                <ProgressRing x:Name="LoadingIndicator" IsActive="False" Grid.RowSpan="5" Grid.ColumnSpan="4" VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock x:Name="UsernameLabel" Text="Username:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="UsernameTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center">
                     <TextBlock x:Name="StarLabel" Text="Stars:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="StarTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1">
+                <StackPanel Grid.Row="1" Grid.Column="1">
                     <TextBlock x:Name="FkdrLabel" Text="FKDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="FkdrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Grid.Column="1">
+                <StackPanel Grid.Row="2" Grid.Column="1">
                     <TextBlock x:Name="WlrLabel" Text="WLR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="WlrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2">
+                <StackPanel Grid.Row="1" Grid.Column="2">
                     <TextBlock x:Name="FinalsLabel" Text="Finals:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="FinalsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.Column="1">
+                <StackPanel Grid.Row="1" Grid.Column="3">
+                    <TextBlock x:Name="FinalDeathsLabel" Text="Final Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="FinalDeathsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="2">
                     <TextBlock x:Name="WinsLabel" Text="Wins:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="WinsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
-                <StackPanel Grid.Row="3" Grid.Column="0">
+
+                <StackPanel Grid.Row="2" Grid.Column="3">
+                    <TextBlock x:Name="LossesLabel" Text="Losses:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="LossesTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Grid.Column="1">
                     <TextBlock x:Name="KdrLabel" Text="KDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="KdrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
-                <StackPanel Grid.Row="3" Grid.Column="1">
+
+                <StackPanel Grid.Row="3" Grid.Column="2">
+                    <TextBlock x:Name="KillsLabel" Text="Kills:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="KillsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Grid.Column="3">
+                    <TextBlock x:Name="DeathsLabel" Text="Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="DeathsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock x:Name="FirstLoginLabel" Text="First Login:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="FirstLoginTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+                    <TextBlock x:Name="TagLabel" Text="Player Tag:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                    <TextBlock x:Name="TagTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
             </Grid>
         </Border>

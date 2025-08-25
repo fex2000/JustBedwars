@@ -1,6 +1,8 @@
 using JustBedwars.Services;
-using Microsoft.UI.Xaml;
+using JustBedwars.Views;
 using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using System;
 
 namespace JustBedwars.Views
 {
@@ -24,6 +26,16 @@ namespace JustBedwars.Views
             {
                 DebugTextBox.Text += log + "\n";
             });
+        }
+
+        private void ButtonJoined_Click(object sender, RoutedEventArgs e)
+        {
+            DebugService.Instance.OnEmulatePlayerJoined(EmulateUsername.Text);
+        }
+
+        private void ButtonLeft_Click(object sender, RoutedEventArgs e)
+        {
+            DebugService.Instance.OnEmulatePlayerLeft(EmulateUsername.Text);
         }
     }
 }
