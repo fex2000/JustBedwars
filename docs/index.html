@@ -12,7 +12,8 @@
             display: flex;
             font-family: Segoe UI;
             line-height: normal;
-            color: #333333;
+            color: #FFFFFF;
+            background-color: #2c2c2c;
             font-size: 15px;
         }
 
@@ -49,24 +50,43 @@
         }
 
         button {
-            background-color: #0078D4;
-            color: #FFFFFF;
+            background-color: #4cc2ff;
+            color: #000000;
             text-align: center;
+            border: none;
             width: 150px;
             height: 40px;
-            border: none;
-            outline: none;
             cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 2px #42a1d2;
+            transition-duration: 0.2s;
+            user-select: none;
         }
 
+            button:hover {
+                background-color: #47b1e8
+            }
+
+            button:active {
+                background-color: #42a1d2;
+                box-shadow: 0 0px #42a1d2;
+                transform: translateY(2px);
+                color: #101010;
+            }
+
         a {
-            color: #0067B8;
+            color: #99ebff;
             text-decoration: none;
             cursor: pointer;
         }
 
-        .dark-blue {
-            color: #0078D4
+            a:active {
+                color: #4cc2ff;
+            }
+
+        .accent-text {
+            color: #99ebff;
+            font-weight: 600;
         }
 
         .mb-24 {
@@ -164,6 +184,7 @@
         .app-image {
             background-color: transparent;
             object-fit: contain;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -176,15 +197,16 @@
       </div>
       <input type="checkbox" id="achk" style="display:none;">
       <div class="alinks">
-        <a href='https://github.com/fex2000/JustBedwars'>GitHub Repository</a>
+          <a href='https://github.com/fex2000/JustBedwars'>GitHub Repository</a>
+          <a href='https://github.com/fex2000/JustBedwars/download/JustBedwars.zip'>Portable Download</a>
       </div>
     </div>
     <div class="right-col">
-      <div class="app-title xl  mb-24 dark-blue"> JustBedwars </div>
+      <div class="app-title xl  mb-24 accent-text"> JustBedwars </div>
       <div class="app-version lg mb-24"> Version 1.2.0 </div>
       <div class="app-description mb-24"> JustBedwars </div>
       <div class="mb-12 dlbuttons">
-        <a href='https://fex2000.github.io/JustBedwars/download/install.exe'>
+        <a href='https://fex2000.github.io/JustBedwars/download/JustBedwars.exe' draggable="false">
           <button>Download Installer</button>
         </a>
       </div>
@@ -192,25 +214,30 @@
       </div>
       <div class="mb-28 lg"> Application Information </div>
       <div class="info-table">
-        <div class="info-row">
-          <div class="key"> Version </div>
-          <div class="value"> 1.2.0 </div>
-        </div>
-        <br />
-        <div class="info-row">
-          <div class="key"> Required Operating System </div>
-          <div class="value"> Windows 10.0.17763.0 </div>
-        </div>
-        <br />
-        <div class="info-row">
-          <div class="key"> Architectures </div>
-          <div class="value"> x64 </div>
-        </div>
-        <br />
-        <div class="info-row">
-          <div class="key"> Publisher </div>
-          <div class="value"> fex2000 </div>
-        </div>
+          <div class="info-row">
+              <div class="key"> Version </div>
+              <div class="value"> 1.2.0 </div>
+          </div>
+          <br />
+          <div class="info-row">
+              <div class="key"> Required Operating System </div>
+              <div class="value"> Windows 10.0.17763.0 </div>
+          </div>
+          <br />
+          <div class="info-row">
+              <div class="key"> Recommended Operating System </div>
+              <div class="value"> Windows 11 </div>
+          </div>
+          <br />
+          <div class="info-row">
+              <div class="key"> Architectures </div>
+              <div class="value"> x64 </div>
+          </div>
+          <br />
+          <div class="info-row">
+              <div class="key"> Publisher </div>
+              <div class="value"> fex2000 </div>
+          </div>
       </div>
     </div>
   </body>
