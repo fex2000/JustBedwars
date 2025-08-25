@@ -50,6 +50,7 @@ namespace JustBedwars.Views
                 StarTextBlock.Text = player.Star.ToString();
                 FkdrTextBlock.Text = player.FKDR.ToString();
                 WlrTextBlock.Text = player.WLR.ToString();
+                BblrTextBlock.Text = player.BBLR.ToString();
                 FinalsTextBlock.Text = player.Finals.ToString();
                 WinsTextBlock.Text = player.Wins.ToString();
                 KdrTextBlock.Text = player.KDR.ToString();
@@ -57,6 +58,8 @@ namespace JustBedwars.Views
                 LossesTextBlock.Text = player.Losses.ToString();
                 KillsTextBlock.Text = player.Kills.ToString();
                 DeathsTextBlock.Text = player.Deaths.ToString();
+                BedsLostTextBlock.Text = player.BedsLost.ToString();
+                BedsTextBlock.Text = player.Beds.ToString();
                 TagTextBlock.Text = player.PlayerTag;
                 FirstLoginTextBlock.Text = player.FirstLoginDate;
 
@@ -78,6 +81,7 @@ namespace JustBedwars.Views
                 StarTextBlock.Text = string.Empty;
                 FkdrTextBlock.Text = string.Empty;
                 WlrTextBlock.Text = string.Empty;
+                BblrTextBlock.Text = string.Empty;
                 FinalsTextBlock.Text = string.Empty;
                 WinsTextBlock.Text = string.Empty;
                 KdrTextBlock.Text = string.Empty;
@@ -87,6 +91,8 @@ namespace JustBedwars.Views
                 KillsTextBlock.Text = string.Empty;
                 DeathsTextBlock.Text = string.Empty;
                 TagTextBlock.Text = string.Empty;
+                BedsTextBlock.Text = string.Empty;
+                BedsLostTextBlock.Text = string.Empty;
                 LoadingIndicator.IsActive = false;
             }
         }
@@ -109,28 +115,47 @@ namespace JustBedwars.Views
             UsernameTextBlock.Visibility = visibility;
             StarLabel.Visibility = visibility;
             StarTextBlock.Visibility = visibility;
+            Stars.Visibility = visibility;
             FkdrLabel.Visibility = visibility;
             FkdrTextBlock.Visibility = visibility;
+            FKDR.Visibility = visibility;
             WlrLabel.Visibility = visibility;
             WlrTextBlock.Visibility = visibility;
+            WLR.Visibility = visibility;
             FinalsLabel.Visibility = visibility;
             FinalsTextBlock.Visibility = visibility;
+            Finals.Visibility = visibility;
             WinsLabel.Visibility = visibility;
             WinsTextBlock.Visibility = visibility;
+            Wins.Visibility = visibility;
             KdrLabel.Visibility = visibility;
             KdrTextBlock.Visibility = visibility;
+            KDR.Visibility = visibility;
             FirstLoginLabel.Visibility = visibility;
             FirstLoginTextBlock.Visibility = visibility;
             FinalDeathsLabel.Visibility = visibility;
             FinalDeathsTextBlock.Visibility = visibility;
+            FinalDeaths.Visibility = visibility;
             LossesLabel.Visibility = visibility;
             LossesTextBlock.Visibility = visibility;
+            Losses.Visibility = visibility;
             KillsLabel.Visibility = visibility;
             KillsTextBlock.Visibility = visibility;
+            Kills.Visibility = visibility;
             DeathsLabel.Visibility = visibility;
             DeathsTextBlock.Visibility = visibility;
+            Deaths.Visibility = visibility;
             TagLabel.Visibility = visibility;
             TagTextBlock.Visibility = visibility;
+            BblrLabel.Visibility = visibility;
+            BblrTextBlock.Visibility = visibility;
+            BBLR.Visibility = visibility;
+            BedsLabel.Visibility = visibility;
+            BedsTextBlock.Visibility = visibility;
+            Beds.Visibility = visibility;
+            BedsLostLabel.Visibility = visibility;
+            BedsLostTextBlock.Visibility = visibility;
+            BedsLost.Visibility = visibility;
         }
     }
 }

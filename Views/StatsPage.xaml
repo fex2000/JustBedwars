@@ -28,7 +28,7 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 Grid.Row="1"
                 MaxHeight="450">
-            <Grid x:Name="StatsGrid" Padding="12" ColumnSpacing="10">
+            <Grid x:Name="StatsGrid" Padding="12" ColumnSpacing="10" RowSpacing="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -52,53 +52,53 @@
                     <TextBlock x:Name="UsernameTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                    <TextBlock x:Name="StarLabel" Text="Stars:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2" x:Name="Stars" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="StarLabel" Text="Stars:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                     <TextBlock x:Name="StarTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Grid.Column="1">
-                    <TextBlock x:Name="FkdrLabel" Text="FKDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" x:Name="FKDR" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="FkdrLabel" Text="FKDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                     <TextBlock x:Name="FkdrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.Column="1">
-                    <TextBlock x:Name="WlrLabel" Text="WLR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" x:Name="WLR" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="WlrLabel" Text="WLR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                     <TextBlock x:Name="WlrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Grid.Column="2">
-                    <TextBlock x:Name="FinalsLabel" Text="Finals:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="1" Grid.Column="2" x:Name="Finals" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="FinalsLabel" Text="Finals:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                     <TextBlock x:Name="FinalsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Grid.Column="3">
-                    <TextBlock x:Name="FinalDeathsLabel" Text="Final Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="1" Grid.Column="3" x:Name="FinalDeaths" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="FinalDeathsLabel" Text="Final Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                     <TextBlock x:Name="FinalDeathsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.Column="2">
-                    <TextBlock x:Name="WinsLabel" Text="Wins:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="2" Grid.Column="2" x:Name="Wins" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="WinsLabel" Text="Wins:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                     <TextBlock x:Name="WinsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2" Grid.Column="3">
-                    <TextBlock x:Name="LossesLabel" Text="Losses:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="2" Grid.Column="3" x:Name="Losses" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="LossesLabel" Text="Losses:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                     <TextBlock x:Name="LossesTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="3" Grid.Column="1">
-                    <TextBlock x:Name="KdrLabel" Text="KDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" x:Name="KDR" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="KdrLabel" Text="KDR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                     <TextBlock x:Name="KdrTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="3" Grid.Column="2">
-                    <TextBlock x:Name="KillsLabel" Text="Kills:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="3" Grid.Column="2" x:Name="Kills" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="KillsLabel" Text="Kills:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                     <TextBlock x:Name="KillsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
-                <StackPanel Grid.Row="3" Grid.Column="3">
-                    <TextBlock x:Name="DeathsLabel" Text="Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
+                <StackPanel Grid.Row="3" Grid.Column="3" x:Name="Deaths" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="DeathsLabel" Text="Deaths:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                     <TextBlock x:Name="DeathsTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
 
@@ -106,7 +106,23 @@
                     <TextBlock x:Name="FirstLoginLabel" Text="First Login:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="FirstLoginTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>
-                <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center">
+
+                <StackPanel Grid.Row="4" Grid.Column="1" x:Name="BBLR" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="BblrLabel" Text="BBLR:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                    <TextBlock x:Name="BblrTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="2" x:Name="Beds" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="BedsLabel" Text="Beds Broken:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                    <TextBlock x:Name="BedsTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="3" x:Name="BedsLost" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}" Padding="10">
+                    <TextBlock x:Name="BedsLostLabel" Text="Beds Lost:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
+                    <TextBlock x:Name="BedsLostTextBlock" Visibility="Collapsed" FontSize="18"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="1" HorizontalAlignment="Center">
                     <TextBlock x:Name="TagLabel" Text="Player Tag:" FontWeight="Bold" Visibility="Collapsed" FontSize="22"/>
                     <TextBlock x:Name="TagTextBlock" Visibility="Collapsed" FontSize="18"/>
                 </StackPanel>

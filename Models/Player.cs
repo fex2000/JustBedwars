@@ -78,6 +78,20 @@ namespace JustBedwars.Models
             }
         }
 
+        private double _bblr;
+        public double BBLR
+        {
+            get => _bblr;
+            set
+            {
+                if (_bblr != value)
+                {
+                    _bblr = value;
+                    OnPropertyChanged(nameof(BBLR));
+                }
+            }
+        }
+
         private double _wlr;
         public double WLR
         {
@@ -186,6 +200,34 @@ namespace JustBedwars.Models
                 {
                     _losses = value;
                     OnPropertyChanged(nameof(Losses));
+                }
+            }
+        }
+
+        private int _beds;
+        public int Beds
+        {
+            get => _beds;
+            set
+            {
+                if (_beds != value)
+                {
+                    _beds = value;
+                    OnPropertyChanged(nameof(Beds));
+                }
+            }
+        }
+
+        private int _bedsLost;
+        public int BedsLost
+        {
+            get => _bedsLost;
+            set
+            {
+                if (_bedsLost != value)
+                {
+                    _bedsLost = value;
+                    OnPropertyChanged(nameof(BedsLost));
                 }
             }
         }

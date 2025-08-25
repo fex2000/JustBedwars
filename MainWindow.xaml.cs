@@ -1,3 +1,4 @@
+using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -32,9 +33,10 @@ namespace JustBedwars
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
             OverlappedPresenter presenter = OverlappedPresenter.Create();
-            presenter.PreferredMinimumWidth = 700;
-            presenter.PreferredMinimumHeight = 500;
+            presenter.PreferredMinimumWidth = 900;
+            presenter.PreferredMinimumHeight = 620;
             AppWindow.SetPresenter(presenter);
+            _ = UpdateService.CheckForUpdates();
         }
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
