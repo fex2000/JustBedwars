@@ -1,7 +1,7 @@
+using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -10,13 +10,13 @@ namespace JustBedwars.Views
     public sealed partial class SettingsView : Page
     {
         private const string ApiKeySettingName = "HypixelApiKey";
-        private readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
-
         private const string LogFileSettingName = "LogFilePath";
+        private readonly SettingsService _settingsService;
 
         public SettingsView()
         {
             InitializeComponent();
+            _settingsService = new SettingsService();
             LoadApiKey();
             LoadLogFilePath();
         }
@@ -28,15 +28,16 @@ namespace JustBedwars.Views
 
         private void LoadApiKey()
         {
-            if (_localSettings.Values.TryGetValue(ApiKeySettingName, out object? apiKey))
+            var apiKey = _settingsService.GetValue(ApiKeySettingName);
+            if (apiKey != null)
             {
-                ApiKeyPasswordBox.Password = (string)apiKey!;
+                ApiKeyPasswordBox.Password = (string)apiKey;
             }
         }
 
         private void SaveApiKey()
         {
-            _localSettings.Values[ApiKeySettingName] = ApiKeyPasswordBox.Password;
+            _settingsService.SetValue(ApiKeySettingName, ApiKeyPasswordBox.Password);
         }
 
         private async void SelectLogFileButton_Click(object sender, RoutedEventArgs e)
@@ -57,15 +58,16 @@ namespace JustBedwars.Views
 
         private void LoadLogFilePath()
         {
-            if (_localSettings.Values.TryGetValue(LogFileSettingName, out object? logFilePath))
+            var logFilePath = _settingsService.GetValue(LogFileSettingName);
+            if (logFilePath != null)
             {
-                LogFilePathTextBox.Text = (string)logFilePath!;
+                LogFilePathTextBox.Text = (string)logFilePath;
             }
         }
 
         private void SaveLogFilePath(string path)
         {
-            _localSettings.Values[LogFileSettingName] = path;
+            _settingsService.SetValue(LogFileSettingName, path);
         }
 
         private void OpenDebugWindow_Click(object sender, RoutedEventArgs e)

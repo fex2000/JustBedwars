@@ -4,27 +4,29 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
-using Windows.Storage;
 
 namespace JustBedwars.Views
 {
     public sealed partial class StatsPage : Page
     {
         private readonly HypixelApi _hypixelApi;
+        private readonly SettingsService _settingsService;
         private const string ApiKeySettingName = "HypixelApiKey";
 
         public StatsPage()
         {
             this.InitializeComponent();
             _hypixelApi = new HypixelApi();
+            _settingsService = new SettingsService();
             LoadApiKey();
         }
 
         private void LoadApiKey()
         {
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(ApiKeySettingName, out object? apiKey))
+            var apiKey = _settingsService.GetValue(ApiKeySettingName);
+            if (apiKey != null)
             {
-                _hypixelApi.SetApiKey((string)apiKey!);
+                _hypixelApi.SetApiKey((string)apiKey);
             }
         }
 

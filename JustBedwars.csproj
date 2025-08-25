@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>winexe</OutputType>
-    <TargetFramework>net10.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net9.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>JustBedwars</RootNamespace>
+    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
@@ -11,6 +12,8 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
   <!-- Pages -->
   <ItemGroup>
@@ -27,6 +30,8 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="docs\src\logo.png" />
+    <Content Include="docs\src\icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
@@ -57,13 +62,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="docs\" />
+	<Folder Include="Setup" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\StatsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
     Explorer "Package and Publish" context menu entry to be enabled for this project even if

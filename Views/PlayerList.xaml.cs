@@ -4,7 +4,6 @@ using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Windows.Storage;
 
 namespace JustBedwars.Views
 {
@@ -12,6 +11,7 @@ namespace JustBedwars.Views
     {
         private LogReader _logReader;
         private readonly HypixelApi _hypixelApi;
+        private readonly SettingsService _settingsService;
         private readonly ObservableCollection<Player> _players = new ObservableCollection<Player>();
         private const string ApiKeySettingName = "HypixelApiKey";
         private const string LogFileSettingName = "LogFilePath";
@@ -20,6 +20,7 @@ namespace JustBedwars.Views
         {
             InitializeComponent();
             _hypixelApi = new HypixelApi();
+            _settingsService = new SettingsService();
 
             LoadApiKey();
             LoadLogReader();
@@ -29,17 +30,19 @@ namespace JustBedwars.Views
 
         private void LoadApiKey()
         {
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(ApiKeySettingName, out object? apiKey))
+            var apiKey = _settingsService.GetValue(ApiKeySettingName);
+            if (apiKey != null)
             {
-                _hypixelApi.SetApiKey((string)apiKey!);
+                _hypixelApi.SetApiKey((string)apiKey);
             }
         }
 
         private void LoadLogReader()
         {
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(LogFileSettingName, out object? logFilePath))
+            var logFilePath = _settingsService.GetValue(LogFileSettingName);
+            if (logFilePath != null)
             {
-                _logReader = new LogReader((string)logFilePath!);
+                _logReader = new LogReader((string)logFilePath);
             }
             else
             {
