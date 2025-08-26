@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {},
     ".NETCoreApp,Version=v9.0/win-x64": {
-      "JustBedwars/1.3.0": {
+      "JustBedwars/1.3.1": {
         "dependencies": {
           "Microsoft.Extensions.Configuration.UserSecrets": "10.0.0-preview.7.25380.108",
           "Microsoft.Windows.SDK.BuildTools": "10.0.26100.4948",
@@ -871,7 +871,7 @@
     }
   },
   "libraries": {
-    "JustBedwars/1.3.0": {
+    "JustBedwars/1.3.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

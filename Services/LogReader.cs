@@ -117,15 +117,15 @@ namespace JustBedwars.Services
             }
 
             // Sent message while waiting
-            match = Regex.Match(line, @"(\w+): *");
+            match = Regex.Match(line, @"\[CHAT\] .* (\w+)\uFFFD.:\s");
             if (match.Success)
             {
-                PlayerLeft?.Invoke(match.Groups[1].Value);
+                PlayerJoined?.Invoke(match.Groups[1].Value);
                 return;
             }
 
             // Final kill
-            match = Regex.Match(line, @"FINAL KILL!\s+(\w+) was killed by (\w+).");
+            match = Regex.Match(line, @"\[CHAT\]\s(\w+)\s.*\s(\w+)\.\sFINAL KILL!");
             if (match.Success)
             {
                 PlayerLeft?.Invoke(match.Groups[1].Value);

@@ -13,9 +13,8 @@ Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Install
 - Listing players from log
 - Sorting Players by FKDR
 - Find all player stats by username
+- Auto player adding and removal based on chatting, Finals and disconnects
 ## Planned
 - Get a Application API key (Will do after more features are added)
 - Sorting players by general skill and not just FKDR
-- Showing players chatting while waiting for the round to start
 - Always on top mode
-- Auto Removing final killed players (will be a setting)
