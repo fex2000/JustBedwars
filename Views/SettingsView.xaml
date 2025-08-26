@@ -4,51 +4,44 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:JustBedwars.Views"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Padding="50" MaxWidth="1000">
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Padding="50" MaxWidth="1000" Spacing="4">
         <TextBlock Text="Settings" FontWeight="SemiBold" FontSize="30" HorizontalAlignment="Center" Margin="20"/>
-        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-            <Grid Padding="12" ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="300"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Hypixel API Key"/>
-                    <TextBlock Text="Use at your own risk!" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                </StackPanel>
-                <PasswordBox x:Name="ApiKeyPasswordBox" Height="32" Grid.Column="1" Grid.Row="0" PasswordChanged="ApiKeyPasswordBox_PasswordChanged"/>
-            </Grid>
-        </Border>
-        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Margin="0,10,0,0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
-            <Grid Padding="12" ColumnSpacing="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="280"/>
-                    <ColumnDefinition Width="70"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Log Location"/>
-                    <TextBlock Text="Change if you aren't playing in the Vanilla Launcher" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
-                </StackPanel>
-                <TextBox x:Name="LogFilePathTextBox" IsReadOnly="True" VerticalAlignment="Center" Grid.Column="1"/>
-                <Button x:Name="SelectLogFileButton" Content="Select" Grid.Column="2" Click="SelectLogFileButton_Click"/>
-            </Grid>
-        </Border>
+        <toolkit:SettingsCard Header="Hypixel API Key"
+                              Description="For development, not recommended for regular users, can be bannable.">
+            <PasswordBox x:Name="ApiKeyPasswordBox" PasswordChanged="ApiKeyPasswordBox_PasswordChanged" IsPasswordRevealButtonEnabled="True"/>
+            <toolkit:SettingsCard.HeaderIcon>
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D7;"/>
+            </toolkit:SettingsCard.HeaderIcon>
+        </toolkit:SettingsCard>
+        <toolkit:SettingsCard Header="Log Location"
+                              Description="Set to your .minecraft/logs/latest.log location to use">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox x:Name="LogFilePathTextBox" IsReadOnly="True" Width="200"/>
+                <Button x:Name="SelectLogFileButton" Content="Select" Click="SelectLogFileButton_Click"/>
+            </StackPanel>
+            <toolkit:SettingsCard.HeaderIcon>
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8E5;"/>
+            </toolkit:SettingsCard.HeaderIcon>
+        </toolkit:SettingsCard>
 
-        <Expander Margin="0,10,0,0">
-            <Expander.Header>
-                <StackPanel VerticalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Advanced Settings"/>
-                    <TextBlock Text="For Development" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
-                </StackPanel>
-            </Expander.Header>
-            <Expander.Content>
-                <Button Content="Open Debug Window" Click="OpenDebugWindow_Click" Margin="0,10,0,0"/>
-            </Expander.Content>
-        </Expander>
+        <toolkit:SettingsExpander Header="Advanced Settings">
+            <toolkit:SettingsExpander.Items>
+                <toolkit:SettingsCard Header="Debug Utilities">
+                    <Button Content="Open Logs" Click="OpenDebugWindow_Click" Margin="0,10,0,0"/>
+                    <toolkit:SettingsCard.HeaderIcon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE756;"/>
+                    </toolkit:SettingsCard.HeaderIcon>
+                </toolkit:SettingsCard>
+            </toolkit:SettingsExpander.Items>
+
+            <toolkit:SettingsExpander.HeaderIcon>
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9F5;"/>
+            </toolkit:SettingsExpander.HeaderIcon>
+        </toolkit:SettingsExpander>
     </StackPanel>
 </Page>

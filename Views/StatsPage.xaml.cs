@@ -38,7 +38,9 @@ namespace JustBedwars.Views
                 return;
             }
 
-            LoadingIndicator.IsActive = true;
+            SetLoaderVisibility(Visibility.Visible);
+            ImageLoader.Visibility = Visibility.Visible;
+            ImageError.Visibility = Visibility.Collapsed;
             SetStatsVisibility(Visibility.Collapsed);
             PlayerImage.Source = null;
 
@@ -62,6 +64,8 @@ namespace JustBedwars.Views
                 BedsTextBlock.Text = player.Beds.ToString();
                 TagTextBlock.Text = player.PlayerTag;
                 FirstLoginTextBlock.Text = player.FirstLoginDate;
+                SetStatsVisibility(Visibility.Visible);
+                SetLoaderVisibility(Visibility.Collapsed);
 
                 if (!string.IsNullOrEmpty(player.PlayerUUID))
                 {
@@ -69,9 +73,24 @@ namespace JustBedwars.Views
                 }
                 else
                 {
+                    ImageError.Visibility = Visibility.Visible;
+                    ImageLoader.Visibility = Visibility.Collapsed;
                     PlayerImage.Source = null;
-                    LoadingIndicator.IsActive = false;
-                    SetStatsVisibility(Visibility.Visible);
+                    StarTextBlock.Text = "Player not found!";
+                    FkdrTextBlock.Text = "Error";
+                    WlrTextBlock.Text = "Error";
+                    BblrTextBlock.Text = "Error";
+                    FinalsTextBlock.Text = "Error";
+                    WinsTextBlock.Text = "Error";
+                    KdrTextBlock.Text = "Error";
+                    FirstLoginTextBlock.Text = "Error";
+                    FinalDeathsTextBlock.Text = "Error";
+                    LossesTextBlock.Text = "Error";
+                    KillsTextBlock.Text = "Error";
+                    DeathsTextBlock.Text = "Error";
+                    TagTextBlock.Text = "Error";
+                    BedsTextBlock.Text = "Error";
+                    BedsLostTextBlock.Text = "Error";
                 }
             }
             else
@@ -93,20 +112,19 @@ namespace JustBedwars.Views
                 TagTextBlock.Text = string.Empty;
                 BedsTextBlock.Text = string.Empty;
                 BedsLostTextBlock.Text = string.Empty;
-                LoadingIndicator.IsActive = false;
+                SetLoaderVisibility(Visibility.Visible);
             }
         }
 
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)
         {
-            LoadingIndicator.IsActive = false;
-            SetStatsVisibility(Visibility.Visible);
+            ImageLoader.Visibility = Visibility.Collapsed;
         }
 
         private void PlayerImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            LoadingIndicator.IsActive = false;
-            SetStatsVisibility(Visibility.Visible);
+            ImageLoader.Visibility = Visibility.Collapsed;
+            ImageError.Visibility = Visibility.Visible;
         }
 
         private void SetStatsVisibility(Visibility visibility)
@@ -156,6 +174,23 @@ namespace JustBedwars.Views
             BedsLostLabel.Visibility = visibility;
             BedsLostTextBlock.Visibility = visibility;
             BedsLost.Visibility = visibility;
+        }
+
+        private void SetLoaderVisibility(Visibility visibility)
+        {
+            StarsLoader.Visibility = visibility;
+            FkdrLoader.Visibility = visibility;
+            WlrLoader.Visibility = visibility;
+            FinalsLoader.Visibility = visibility;
+            FinalDeathsLoader.Visibility = visibility;
+            WinsLoader.Visibility = visibility;
+            LossesLoader.Visibility = visibility;
+            KdrLoader.Visibility = visibility;
+            KillsLoader.Visibility = visibility;
+            DeathsLoader.Visibility = visibility;
+            BblrLoader.Visibility = visibility;
+            BedsLoader.Visibility = visibility;
+            BedsLostLoader.Visibility = visibility;
         }
     }
 }

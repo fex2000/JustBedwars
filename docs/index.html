@@ -169,6 +169,18 @@
             transition: max-height .5s ease-in !important;
         }
 
+        .changelog {
+            max-height: 0px;
+            transition: max-height .4s ease-out;
+            overflow: hidden;
+        }
+
+        input#chngd:checked + .changelog {
+            height: auto;
+            max-height: 400px;
+            transition: max-height .5s ease-in !important;
+        }
+
         .sm {
             font-size: 10px;
         }
@@ -202,43 +214,61 @@
       </div>
     </div>
     <div class="right-col">
-      <div class="app-title xl  mb-24 accent-text"> JustBedwars </div>
-      <div class="app-version lg mb-24"> Version 1.3.1 </div>
-      <div class="app-description mb-24"> JustBedwars </div>
-      <div class="mb-12 dlbuttons">
-        <a href='download/JustBedwars.exe' draggable="false">
-          <button>Download Installer</button>
-        </a>
-      </div>
-      <div class="mb-24">
-      </div>
-      <div class="mb-28 lg"> Application Information </div>
-      <div class="info-table">
-          <div class="info-row">
-              <div class="key"> Version </div>
-              <div class="value"> 1.3.1 </div>
-          </div>
-          <br />
-          <div class="info-row">
-              <div class="key"> Required Operating System </div>
-              <div class="value"> Windows 10.0.17763.0 </div>
-          </div>
-          <br />
-          <div class="info-row">
-              <div class="key"> Recommended Operating System </div>
-              <div class="value"> Windows 11 </div>
-          </div>
-          <br />
-          <div class="info-row">
-              <div class="key"> Architectures </div>
-              <div class="value"> x64 </div>
-          </div>
-          <br />
-          <div class="info-row">
-              <div class="key"> Publisher </div>
-              <div class="value"> fex2000 </div>
-          </div>
-      </div>
-    </div>
-  </body>
+        <div class="app-title xl  mb-24 accent-text"> JustBedwars </div>
+        <div class="app-version lg mb-24"> Version 1.3.2 </div>
+        <div class="app-description mb-24"> JustBedwars </div>
+        <div class="mb-12 dlbuttons">
+            <a href='download/JustBedwars.exe' draggable="false">
+                <button>Download Installer</button>
+            </a>
+        </div>
+        <div class="mb-24">
+        </div>
+        <div class="mb-28 lg"> <label for="chngd"> Last Update Changelog <i class="ms-Icon--ChevronDown ms-Icon sm"> </i> </label> </div>
+        <input type="checkbox" id="chngd" style="display:none;">
+        <div class="info-table, changelog">
+            <div class="info-row">
+                <div class="key"> Update Type </div>
+                <div class="value"> Minor </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Changed </div>
+                <div class="value"> Stats page loads faster and has new loading indicators </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Changed </div>
+                <div class="value"> Better Descriptions on Settings Page </div>
+            </div>
+            <br />
+        </div>
+        <div class="mb-28 lg"> Application Information </div>
+        <div class="info-table">
+            <div class="info-row">
+                <div class="key"> Version </div>
+                <div class="value"> 1.3.2 </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Required Operating System </div>
+                <div class="value"> Windows 10.0.17763.0 </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Recommended Operating System </div>
+                <div class="value"> Windows 11 </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Architectures </div>
+                <div class="value"> x64 </div>
+            </div>
+            <br />
+            <div class="info-row">
+                <div class="key"> Publisher </div>
+                <div class="value"> fex2000 </div>
+            </div>
+        </div>
+</body>
 </html>
