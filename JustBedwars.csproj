@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
 	<Folder Include="Setup" />
+	<Folder Include="Setup\Source\" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\StatsPage.xaml">
