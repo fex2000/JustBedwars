@@ -1,6 +1,9 @@
 # Info
 JUstBedwars is a Hypixel Bedwars Companion App for finding Player Stats.
 
+## Warning
+I don't have a backend for the API to work on yet, so setting a API key is required. API keys are only intended to be used for developers, and can be bannable if not used for development.
+
 # Installation
 Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening a file.
 
@@ -15,6 +18,6 @@ Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Install
 - Find all player stats by username
 - Auto player adding and removal based on chatting, Finals and disconnects
 ## Planned
-- Get a Application API key (Will do after more features are added)
+- Set up a backend so the Application actually works for non-devs.
 - Sorting players by general skill and not just FKDR
 - Always on top mode
