@@ -181,6 +181,18 @@
             transition: max-height .5s ease-in !important;
         }
 
+        .app-info {
+            max-height: 0px;
+            transition: max-height .4s ease-out;
+            overflow: hidden;
+        }
+
+        input#info:checked + .app-info {
+            height: auto;
+            max-height: 400px;
+            transition: max-height .5s ease-in !important;
+        }
+
         .sm {
             font-size: 10px;
         }
@@ -215,8 +227,8 @@
     </div>
     <div class="right-col">
         <div class="app-title xl  mb-24 accent-text"> JustBedwars </div>
-        <div class="app-version lg mb-24"> Version 1.3.2 </div>
-        <div class="app-description mb-24"> JustBedwars </div>
+        <div class="app-description mb-12"> A quick BedWars stats lookup tool </div>
+        <div class="accent-text mb-24"> You will most likely need to set a Development API Key, since the App in not yet approved by Hypixel! </div>
         <div class="mb-12 dlbuttons">
             <a href='download/JustBedwars.exe' draggable="false">
                 <button>Download Installer</button>
@@ -227,27 +239,23 @@
         <div class="mb-28 lg"> <label for="chngd"> Last Update Changelog <i class="ms-Icon--ChevronDown ms-Icon sm"> </i> </label> </div>
         <input type="checkbox" id="chngd" style="display:none;">
         <div class="info-table, changelog">
-            <div class="info-row">
-                <div class="key"> Update Type </div>
-                <div class="value"> Minor </div>
+            <div class="info-row mb-12">
+                <div class="accent-text key"> Update Type </div>
+                <div class="accent-text value"> Minor </div>
             </div>
             <br />
             <div class="info-row">
                 <div class="key"> Changed </div>
-                <div class="value"> Stats page loads faster and has new loading indicators </div>
-            </div>
-            <br />
-            <div class="info-row">
-                <div class="key"> Changed </div>
-                <div class="value"> Better Descriptions on Settings Page </div>
+                <div class="value"> Switched to pulling from backend </div>
             </div>
             <br />
         </div>
-        <div class="mb-28 lg"> Application Information </div>
-        <div class="info-table">
+        <div class="mb-28 lg"> <label for="info"> Application Information <i class="ms-Icon--ChevronDown ms-Icon sm"> </i> </label> </div>
+        <input type="checkbox" id="info" style="display:none;">
+        <div class="info-table, app-info">
             <div class="info-row">
                 <div class="key"> Version </div>
-                <div class="value"> 1.3.2 </div>
+                <div class="value"> 1.3.3 </div>
             </div>
             <br />
             <div class="info-row">

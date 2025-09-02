@@ -29,11 +29,6 @@ namespace JustBedwars.Services
 
         public async Task<Player?> GetPlayerStats(string username)
         {
-            if (string.IsNullOrEmpty(_apiKey))
-            {
-                DebugService.Instance.Log("[HypixelApi] API key is not set.");
-                return null;
-            }
 
             // Check cache first
             if (_playerCache.Contains(username))
@@ -45,9 +40,9 @@ namespace JustBedwars.Services
             await _apiSemaphore.WaitAsync();
             try
             {
-                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 100)
+                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 10)
                 {
-                    await Task.Delay(100 - (int)_apiStopwatch.ElapsedMilliseconds);
+                    await Task.Delay(10 - (int)_apiStopwatch.ElapsedMilliseconds);
                 }
 
                 // Get UUID from Mojang API
@@ -63,7 +58,14 @@ namespace JustBedwars.Services
                     return nickplayer;
                 }
 
-                var url = $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
+               
+                var url = $"http://185.194.216.210:3000/player?uuid={uuid}";
+
+                if (!string.IsNullOrEmpty(_apiKey))
+                {
+                    url = $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
+                }
+
                 DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
 
                 var response = await _httpClient.GetStringAsync(url);
