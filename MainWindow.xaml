@@ -34,7 +34,7 @@
                                 ItemInvoked="NavView_ItemInvoked"
                                 IsBackButtonVisible="Collapsed"
                                 AlwaysShowHeader="False"
-                                PaneDisplayMode="Left"
+                                PaneDisplayMode="Auto"
                                 IsPaneOpen="False"
                                 PaneTitle="JustBedwars"
                                 Margin="0, 32, 0, 0">
