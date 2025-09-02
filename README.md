@@ -18,6 +18,7 @@ Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Install
 - Find all player stats by username
 - Auto player adding and removal based on chatting, Finals and disconnects
 ## Planned
-- Set up a backend so the Application actually works for non-devs.
 - Sorting players by general skill and not just FKDR
+- Finding out more about players by clicking on their name
+- More settings to change things like auto adding and sorting
 - Always on top mode
