@@ -19,10 +19,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="UsernameTextBox" PlaceholderText="Username" Grid.Column="0"/>
-            <Button x:Name="SearchButton" Click="SearchButton_Click" Grid.Column="1">
-                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE721;"/>
-            </Button>
+            <AutoSuggestBox x:Name="UsernameAutoSuggestBox"
+                            PlaceholderText="Username"
+                            Grid.Column="0"
+                            TextChanged="UsernameAutoSuggestBox_TextChanged"
+                            SuggestionChosen="UsernameAutoSuggestBox_SuggestionChosen"
+                            QueryIcon="Find"
+                            QuerySubmitted="UsernameAutoSuggestBox_QuerySubmitted"/>
         </Grid>
         <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                 CornerRadius="{ThemeResource ControlCornerRadius}"

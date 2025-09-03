@@ -4,6 +4,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace JustBedwars.Views
 {
@@ -11,6 +14,7 @@ namespace JustBedwars.Views
     {
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
+        private readonly HttpClient _httpClient;
         private const string ApiKeySettingName = "HypixelApiKey";
 
         public StatsPage()
@@ -18,6 +22,7 @@ namespace JustBedwars.Views
             this.InitializeComponent();
             _hypixelApi = new HypixelApi();
             _settingsService = new SettingsService();
+            _httpClient = new HttpClient();
             LoadApiKey();
         }
 
@@ -30,9 +35,9 @@ namespace JustBedwars.Views
             }
         }
 
-        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        private async void SearchPlayer()
         {
-            var username = UsernameTextBox.Text;
+            var username = UsernameAutoSuggestBox.Text;
             if (string.IsNullOrWhiteSpace(username))
             {
                 return;
@@ -116,6 +121,35 @@ namespace JustBedwars.Views
             }
         }
 
+        private async void UsernameAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                var query = sender.Text;
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    return;
+                }
+
+                try
+                {
+                    var response = await _httpClient.GetStringAsync($"http://185.194.216.210:3000/autocomplete?query={query}&limit=10");
+                    var suggestions = JsonConvert.DeserializeObject<List<string>>(response);
+                    sender.ItemsSource = suggestions;
+                }
+                catch (HttpRequestException)
+                {
+                    // Handle API errors gracefully
+                }
+            }
+        }
+
+        private void UsernameAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            sender.Text = args.SelectedItem.ToString();
+            SearchPlayer();
+        }
+
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)
         {
             ImageLoader.Visibility = Visibility.Collapsed;
@@ -191,6 +225,11 @@ namespace JustBedwars.Views
             BblrLoader.Visibility = visibility;
             BedsLoader.Visibility = visibility;
             BedsLostLoader.Visibility = visibility;
+        }
+
+        private void UsernameAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            SearchPlayer();
         }
     }
 }
