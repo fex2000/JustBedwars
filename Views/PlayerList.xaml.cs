@@ -1,6 +1,7 @@
 using JustBedwars.Models;
 using JustBedwars.Services;
 using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -80,7 +81,10 @@ namespace JustBedwars.Views
                             Star = stats.Star,
                             FKDR = stats.FKDR,
                             WLR = stats.WLR,
+                            BBLR = stats.BBLR,
                             Finals = stats.Finals,
+                            Kills = stats.Kills,
+                            Beds = stats.Beds,
                             Wins = stats.Wins,
                             PlayerTag = stats.PlayerTag,
                             IsLoading = false // Set to false as stats are loaded
@@ -119,7 +123,7 @@ namespace JustBedwars.Views
         }
 
         private void OnWhoResult(List<string> players)
-        {
+        { 
             DispatcherQueue.TryEnqueue(() =>
             {
                 _players.Clear();
@@ -133,9 +137,43 @@ namespace JustBedwars.Views
 
         private void SortPlayers()
         {
-            var sortedPlayers = _players.OrderByDescending(p => p.FKDR).ToList();
+            var sortingMode = _settingsService.GetValue("PlayerSorting") as string ?? "JustBedwars Score";
+            
+            IOrderedEnumerable<Player> sortedPlayers;
+
+            switch (sortingMode)
+            {
+                case "Abyss Index":
+                    sortedPlayers = _players
+                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .ThenByDescending(p => p.Star * p.FKDR * p.FKDR);
+                    break;
+                case "FKDR":
+                    sortedPlayers = _players
+                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .ThenByDescending(p => p.FKDR);
+                    break;
+                case "WLR":
+                    sortedPlayers = _players
+                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .ThenByDescending(p => p.WLR);
+                    break;
+                case "Stars":
+                    sortedPlayers = _players
+                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .ThenByDescending(p => p.Star);
+                    break;
+                case "JustBedwars Score":
+                default:
+                    sortedPlayers = _players
+                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .ThenByDescending(p => p.Star * Math.Pow(p.FKDR, 2) * Math.Pow(p.WLR, 1.2) * Math.Pow(p.BBLR, 1.1) * (1 + p.Finals / 1000.0 + p.Kills / 2000.0 + p.Beds / 500.0 + p.Wins / 1000.0));
+                    break;
+            }
+
+            var sortedList = sortedPlayers.ToList();
             _players.Clear();
-            foreach (var p in sortedPlayers)
+            foreach (var p in sortedList)
             {
                 _players.Add(p);
             }

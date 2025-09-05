@@ -197,9 +197,9 @@ namespace JustBedwars
                 NavView.Margin = margin;
                 NavView.Header = null;
                 Thickness padding = ContentFrame.Margin;
-                margin.Top = 20;
+                margin.Top = 24;
                 ContentFrame.Margin = margin;
-                AppTitle.Visibility = Visibility.Collapsed;
+                AppTitle.Text = "JustBedwars Overlay";
             }
             else
             {
@@ -207,11 +207,15 @@ namespace JustBedwars
                 isOnTop = false;
                 AppWindow.SetPresenter(presenter);
                 NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
+                presenter.Restore();
                 Thickness margin = NavView.Margin;
                 margin.Top = 32;
                 NavView.Margin = margin;
+                Thickness padding = ContentFrame.Margin;
+                margin.Top = 0;
+                ContentFrame.Margin = margin;
                 NavView.IsPaneToggleButtonVisible = true;
-                AppTitle.Visibility = Visibility.Visible;
+                AppTitle.Text = "JustBedwars";
                 AlwaysOnTopButton.Content = "\uE8A7";
                 SystemBackdrop = new MicaBackdrop();
                 NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());

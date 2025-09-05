@@ -16,12 +16,13 @@
         <TextBlock Text="Player List" FontSize="14" Margin="6, 36, 6, 6" FontWeight="Medium"/>
         
         <!-- Sorting -->
-        <toolkit:SettingsCard Header="Player Sorting" Description="The order that players appear in" IsEnabled="False">
-            <ComboBox PlaceholderText="Select Sorting" Width="200">
+        <toolkit:SettingsCard Header="Player Sorting" Description="The order that players appear in">
+            <ComboBox x:Name="SortingComboBox" PlaceholderText="Select Sorting" Width="200" SelectionChanged="SortingComboBox_SelectionChanged">
                 <x:String>JustBedwars Score</x:String>
-                <x:String>Abyss Score</x:String>
+                <x:String>Abyss Index</x:String>
                 <x:String>Stars</x:String>
                 <x:String>FKDR</x:String>
+                <x:String>WLR</x:String>
             </ComboBox>
             <toolkit:SettingsCard.HeaderIcon>
                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8CB;"/>
