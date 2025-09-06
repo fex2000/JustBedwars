@@ -17,6 +17,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ApplicationSettings;
 using Microsoft.UI.Windowing;
+using System.Threading.Tasks;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -43,7 +44,7 @@ namespace JustBedwars
 
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
-        private bool isOnTop;
+        public bool isOnTop;
         private Type preTopPage;
 
         private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
@@ -219,6 +220,7 @@ namespace JustBedwars
                 AlwaysOnTopButton.Content = "\uE8A7";
                 SystemBackdrop = new MicaBackdrop();
                 NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
+                NavView.IsPaneOpen = false;
             }
         }
     }

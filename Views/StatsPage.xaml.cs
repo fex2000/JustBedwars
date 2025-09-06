@@ -43,16 +43,26 @@ namespace JustBedwars.Views
                 return;
             }
 
+            ProgressBars.Visibility = Visibility.Collapsed;
             SetLoaderVisibility(Visibility.Visible);
             ImageLoader.Visibility = Visibility.Visible;
             ImageError.Visibility = Visibility.Collapsed;
             SetStatsVisibility(Visibility.Collapsed);
+            ContentBorder.Visibility = Visibility.Visible;
             PlayerImage.Source = null;
 
             var player = await _hypixelApi.GetPlayerStats(username);
 
             if (player != null)
             {
+                if (player.PlayerTag != "NICK" && player.PlayerTag != "ERROR")
+                {
+                    HypixelLevelText.Text = $"Hypixel Level: {player.HypixelLevel}";
+                    HypixelLevelProgress.Value = player.HypixelLevelProgress;
+                    BedwarsLevelText.Text = $"Bedwars Stars: {player.Star}";
+                    BedwarsLevelProgress.Value = player.BedwarsLevelProgress;
+                    ProgressBars.Visibility = Visibility.Visible;
+                }
                 UsernameTextBlock.Text = player.Username;
                 StarTextBlock.Text = player.Star.ToString();
                 FkdrTextBlock.Text = player.FKDR.ToString();
@@ -225,6 +235,11 @@ namespace JustBedwars.Views
             BblrLoader.Visibility = visibility;
             BedsLoader.Visibility = visibility;
             BedsLostLoader.Visibility = visibility;
+            HypixelLevelProgressLoad.Visibility = visibility;
+            HypixelLevelTextLoad.Visibility = visibility;
+            BedwarsLevelProgressLoad.Visibility = visibility;
+            BedwarsLevelTextLoad.Visibility = visibility;
+            ProgressBarsLoader.Visibility = visibility;
         }
 
         private void UsernameAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
