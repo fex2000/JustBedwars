@@ -1,10 +1,12 @@
 using JustBedwars.Models;
 using JustBedwars.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 
 namespace JustBedwars.Views
 {
@@ -83,10 +85,16 @@ namespace JustBedwars.Views
                             WLR = stats.WLR,
                             BBLR = stats.BBLR,
                             Finals = stats.Finals,
+                            FinalDeaths = stats.FinalDeaths,
                             Kills = stats.Kills,
+                            Deaths = stats.Deaths,
+                            KDR = stats.KDR,
                             Beds = stats.Beds,
+                            BedsLost = stats.BedsLost,
                             Wins = stats.Wins,
+                            Losses = stats.Losses,
                             PlayerTag = stats.PlayerTag,
+                            FirstLogin = stats.FirstLogin,
                             IsLoading = false // Set to false as stats are loaded
                             
                         };
@@ -176,6 +184,24 @@ namespace JustBedwars.Views
             foreach (var p in sortedList)
             {
                 _players.Add(p);
+            }
+        }
+
+        private void Player_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is Player player)
+            {
+                var existingPlayer = _players.FirstOrDefault(p => p.Username == player.Username);
+                if (existingPlayer != null)
+                {
+                    var index = _players.IndexOf(existingPlayer);
+                    var updatedPlayer = existingPlayer;
+                    updatedPlayer.IsExpanded = !existingPlayer.IsExpanded;
+                    if (index != -1)
+                    {
+                        _players[index] = updatedPlayer;
+                    }
+                }
             }
         }
     }

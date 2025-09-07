@@ -1,5 +1,7 @@
 
+using JustBedwars.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.ComponentModel;
 
@@ -371,6 +373,52 @@ namespace JustBedwars.Models
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                if (_isExpanded != value)
+                {
+                    _isExpanded = value;
+                    OnPropertyChanged(nameof(IsExpanded));
+                    OnPropertyChanged(nameof(IsCollapsedContentVisible));
+                    OnPropertyChanged(nameof(IsExpandedContentVisible));
+                }
+            }
+        }
+
+        public Visibility IsCollapsedContentVisible
+        {
+            get
+            {
+                if (_isExpanded == true)
+                    return Visibility.Collapsed;
+                else
+                    return Visibility.Visible;
+            }
+        }
+
+        public Visibility IsExpandedContentVisible
+        {
+            get
+            {
+                if (_isExpanded == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
+
+        public BitmapImage PlayerImageFace
+        {
+            get
+            {
+                return new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{_username}/face"));
+            }
         }
     }
 }

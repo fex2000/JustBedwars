@@ -21,7 +21,7 @@
                     <media:AcrylicBrush BlurAmount="50" TintColor="Black" TintOpacity="0"/>
                 </Grid.Background>
                 <!-- App Title -->
-                <TextBlock Text="JustBedwars" HorizontalAlignment="Center" Margin="7" x:Name="AppTitle" Canvas.ZIndex="1"/>
+                <TextBlock Text="JustBedwars" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="7" x:Name="AppTitle" Canvas.ZIndex="1"/>
                 <!-- Back Button - Currently Disabled -->
                 <AppBarButton Click="BackButton_Click"
                               x:Name="BackButton"
