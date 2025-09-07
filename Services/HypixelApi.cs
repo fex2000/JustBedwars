@@ -97,7 +97,7 @@ namespace JustBedwars.Services
                     return nickplayer;
                 }
 
-                var player = new Player
+                                var player = new Player
                 {
                     Username = (string?)json["player"]?["displayname"],
                     Star = (int?)json["player"]?["achievements"]?["bedwars_level"] ?? 0,
@@ -116,6 +116,8 @@ namespace JustBedwars.Services
                     FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
                     PlayerTag = (string?)"-",
                     PlayerUUID = uuid,
+                    NetworkExp = (long?)json["player"]?["networkExp"] ?? 0,
+                    BedwarsExperience = (int?)json["player"]?["stats"]?["Bedwars"]?["Experience"] ?? 0,
                 };
 
                 // Add to cache

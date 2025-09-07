@@ -16,6 +16,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ApplicationSettings;
 using Microsoft.UI.Windowing;
+using System.Threading.Tasks;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -28,17 +29,22 @@ namespace JustBedwars
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        OverlappedPresenter presenter = OverlappedPresenter.Create();
+
         public MainWindow()
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
-            OverlappedPresenter presenter = OverlappedPresenter.Create();
             presenter.PreferredMinimumWidth = 900;
             presenter.PreferredMinimumHeight = 620;
             AppWindow.SetPresenter(presenter);
             _ = UpdateService.CheckForUpdates();
         }
+
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
+
+        public bool isOnTop;
+        private Type preTopPage;
 
         private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
@@ -154,5 +160,68 @@ namespace JustBedwars
         {
             TryGoBack();
         }
+
+        private void AlwaysOnTopButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (isOnTop == false)
+            {
+                isOnTop = true;
+                OverlappedPresenter alwaysontop = OverlappedPresenter.Create();
+                alwaysontop.IsAlwaysOnTop = true;
+                alwaysontop.IsMaximizable = false;
+                alwaysontop.IsMinimizable = false;
+                alwaysontop.PreferredMaximumHeight = 700;
+                alwaysontop.PreferredMinimumHeight = 300;
+                alwaysontop.PreferredMaximumWidth = 1200;
+                alwaysontop.PreferredMinimumWidth = 550;
+                alwaysontop.SetBorderAndTitleBar(true, true);
+                AppWindow.SetPresenter(alwaysontop);
+                alwaysontop.Restore();
+                AppWindow.Resize(new Windows.Graphics.SizeInt32(800, 500));
+
+                AlwaysOnTopButton.HorizontalAlignment = HorizontalAlignment.Left;
+                AlwaysOnTopButton.Content = "\uE944";
+                SystemBackdrop = new DesktopAcrylicBackdrop();
+
+                NavView.IsPaneToggleButtonVisible = false;
+                NavView.SelectedItem = "JustBedwars.Views.PlayerList";
+                Type preNavPageType = ContentFrame.CurrentSourcePageType;
+                preTopPage = ContentFrame.CurrentSourcePageType;
+                if (preTopPage != typeof(Views.PlayerList))
+                {
+                    NavView_Navigate(typeof(Views.PlayerList), new DrillInNavigationTransitionInfo());
+                }
+                NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+                Thickness margin = NavView.Margin;
+                margin.Top = 0;
+                NavView.Margin = margin;
+                NavView.Header = null;
+                Thickness padding = ContentFrame.Margin;
+                margin.Top = 24;
+                ContentFrame.Margin = margin;
+                AppTitle.Text = "JustBedwars Overlay";
+            }
+            else
+            {
+                AlwaysOnTopButton.HorizontalAlignment = HorizontalAlignment.Right;
+                isOnTop = false;
+                AppWindow.SetPresenter(presenter);
+                NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
+                presenter.Restore();
+                Thickness margin = NavView.Margin;
+                margin.Top = 32;
+                NavView.Margin = margin;
+                Thickness padding = ContentFrame.Margin;
+                margin.Top = 0;
+                ContentFrame.Margin = margin;
+                NavView.IsPaneToggleButtonVisible = true;
+                AppTitle.Text = "JustBedwars";
+                AlwaysOnTopButton.Content = "\uE8A7";
+                SystemBackdrop = new MicaBackdrop();
+                NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
+                NavView.IsPaneOpen = false;
+            }
+        }
     }
 }
+

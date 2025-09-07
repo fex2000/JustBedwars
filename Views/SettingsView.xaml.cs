@@ -11,6 +11,7 @@ namespace JustBedwars.Views
     {
         private const string ApiKeySettingName = "HypixelApiKey";
         private const string LogFileSettingName = "LogFilePath";
+        private const string PlayerSortingSettingName = "PlayerSorting";
         private readonly SettingsService _settingsService;
 
         public SettingsView()
@@ -19,6 +20,7 @@ namespace JustBedwars.Views
             _settingsService = new SettingsService();
             LoadApiKey();
             LoadLogFilePath();
+            LoadPlayerSorting();
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -74,6 +76,32 @@ namespace JustBedwars.Views
         {
             var debugWindow = new DebugWindow();
             debugWindow.Activate();
+        }
+
+        private void SortingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SavePlayerSorting();
+        }
+
+        private void LoadPlayerSorting()
+        {
+            var sorting = _settingsService.GetValue(PlayerSortingSettingName);
+            if (sorting != null)
+            {
+                SortingComboBox.SelectedItem = sorting;
+            }
+            else
+            {
+                SortingComboBox.SelectedItem = "JustBedwars Score";
+            }
+        }
+
+        private void SavePlayerSorting()
+        {
+            if (SortingComboBox.SelectedItem != null)
+            {
+                _settingsService.SetValue(PlayerSortingSettingName, SortingComboBox.SelectedItem.ToString());
+            }
         }
     }
 }

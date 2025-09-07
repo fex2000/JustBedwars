@@ -1,5 +1,7 @@
 
+using JustBedwars.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.ComponentModel;
 
@@ -274,6 +276,78 @@ namespace JustBedwars.Models
             }
         }
 
+        private long _bedwarsExperience;
+        public long BedwarsExperience
+        {
+            get => _bedwarsExperience;
+            set
+            {
+                if (_bedwarsExperience != value)
+                {
+                    _bedwarsExperience = value;
+                    OnPropertyChanged(nameof(BedwarsExperience));
+                    OnPropertyChanged(nameof(BedwarsLevelProgress));
+                }
+            }
+        }
+
+        private long _networkExp;
+        public long NetworkExp
+        {
+            get => _networkExp;
+            set
+            {
+                if (_networkExp != value)
+                {
+                    _networkExp = value;
+                    OnPropertyChanged(nameof(NetworkExp));
+                    OnPropertyChanged(nameof(HypixelLevelProgress));
+                    OnPropertyChanged(nameof(HypixelLevel));
+                }
+            }
+        }
+
+        public double BedwarsLevelProgress
+        {
+            get
+            {
+                if (BedwarsExperience == 0) return 0;
+                return GetBedWarsLevelPercentage(BedwarsExperience) * 100;
+            }
+        }
+
+        public double HypixelLevelProgress
+        {
+            get
+            {
+                if (NetworkExp == 0) return 0;
+                double progress = (Math.Sqrt((2 * NetworkExp) + 30625) / 50) - 2.5;
+                return (progress - Math.Truncate(progress)) * 100;
+            }
+        }
+
+        public int HypixelLevel
+        {
+            get
+            {
+                if (NetworkExp == 0) return 0;
+                double progress = (Math.Sqrt((2 * NetworkExp) + 30625) / 50) - 2.5;
+                return (int)Math.Truncate(progress);
+            }
+        }
+
+        private static double GetBedWarsLevelPercentage(double exp)
+        {
+            int level = 100 * (int)(exp / 487000);
+            exp = exp % 487000;
+            if (exp < 500) return level + exp / 500;
+            if (exp < 1500) return level + (exp - 500) / 1000;
+            if (exp < 3500) return level + (exp - 1500) / 2000;
+            if (exp < 7000) return level + (exp - 3500) / 3500;
+            exp -= 7000;
+            return ((level + exp / 5000) - Math.Truncate(level + exp / 5000));
+        }
+
         public Visibility IsLoaderVisible
         {
             get
@@ -299,6 +373,52 @@ namespace JustBedwars.Models
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                if (_isExpanded != value)
+                {
+                    _isExpanded = value;
+                    OnPropertyChanged(nameof(IsExpanded));
+                    OnPropertyChanged(nameof(IsCollapsedContentVisible));
+                    OnPropertyChanged(nameof(IsExpandedContentVisible));
+                }
+            }
+        }
+
+        public Visibility IsCollapsedContentVisible
+        {
+            get
+            {
+                if (_isExpanded == true)
+                    return Visibility.Collapsed;
+                else
+                    return Visibility.Visible;
+            }
+        }
+
+        public Visibility IsExpandedContentVisible
+        {
+            get
+            {
+                if (_isExpanded == true)
+                    return Visibility.Visible;
+                else
+                    return Visibility.Collapsed;
+            }
+        }
+
+        public BitmapImage PlayerImageFace
+        {
+            get
+            {
+                return new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{_username}/face"));
+            }
         }
     }
 }

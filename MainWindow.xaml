@@ -7,17 +7,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxm="using:Microsoft.UI.Xaml.Media"
+    xmlns:media="using:CommunityToolkit.WinUI.Media"
     mc:Ignorable="d"
     Title="JustBedwars">
 
     <Window.SystemBackdrop>
-        <MicaBackdrop />
+        <MicaBackdrop Kind="Base"/>
     </Window.SystemBackdrop>
     <Window.Content>
         <Page>
             <Grid>
+                <Grid.Background>
+                    <media:AcrylicBrush BlurAmount="50" TintColor="Black" TintOpacity="0"/>
+                </Grid.Background>
                 <!-- App Title -->
-                <TextBlock Text="JustBedwars" HorizontalAlignment="Center" Margin="7"/>
+                <TextBlock Text="JustBedwars" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="7" x:Name="AppTitle" Canvas.ZIndex="1"/>
                 <!-- Back Button - Currently Disabled -->
                 <AppBarButton Click="BackButton_Click"
                               x:Name="BackButton"
@@ -28,6 +32,21 @@
                               Margin="7, -3, 0, 0"
                               Padding="20"
                               Visibility="Collapsed"/>
+                <!-- Always on Top-->
+                <Button Click="AlwaysOnTopButton_Click"
+                        CornerRadius="0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        x:Name="AlwaysOnTopButton"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Width="48"
+                        Height="32"
+                        Margin="0, 0, 138, 0"
+                        Padding="3"
+                        FontFamily="Segoe Fluent Icons"
+                        Content="&#xE8A7;"
+                        Canvas.ZIndex="1"/>
                 <!-- Navigation View -->
                 <NavigationView x:Name="NavView"
                                 Loaded="NavView_Loaded"
