@@ -7,7 +7,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:converters="using:JustBedwars.Converters"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <converters:UsernameColorConverter x:Key="UsernameColorConverter"/>
+        <converters:FkdrColorConverter x:Key="FkdrColorConverter"/>
+        <converters:WlrColorConverter x:Key="WlrColorConverter"/>
+        <converters:FinalsColorConverter x:Key="FinalsColorConverter"/>
+        <converters:WinsColorConverter x:Key="WinsColorConverter"/>
+        <converters:BblrColorConverter x:Key="BblrColorConverter"/>
+        <converters:KdrColorConverter x:Key="KdrColorConverter"/>
+        <converters:StarsColorConverter x:Key="StarsColorConverter"/>
+    </Page.Resources>
 
     <Grid Padding="10" RowSpacing="10">
         <Grid.RowDefinitions>
@@ -15,11 +27,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <!-- Title -->
-        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Grid.Row="0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="{ThemeResource ControlCornerRadius}" Grid.Row="0" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" DoubleTapped="AddPlayer_DoubleTapped">
             <Grid VerticalAlignment="Center" Padding="20, 0" ColumnSpacing="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -30,9 +44,11 @@
                 <TextBlock Text="Tag" Grid.Column="1" TextAlignment="Center"/>
                 <TextBlock Text="FKDR" Grid.Column="2" TextAlignment="Center"/>
                 <TextBlock Text="WLR" Grid.Column="3" TextAlignment="Center"/>
-                <TextBlock Text="Finals" Grid.Column="4" TextAlignment="Center"/>
-                <TextBlock Text="Wins" Grid.Column="5" TextAlignment="Center"/>
-                <TextBlock Text="Stars" Grid.Column="6" TextAlignment="Center"/>
+                <TextBlock Text="BBLR" Grid.Column="4" TextAlignment="Center"/>
+                <TextBlock Text="KDR" Grid.Column="5" TextAlignment="Center"/>
+                <TextBlock Text="Finals" Grid.Column="6" TextAlignment="Center"/>
+                <TextBlock Text="Wins" Grid.Column="7" TextAlignment="Center"/>
+                <TextBlock Text="Stars" Grid.Column="8" TextAlignment="Center"/>
             </Grid>
         </Border>
         <!-- Players -->
@@ -52,16 +68,20 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="50"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}"/>
+                                <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}" Foreground="{x:Bind Score, Converter={StaticResource UsernameColorConverter}}"/>
                                 <TextBlock Text="{x:Bind PlayerTag}" Grid.Column="1" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <TextBlock Text="{x:Bind FKDR}" Grid.Column="2" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <TextBlock Text="{x:Bind WLR}" Grid.Column="3" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <TextBlock Text="{x:Bind Finals}" Grid.Column="4" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <TextBlock Text="{x:Bind Wins}" Grid.Column="5" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <TextBlock Text="{x:Bind Star}" Grid.Column="6" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
-                                <ProgressBar Grid.ColumnSpan="5" Grid.Column="3" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
+                                <TextBlock Text="{x:Bind FKDR}" Grid.Column="2" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind FKDR, Converter={StaticResource FkdrColorConverter}}"/>
+                                <TextBlock Text="{x:Bind WLR}" Grid.Column="3" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind WLR, Converter={StaticResource WlrColorConverter}}"/>
+                                <TextBlock Text="{x:Bind BBLR}" Grid.Column="4" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind BBLR, Converter={StaticResource BblrColorConverter}}"/>
+                                <TextBlock Text="{x:Bind KDR}" Grid.Column="5" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind KDR, Converter={StaticResource KdrColorConverter}}"/>
+                                <TextBlock Text="{x:Bind Finals}" Grid.Column="6" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Finals, Converter={StaticResource FinalsColorConverter}}"/>
+                                <TextBlock Text="{x:Bind Wins}" Grid.Column="7" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Wins, Converter={StaticResource WinsColorConverter}}"/>
+                                <TextBlock Text="{x:Bind Star}" Grid.Column="8" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Star, Converter={StaticResource StarsColorConverter}}"/>
+                                <ProgressBar Grid.ColumnSpan="7" Grid.Column="3" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
                             </Grid>
                         </Border>
                         <!-- Advanced -->
@@ -76,26 +96,26 @@
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
                                 <Image Source="{x:Bind PlayerImageFace}" Height="100" Width="120" Margin="0, 24, 0, -12"/>
-                                <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}" HorizontalAlignment="Center" FontWeight="SemiBold"/>
+                                <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}" HorizontalAlignment="Center" FontWeight="SemiBold" Foreground="{x:Bind Score, Converter={StaticResource UsernameColorConverter}}"/>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="FKDR" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                                    <TextBlock Text="{x:Bind FKDR}"/>
+                                    <TextBlock Text="{x:Bind FKDR}" Foreground="{x:Bind FKDR, Converter={StaticResource FkdrColorConverter}}"/>
                                     <TextBlock Text="Finals" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                    <TextBlock Text="{x:Bind Finals}"/>
+                                    <TextBlock Text="{x:Bind Finals}" Foreground="{x:Bind Finals, Converter={StaticResource FinalsColorConverter}}"/>
                                     <TextBlock Text="Final Deaths" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                                     <TextBlock Text="{x:Bind FinalDeaths}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="WLR" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                                    <TextBlock Text="{x:Bind WLR}"/>
+                                    <TextBlock Text="{x:Bind WLR}" Foreground="{x:Bind WLR, Converter={StaticResource WlrColorConverter}}"/>
                                     <TextBlock Text="Wins" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                                    <TextBlock Text="{x:Bind Wins}"/>
+                                    <TextBlock Text="{x:Bind Wins}" Foreground="{x:Bind Wins, Converter={StaticResource WinsColorConverter}}"/>
                                     <TextBlock Text="Losses" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                                     <TextBlock Text="{x:Bind Losses}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="KDR" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                                    <TextBlock Text="{x:Bind KDR}"/>
+                                    <TextBlock Text="{x:Bind KDR}" Foreground="{x:Bind KDR, Converter={StaticResource KdrColorConverter}}"/>
                                     <TextBlock Text="Kills" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                                     <TextBlock Text="{x:Bind Kills}"/>
                                     <TextBlock Text="Deaths" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
@@ -103,17 +123,21 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="BBLR" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                                    <TextBlock Text="{x:Bind BBLR}"/>
+                                    <TextBlock Text="{x:Bind BBLR}" Foreground="{x:Bind BBLR, Converter={StaticResource BblrColorConverter}}"/>
                                     <TextBlock Text="Beds Broken" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                                     <TextBlock Text="{x:Bind Beds}"/>
                                     <TextBlock Text="Beds Lost" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                                     <TextBlock Text="{x:Bind BedsLost}"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <StackPanel Grid.Column="5" VerticalAlignment="Top" HorizontalAlignment="Center">
                                     <TextBlock Text="Stars" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                                     <TextBlock Text="{x:Bind Star}"/>
                                     <TextBlock Text="First Login" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                                     <TextBlock Text="{x:Bind FirstLoginDate}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="1">
+                                    <TextBlock Text="Sorting Score" FontWeight="SemiBold" FontSize="12"/>
+                                    <TextBlock Text="{x:Bind Score}" FontSize="10"/>
                                 </StackPanel>
                             </Grid>
                         </Border>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Microsoft.UI.Xaml.Input;
 
 namespace JustBedwars.Views
 {
@@ -29,6 +30,33 @@ namespace JustBedwars.Views
             LoadLogReader();
 
             PlayersListView.ItemsSource = _players;
+        }
+
+        private async void AddPlayer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var inputTextBox = new TextBox
+            {
+                PlaceholderText = "Enter player name"
+            };
+            var dialog = new ContentDialog
+            {
+                Title = "Add Player",
+                Content = inputTextBox,
+                PrimaryButtonText = "Add",
+                CloseButtonText = "Cancel",
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var playerName = inputTextBox.Text;
+                if (!string.IsNullOrWhiteSpace(playerName))
+                {
+                    OnPlayerJoined(playerName);
+                }
+            }
         }
 
         private void LoadApiKey()
@@ -96,7 +124,7 @@ namespace JustBedwars.Views
                             PlayerTag = stats.PlayerTag,
                             FirstLogin = stats.FirstLogin,
                             IsLoading = false // Set to false as stats are loaded
-                            
+
                         };
 
                         // Find the index of the existing player and replace it
