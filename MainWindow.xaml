@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxm="using:Microsoft.UI.Xaml.Media"
     xmlns:media="using:CommunityToolkit.WinUI.Media"
+    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     mc:Ignorable="d"
     Title="JustBedwars">
 
@@ -21,7 +22,17 @@
                     <media:AcrylicBrush BlurAmount="50" TintColor="Black" TintOpacity="0"/>
                 </Grid.Background>
                 <!-- App Title -->
-                <TextBlock Text="JustBedwars" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="7" x:Name="AppTitle" Canvas.ZIndex="1"/>
+                <TextBlock Text="JustBedwars" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Top" 
+                           Margin="7" 
+                           x:Name="AppTitle" 
+                           Canvas.ZIndex="1">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Duration="0:0:1" Delay="0:0:4" From="0,-40,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:1" Delay="0:0:4" From="0" To="1.0"/>
+                    </animations:Implicit.ShowAnimations>
+                </TextBlock>
                 <!-- Back Button - Currently Disabled -->
                 <AppBarButton Click="BackButton_Click"
                               x:Name="BackButton"
@@ -46,7 +57,12 @@
                         Padding="3"
                         FontFamily="Segoe Fluent Icons"
                         Content="&#xE8A7;"
-                        Canvas.ZIndex="1"/>
+                        Canvas.ZIndex="1">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Duration="0:0:1" Delay="0:0:4" From="0,-40,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:1" Delay="0:0:4" From="0" To="1.0"/>
+                    </animations:Implicit.ShowAnimations>
+                </Button>
                 <!-- Navigation View -->
                 <NavigationView x:Name="NavView"
                                 Loaded="NavView_Loaded"
@@ -64,7 +80,18 @@
                     <NavigationView.Content>
                         <Frame x:Name="ContentFrame"/>
                     </NavigationView.Content>
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Duration="0:0:1" Delay="0:0:3.5" From="0,200,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:1" Delay="0:0:3.5" From="0" To="1.0"/>
+                    </animations:Implicit.ShowAnimations>
                 </NavigationView>
+                <!-- Splash Screen -->
+                <Image Source="/Assets/SplashScreen.png" MaxWidth="620" Stretch="Uniform">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="0" To="0,-350,0"/>
+                        <animations:OpacityAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="1.0" To="0"/>
+                    </animations:Implicit.ShowAnimations>
+                </Image>
             </Grid>
         </Page>
     </Window.Content>

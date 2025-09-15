@@ -117,7 +117,7 @@ namespace JustBedwars.Models
                 if (_kdr != value)
                 {
                     _kdr = value;
-                    OnPropertyChanged(nameof(WLR));
+                    OnPropertyChanged(nameof(KDR));
                 }
             }
         }

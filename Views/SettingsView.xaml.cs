@@ -13,6 +13,7 @@ namespace JustBedwars.Views
         private const string LogFileSettingName = "LogFilePath";
         private const string PlayerSortingSettingName = "PlayerSorting";
         private readonly SettingsService _settingsService;
+        public string Version { get; }
 
         public SettingsView()
         {
@@ -21,6 +22,7 @@ namespace JustBedwars.Views
             LoadApiKey();
             LoadLogFilePath();
             LoadPlayerSorting();
+            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
