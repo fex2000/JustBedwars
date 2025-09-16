@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -28,6 +29,7 @@ namespace JustBedwars
     {
         private static Window? _window;
         public static Window? Window { get { return _window; } }
+        private readonly SettingsService _settingsService;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -36,6 +38,7 @@ namespace JustBedwars
         public App()
         {
             InitializeComponent();
+            _settingsService = new SettingsService();
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace JustBedwars
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            _window = new MainWindow();
+            _window = new MainWindow(_settingsService);
             _window.Activate();
         }
     }

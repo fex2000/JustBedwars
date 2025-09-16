@@ -129,13 +129,13 @@
                                     <TextBlock Text="Beds Lost" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                                     <TextBlock Text="{x:Bind BedsLost}"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="5" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Text="Stars" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
-                                    <TextBlock Text="{x:Bind Star}"/>
+                                    <TextBlock Text="{x:Bind Star}" Foreground="{x:Bind Star, Converter={StaticResource StarsColorConverter}}"/>
                                     <TextBlock Text="First Login" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                                     <TextBlock Text="{x:Bind FirstLoginDate}"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="1">
+                                <StackPanel Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="1" Visibility="Collapsed">
                                     <TextBlock Text="Sorting Score" FontWeight="SemiBold" FontSize="12"/>
                                     <TextBlock Text="{x:Bind Score}" FontSize="10"/>
                                 </StackPanel>

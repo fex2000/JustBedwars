@@ -1,6 +1,7 @@
 using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
@@ -12,17 +13,24 @@ namespace JustBedwars.Views
         private const string ApiKeySettingName = "HypixelApiKey";
         private const string LogFileSettingName = "LogFilePath";
         private const string PlayerSortingSettingName = "PlayerSorting";
-        private readonly SettingsService _settingsService;
+        private const string MediaPlayerSettingName = "ShowMediaPlayer";
+        private SettingsService _settingsService;
         public string Version { get; }
 
         public SettingsView()
         {
             InitializeComponent();
-            _settingsService = new SettingsService();
+            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            _settingsService = e.Parameter as SettingsService;
             LoadApiKey();
             LoadLogFilePath();
             LoadPlayerSorting();
-            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
+            LoadMediaPlayerSetting();
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -103,6 +111,20 @@ namespace JustBedwars.Views
             if (SortingComboBox.SelectedItem != null)
             {
                 _settingsService.SetValue(PlayerSortingSettingName, SortingComboBox.SelectedItem.ToString());
+            }
+        }
+
+        private void MediaPlayerToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            _settingsService.SetValue(MediaPlayerSettingName, MediaPlayerToggle.IsOn);
+        }
+
+        private void LoadMediaPlayerSetting()
+        {
+            var showMediaPlayer = _settingsService.GetValue(MediaPlayerSettingName);
+            if (showMediaPlayer != null)
+            {
+                MediaPlayerToggle.IsOn = (bool)showMediaPlayer;
             }
         }
     }

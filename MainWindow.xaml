@@ -67,6 +67,8 @@
                 <NavigationView x:Name="NavView"
                                 Loaded="NavView_Loaded"
                                 ItemInvoked="NavView_ItemInvoked"
+                                PaneOpening="NavView_PaneOpening"
+                                PaneClosing="NavView_PaneClosing"
                                 IsBackButtonVisible="Collapsed"
                                 AlwaysShowHeader="False"
                                 PaneDisplayMode="Auto"
@@ -80,13 +82,67 @@
                     <NavigationView.Content>
                         <Frame x:Name="ContentFrame"/>
                     </NavigationView.Content>
+                    <NavigationView.PaneFooter>
+                        <Grid x:Name="MediaPlayerGrid" Visibility="Collapsed" Margin="8,0,8,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Border MaxHeight="124" Margin="-4" Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" CornerRadius="4">
+                                <Image x:Name="MediaImageBG" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Assets/Icon.ico"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+
+                            <Border Margin="-4" Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CornerRadius="4"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefault}"
+                                    BorderThickness="0.2">
+                                <Border.Background>
+                                    <media:AcrylicBrush BlurAmount="32"
+                                        TintColor="Black"
+                                        TintOpacity="0" />
+                                </Border.Background>
+                                <Border Background="{ThemeResource ControlOnImageFillColorDefaultBrush}"/>
+                            </Border>
+
+
+                            <Border Grid.RowSpan="1" CornerRadius="4" Margin="0,0,12,4">
+                                <Image x:Name="MediaImage" Width="64" Height="64" Stretch="UniformToFill">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="/Assets/Icon.ico"/>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Margin="0,2,0,0">
+                                <TextBlock x:Name="MediaTitle" Text="Title" FontWeight="Bold" FontSize="14" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="MediaAuthor" Text="Author" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+
+                            <ProgressBar Grid.Column="0" Grid.Row="1" x:Name="MediaProgressBar" Height="2" Margin="0,4,0,0" Grid.ColumnSpan="2"/>
+
+                            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4" Margin="0,010,0,0">
+                                <Button x:Name="PreviousButton" FontFamily="Segoe Fluent Icons" Content="&#xE892;" Click="PreviousButton_Click"/>
+                                <Button x:Name="PlayPauseButton" FontFamily="Segoe Fluent Icons" Content="&#xE769;" Click="PlayPauseButton_Click"/>
+                                <Button x:Name="NextButton" FontFamily="Segoe Fluent Icons" Content="&#xE893;" Click="NextButton_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </NavigationView.PaneFooter>
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Duration="0:0:1" Delay="0:0:3.5" From="0,200,0" To="0"/>
                         <animations:OpacityAnimation Duration="0:0:1" Delay="0:0:3.5" From="0" To="1.0"/>
                     </animations:Implicit.ShowAnimations>
                 </NavigationView>
                 <!-- Splash Screen -->
-                <Image Source="/Assets/SplashScreen.png" MaxWidth="620" Stretch="Uniform">
+                <Image Source="/Assets/SplashScreen.png" MaxWidth="620" Stretch="Uniform" Canvas.ZIndex="-1">
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="0" To="0,-350,0"/>
                         <animations:OpacityAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="1.0" To="0"/>
