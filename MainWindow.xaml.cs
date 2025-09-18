@@ -163,7 +163,7 @@ namespace JustBedwars
         {
             if (key == "ShowMediaPlayer")
             {
-                LoadMediaPlayerSetting();
+                    LoadMediaPlayerSetting();
             }
         }
 

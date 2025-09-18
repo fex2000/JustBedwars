@@ -63,7 +63,7 @@
             <toolkit:SettingsCard Header="Media Player" Description="See Windows Media">
                 <ToggleSwitch x:Name="MediaPlayerToggle" Toggled="MediaPlayerToggle_Toggled"/>
                 <toolkit:SettingsCard.HeaderIcon>
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE945;"/>
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEA69;"/>
                 </toolkit:SettingsCard.HeaderIcon>
             </toolkit:SettingsCard>
 
