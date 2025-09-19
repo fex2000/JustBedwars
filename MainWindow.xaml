@@ -83,7 +83,7 @@
                         <Frame x:Name="ContentFrame"/>
                     </NavigationView.Content>
                     <NavigationView.PaneFooter>
-                        <Grid x:Name="MediaPlayerGrid" Visibility="Collapsed" Margin="8,0,8,4">
+                        <Grid x:Name="MediaPlayerGrid" Visibility="Collapsed" Margin="8,0,8,4" Canvas.ZIndex="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
@@ -93,6 +93,14 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
+                            <animations:Implicit.ShowAnimations>
+                                <animations:TranslationAnimation Duration="0:0:0.7" From="-400,0,0" To="0"/>
+                                <animations:OpacityAnimation Duration="0:0:0.3" From="0" To="1"/>
+                            </animations:Implicit.ShowAnimations>
+                            <animations:Implicit.HideAnimations>
+                                <animations:TranslationAnimation Duration="0:0:0.1" From="0,-120,0" To="0,-120,0"/>
+                                <animations:OpacityAnimation Duration="0:0:0.3" From="1" To="0"/>
+                            </animations:Implicit.HideAnimations>
 
                             <Border MaxHeight="124" Margin="-4" Grid.ColumnSpan="2" Grid.RowSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" CornerRadius="4">
                                 <Image x:Name="MediaImageBG" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Center">

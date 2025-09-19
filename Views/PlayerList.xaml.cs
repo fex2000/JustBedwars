@@ -31,6 +31,21 @@ namespace JustBedwars.Views
             LoadLogReader();
 
             PlayersListView.ItemsSource = _players;
+            Unloaded += PlayerList_Unloaded;
+        }
+
+        private void PlayerList_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_logReader != null)
+            {
+                _logReader.Stop();
+                _logReader.PlayerJoined -= OnPlayerJoined;
+                _logReader.PlayerLeft -= OnPlayerLeft;
+                _logReader.WhoResult -= OnWhoResult;
+                _logReader.ClearList -= OnClearList;
+            }
+            DebugService.Instance.EmulatePlayerJoined -= OnPlayerJoined;
+            DebugService.Instance.EmulatePlayerLeft -= OnPlayerLeft;
         }
 
         private async void AddPlayer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -83,13 +98,26 @@ namespace JustBedwars.Views
             _logReader.PlayerJoined += OnPlayerJoined;
             _logReader.PlayerLeft += OnPlayerLeft;
             _logReader.WhoResult += OnWhoResult;
+            _logReader.ClearList += OnClearList;
             _logReader.Start();
             DebugService.Instance.EmulatePlayerJoined += OnPlayerJoined;
             DebugService.Instance.EmulatePlayerLeft += OnPlayerLeft;
         }
 
+        private void OnClearList()
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                _players.Clear();
+            });
+        }
+
         public async void OnPlayerJoined(string username)
         {
+            if (_players.Any(p => p.Username == username))
+            {
+                return;
+            }
             var player = new Player { Username = username, IsLoading = true };
             DispatcherQueue.TryEnqueue(() =>
             {

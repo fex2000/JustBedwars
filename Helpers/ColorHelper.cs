@@ -49,8 +49,7 @@ namespace JustBedwars.Helpers
             if (score < 10000) return GetStatColor(2.6, StatType.FKDR);
             if (score < 100000) return GetStatColor(5.1, StatType.FKDR);
             if (score < 2500000) return GetStatColor(14.1, StatType.FKDR);
-            if (score < 30000000) return GetStatColor(30.1, StatType.FKDR);
-            return GetStatColor(20, StatType.FKDR);
+            return GetStatColor(30.1, StatType.FKDR);
         }
 
         private static StatLevel GetStatLevel(double value, StatType type)
