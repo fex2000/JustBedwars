@@ -14,6 +14,7 @@ namespace JustBedwars.Services
         public event Action<string> PlayerJoined = delegate { };
         public event Action<string> PlayerLeft = delegate { };
         public event Action<List<string>> WhoResult = delegate { };
+        public event Action ClearList = delegate { };
 
         private readonly string _logFilePath;
         private long _lastPosition;
@@ -92,16 +93,8 @@ namespace JustBedwars.Services
                 }
             }
 
-            // Player leave in Lobby.
-            var match = Regex.Match(line, @"(\w+) has quit!");
-            if (match.Success)
-            {
-                PlayerLeft?.Invoke(match.Groups[1].Value);
-                return;
-            }
-
             // Player leave in Round.
-            match = Regex.Match(line, @"(\w+) disconnected");
+            var match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] (\w+) disconnected\.");
             if (match.Success)
             {
                 PlayerLeft?.Invoke(match.Groups[1].Value);
@@ -109,26 +102,37 @@ namespace JustBedwars.Services
             }
 
             // Player rejoin in Round.
-            match = Regex.Match(line, @"(\w+) reconnected");
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] (\w+) reconnected\.");
             if (match.Success)
             {
                 PlayerJoined?.Invoke(match.Groups[1].Value);
                 return;
             }
 
-            // Sent message while waiting
-            match = Regex.Match(line, @"\[CHAT\] .* (\w+)\uFFFD.:\s");
+            // Sent message
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] .*\uFFFD.\[.*\]\s(\w+)\uFFFD.:\s.*|\[.*\] \[Client thread/INFO\]: \[CHAT\] .* \uFFFD.(\w+)\uFFFD.:\s");
             if (match.Success)
             {
-                PlayerJoined?.Invoke(match.Groups[1].Value);
+                if (match.Groups[1].Success)
+                    PlayerJoined?.Invoke(match.Groups[1].Value);
+                if (match.Groups[2].Success)
+                    PlayerJoined?.Invoke(match.Groups[2].Value);
                 return;
             }
 
             // Final kill
-            match = Regex.Match(line, @"\[CHAT\]\s(\w+)\s.*\s(\w+)\.\sFINAL KILL!");
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\]\s(\w+).*\.\sFINAL KILL!");
             if (match.Success)
             {
                 PlayerLeft?.Invoke(match.Groups[1].Value);
+                return;
+            }
+
+            // Server Switch
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] Sending you to mini.*!");
+            if (match.Success)
+            {
+                ClearList?.Invoke();
                 return;
             }
         }

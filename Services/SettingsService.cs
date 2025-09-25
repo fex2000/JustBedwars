@@ -11,6 +11,8 @@ namespace JustBedwars.Services
         private readonly string _filePath;
         private Dictionary<string, object> _settings;
 
+        public event EventHandler<string> SettingChanged;
+
         public SettingsService()
         {
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -48,6 +50,7 @@ namespace JustBedwars.Services
         {
             _settings[key] = value;
             Save();
+            SettingChanged?.Invoke(this, key);
         }
     }
 }

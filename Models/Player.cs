@@ -117,7 +117,7 @@ namespace JustBedwars.Models
                 if (_kdr != value)
                 {
                     _kdr = value;
-                    OnPropertyChanged(nameof(WLR));
+                    OnPropertyChanged(nameof(KDR));
                 }
             }
         }
@@ -418,6 +418,13 @@ namespace JustBedwars.Models
             get
             {
                 return new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{_username}/face"));
+            }
+        }
+
+        public double Score
+        {
+            get {
+                return Star * Math.Pow(FKDR, 2) * Math.Pow(WLR, 1.2) * Math.Pow(BBLR, 1.1) * (1 + Finals / 1000.0 + Kills / 2000.0 + Beds / 500.0 + Wins / 1000.0);
             }
         }
     }

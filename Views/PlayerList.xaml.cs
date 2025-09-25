@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using Microsoft.UI.Xaml.Input;
+using System.Threading.Tasks;
 
 namespace JustBedwars.Views
 {
@@ -29,6 +31,48 @@ namespace JustBedwars.Views
             LoadLogReader();
 
             PlayersListView.ItemsSource = _players;
+            Unloaded += PlayerList_Unloaded;
+        }
+
+        private void PlayerList_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_logReader != null)
+            {
+                _logReader.Stop();
+                _logReader.PlayerJoined -= OnPlayerJoined;
+                _logReader.PlayerLeft -= OnPlayerLeft;
+                _logReader.WhoResult -= OnWhoResult;
+                _logReader.ClearList -= OnClearList;
+            }
+            DebugService.Instance.EmulatePlayerJoined -= OnPlayerJoined;
+            DebugService.Instance.EmulatePlayerLeft -= OnPlayerLeft;
+        }
+
+        private async void AddPlayer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var inputTextBox = new TextBox
+            {
+                PlaceholderText = "Enter player name"
+            };
+            var dialog = new ContentDialog
+            {
+                Title = "Add Player",
+                Content = inputTextBox,
+                PrimaryButtonText = "Add",
+                CloseButtonText = "Cancel",
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var playerName = inputTextBox.Text;
+                if (!string.IsNullOrWhiteSpace(playerName))
+                {
+                    OnPlayerJoined(playerName);
+                }
+            }
         }
 
         private void LoadApiKey()
@@ -54,13 +98,26 @@ namespace JustBedwars.Views
             _logReader.PlayerJoined += OnPlayerJoined;
             _logReader.PlayerLeft += OnPlayerLeft;
             _logReader.WhoResult += OnWhoResult;
+            _logReader.ClearList += OnClearList;
             _logReader.Start();
             DebugService.Instance.EmulatePlayerJoined += OnPlayerJoined;
             DebugService.Instance.EmulatePlayerLeft += OnPlayerLeft;
         }
 
+        private void OnClearList()
+        {
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                _players.Clear();
+            });
+        }
+
         public async void OnPlayerJoined(string username)
         {
+            if (_players.Any(p => p.Username == username))
+            {
+                return;
+            }
             var player = new Player { Username = username, IsLoading = true };
             DispatcherQueue.TryEnqueue(() =>
             {
@@ -96,7 +153,7 @@ namespace JustBedwars.Views
                             PlayerTag = stats.PlayerTag,
                             FirstLogin = stats.FirstLogin,
                             IsLoading = false // Set to false as stats are loaded
-                            
+
                         };
 
                         // Find the index of the existing player and replace it
@@ -109,12 +166,99 @@ namespace JustBedwars.Views
                     }
                     else
                     {
-                        // If stats are null, just set IsLoading to false on the existing player
-                        existingPlayer.IsLoading = false;
-                        DebugService.Instance.Log($"[PlayerList] No stats received for {username}. Set IsLoading to false.");
+                        // If stats are null, it could be a nick or an API error.
+                        // Let's retry.
+                        DebugService.Instance.Log($"[PlayerList] No stats received for {username}. Initiating retry logic.");
+                        RetryPlayerFetch(username, 1);
                     }
                 }
                 SortPlayers();
+            });
+        }
+
+        private async void RetryPlayerFetch(string username, int attempt)
+        {
+            int delay;
+            switch (attempt)
+            {
+                case 1:
+                    delay = 3000; // 3 seconds
+                    break;
+                case 2:
+                    delay = 5000; // 5 seconds
+                    break;
+                case 3:
+                    delay = 10000; // 10 seconds
+                    break;
+                default:
+                    // Max retries reached
+                    var player = _players.FirstOrDefault(p => p.Username == username);
+                    if (player != null)
+                    {
+                        player.IsLoading = false; // Give up
+                        player.PlayerTag = "ERROR"; // Indicate error
+                    }
+                    return;
+            }
+
+            await Task.Delay(delay);
+
+            // Check if player is still in the list
+            var existingPlayer = _players.FirstOrDefault(p => p.Username == username);
+            if (existingPlayer == null)
+            {
+                // Player left, no need to retry
+                return;
+            }
+
+            // It's good practice to set IsLoading to true before fetching
+            existingPlayer.IsLoading = true;
+
+            var stats = await _hypixelApi.GetPlayerStats(username);
+
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                var playerToUpdate = _players.FirstOrDefault(p => p.Username == username);
+                if (playerToUpdate != null)
+                {
+                    if (stats != null)
+                    {
+                        // Update player with stats, same logic as in OnPlayerJoined
+                        var updatedPlayer = new Player
+                        {
+                            Username = stats.Username,
+                            Star = stats.Star,
+                            FKDR = stats.FKDR,
+                            WLR = stats.WLR,
+                            BBLR = stats.BBLR,
+                            Finals = stats.Finals,
+                            FinalDeaths = stats.FinalDeaths,
+                            Kills = stats.Kills,
+                            Deaths = stats.Deaths,
+                            KDR = stats.KDR,
+                            Beds = stats.Beds,
+                            BedsLost = stats.BedsLost,
+                            Wins = stats.Wins,
+                            Losses = stats.Losses,
+                            PlayerTag = stats.PlayerTag,
+                            FirstLogin = stats.FirstLogin,
+                            IsLoading = false
+                        };
+
+                        var index = _players.IndexOf(playerToUpdate);
+                        if (index != -1)
+                        {
+                            _players[index] = updatedPlayer;
+                            DebugService.Instance.Log($"[PlayerList] Replaced player {username} with updated stats on retry attempt {attempt}.");
+                        }
+                        SortPlayers();
+                    }
+                    else
+                    {
+                        // Retry again
+                        RetryPlayerFetch(username, attempt + 1);
+                    }
+                }
             });
         }
 

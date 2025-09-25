@@ -7,6 +7,7 @@ using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace JustBedwars.Views
 {
@@ -24,6 +25,16 @@ namespace JustBedwars.Views
             _settingsService = new SettingsService();
             _httpClient = new HttpClient();
             LoadApiKey();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter is string username)
+            {
+                UsernameAutoSuggestBox.Text = username;
+                SearchPlayer();
+            }
         }
 
         private void LoadApiKey()

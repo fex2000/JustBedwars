@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JustBedwars"
-#define MyAppVersion "1.3.2"
+#define MyAppVersion "1.5.0"
 #define MyAppPublisher "fex2000"
 #define MyAppURL "https://fex2000.github.io/JustBedwars"
 #define MyAppExeName "JustBedwars.exe"
