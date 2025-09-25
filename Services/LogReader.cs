@@ -110,7 +110,7 @@ namespace JustBedwars.Services
             }
 
             // Sent message
-            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] .* \uFFFD.\[.*\]\s(\w+)\uFFFD.:\s.*|\[.*\] \[Client thread/INFO\]: \[CHAT\] .* \uFFFD.(\w+)\uFFFD.:\s");
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] .*\uFFFD.\[.*\]\s(\w+)\uFFFD.:\s.*|\[.*\] \[Client thread/INFO\]: \[CHAT\] .* \uFFFD.(\w+)\uFFFD.:\s");
             if (match.Success)
             {
                 if (match.Groups[1].Success)

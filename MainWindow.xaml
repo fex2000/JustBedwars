@@ -77,7 +77,16 @@
                                 Margin="0, 32, 0, 0">
                     <NavigationView.MenuItems>
                         <NavigationViewItem Icon="Play" Content="Current Game" Tag="JustBedwars.Views.PlayerList"/>
-                        <NavigationViewItem Icon="OtherUser" Content="Player Lookup" Tag="JustBedwars.Views.StatsPage"/>
+                        <NavigationViewItem Content="Player Lookup" Tag="JustBedwars.Views.StatsPage">
+                            <NavigationViewItem.Icon>
+                                <FontIcon Glyph="&#xEDE4;" FontFamily="Segoe Fluent Icons"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                        <NavigationViewItem Content="Leaderboards" Tag="JustBedwars.Views.LeaderboardsPage">
+                            <NavigationViewItem.Icon>
+                                <FontIcon Glyph="&#xECA7;" FontFamily="Segoe Fluent Icons"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
                     </NavigationView.MenuItems>
                     <NavigationView.Content>
                         <Frame x:Name="ContentFrame"/>

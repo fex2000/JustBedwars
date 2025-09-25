@@ -36,7 +36,7 @@ namespace JustBedwars.Helpers
                 StatLevel.OK => theme == ApplicationTheme.Dark ? WHITE : BLACK,
                 StatLevel.Decent => theme == ApplicationTheme.Dark ? YELLOW : GOLD,
                 StatLevel.Good => theme == ApplicationTheme.Dark ? AQUA : DARK_AQUA,
-                StatLevel.Legend => DARK_RED,
+                StatLevel.Legend => theme == ApplicationTheme.Dark ? RED : DARK_RED,
                 StatLevel.God => DARK_PURPLE,
                 _ => theme == ApplicationTheme.Dark ? WHITE : BLACK,
             };
@@ -45,10 +45,10 @@ namespace JustBedwars.Helpers
         public static Color GetUsernameColor(int score)
         {
             if (score < 20) return GetStatColor(0, StatType.FKDR);
-            if (score < 250) return GetStatColor(1, StatType.FKDR);
-            if (score < 10000) return GetStatColor(2.6, StatType.FKDR);
-            if (score < 100000) return GetStatColor(5.1, StatType.FKDR);
-            if (score < 2500000) return GetStatColor(14.1, StatType.FKDR);
+            if (score < 250) return GetStatColor(3, StatType.FKDR);
+            if (score < 10000) return GetStatColor(5, StatType.FKDR);
+            if (score < 100000) return GetStatColor(10, StatType.FKDR);
+            if (score < 2500000) return GetStatColor(25, StatType.FKDR);
             return GetStatColor(30.1, StatType.FKDR);
         }
 
@@ -58,56 +58,56 @@ namespace JustBedwars.Helpers
             {
                 StatType.FKDR => value switch
                 {
-                    < 0.9 => StatLevel.Bad,
-                    < 2.5 => StatLevel.OK,
+                    < 1 => StatLevel.Bad,
+                    < 3 => StatLevel.OK,
                     < 5 => StatLevel.Decent,
-                    < 14 => StatLevel.Good,
-                    < 30 => StatLevel.Legend,
+                    < 10 => StatLevel.Good,
+                    < 25 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.WLR => value switch
                 {
-                    < 0.8 => StatLevel.Bad,
-                    < 2.3 => StatLevel.OK,
-                    < 4.5 => StatLevel.Decent,
-                    < 12 => StatLevel.Good,
-                    < 25 => StatLevel.Legend,
+                    < 1 => StatLevel.Bad,
+                    < 2 => StatLevel.OK,
+                    < 5 => StatLevel.Decent,
+                    < 7 => StatLevel.Good,
+                    < 10 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.Finals => value switch
                 {
                     < 1000 => StatLevel.Bad,
-                    < 2500 => StatLevel.OK,
-                    < 4000 => StatLevel.Decent,
-                    < 7000 => StatLevel.Good,
-                    < 16000 => StatLevel.Legend,
+                    < 5000 => StatLevel.OK,
+                    < 15000 => StatLevel.Decent,
+                    < 30000 => StatLevel.Good,
+                    < 75000 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.Wins => value switch
                 {
-                    < 235 => StatLevel.Bad,
-                    < 400 => StatLevel.OK,
-                    < 900 => StatLevel.Decent,
-                    < 1700 => StatLevel.Good,
-                    < 3900 => StatLevel.Legend,
+                    < 500 => StatLevel.Bad,
+                    < 1000 => StatLevel.OK,
+                    < 3000 => StatLevel.Decent,
+                    < 5000 => StatLevel.Good,
+                    < 10000 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.BBLR => value switch
                 {
-                    < 0.5 => StatLevel.Bad,
-                    < 1 => StatLevel.OK,
-                    < 2 => StatLevel.Decent,
+                    < 1 => StatLevel.Bad,
+                    < 2 => StatLevel.OK,
+                    < 3 => StatLevel.Decent,
                     < 5 => StatLevel.Good,
-                    < 10 => StatLevel.Legend,
+                    < 7.5 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.KDR => value switch
                 {
-                    < 0.5 => StatLevel.Bad,
-                    < 1 => StatLevel.OK,
-                    < 2 => StatLevel.Decent,
-                    < 5 => StatLevel.Good,
-                    < 10 => StatLevel.Legend,
+                    < 1 => StatLevel.Bad,
+                    < 3 => StatLevel.OK,
+                    < 5 => StatLevel.Decent,
+                    < 10 => StatLevel.Good,
+                    < 25 => StatLevel.Legend,
                     _ => StatLevel.God,
                 },
                 StatType.Stars => value switch
