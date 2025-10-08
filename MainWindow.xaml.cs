@@ -19,6 +19,10 @@ using Microsoft.UI.Windowing;
 using System.Threading.Tasks;
 using Windows.Media.Control;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Composition;
+using System.Runtime.InteropServices;
+using WinRT;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -35,6 +39,10 @@ namespace JustBedwars
         private readonly SettingsService _settingsService;
         private GlobalSystemMediaTransportControlsSessionManager _mediaManager;
         private GlobalSystemMediaTransportControlsSession _currentSession;
+
+        WindowsSystemDispatcherQueueHelper m_wsdqHelper;
+        DesktopAcrylicController m_acrylicController;
+        SystemBackdropConfiguration m_configurationSource;
 
         public MainWindow(Services.SettingsService settingsService)
         {
@@ -330,7 +338,8 @@ namespace JustBedwars
 
                 AlwaysOnTopButton.HorizontalAlignment = HorizontalAlignment.Left;
                 AlwaysOnTopButton.Content = "\uE944";
-                SystemBackdrop = new DesktopAcrylicBackdrop();
+                SystemBackdrop = null;
+                TrySetAcrylicBackdrop();
 
                 NavView.IsPaneToggleButtonVisible = false;
                 NavView.SelectedItem = "JustBedwars.Views.PlayerList";
@@ -366,6 +375,11 @@ namespace JustBedwars
                 NavView.IsPaneToggleButtonVisible = true;
                 AppTitle.Text = "JustBedwars";
                 AlwaysOnTopButton.Content = "\uE8A7";
+                if (m_acrylicController != null)
+                {
+                    m_acrylicController.Dispose();
+                    m_acrylicController = null;
+                }
                 SystemBackdrop = new MicaBackdrop();
                 NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
                 NavView.IsPaneOpen = false;
@@ -404,6 +418,74 @@ namespace JustBedwars
         private void NavView_PaneClosing(NavigationView sender, NavigationViewPaneClosingEventArgs args)
         {
             LoadMediaPlayerSetting();
+        }
+
+        bool TrySetAcrylicBackdrop()
+        {
+            if (DesktopAcrylicController.IsSupported())
+            {
+                m_wsdqHelper = new WindowsSystemDispatcherQueueHelper();
+                m_wsdqHelper.EnsureWindowsSystemDispatcherQueueController();
+
+                m_configurationSource = new SystemBackdropConfiguration();
+
+                m_configurationSource.IsInputActive = true;
+
+                switch (((FrameworkElement)this.Content).ActualTheme)
+                {
+                    case ElementTheme.Dark:
+                        m_configurationSource.Theme = SystemBackdropTheme.Dark;
+                        break;
+                    case ElementTheme.Light:
+                        m_configurationSource.Theme = SystemBackdropTheme.Light;
+                        break;
+                    case ElementTheme.Default:
+                        m_configurationSource.Theme = SystemBackdropTheme.Default;
+                        break;
+                }
+
+                m_acrylicController = new DesktopAcrylicController();
+
+                m_acrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
+                m_acrylicController.SetSystemBackdropConfiguration(m_configurationSource);
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    class WindowsSystemDispatcherQueueHelper
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        struct DispatcherQueueOptions
+        {
+            internal int dwSize;
+            internal int threadType;
+            internal int apartmentType;
+        }
+
+        [DllImport("CoreMessaging.dll")]
+        private static extern int CreateDispatcherQueueController([In] DispatcherQueueOptions options, [In, Out, MarshalAs(UnmanagedType.IUnknown)] ref object dispatcherQueueController);
+
+        object m_dispatcherQueueController = null;
+        public void EnsureWindowsSystemDispatcherQueueController()
+        {
+            if (Windows.System.DispatcherQueue.GetForCurrentThread() != null)
+            {
+                return;
+            }
+
+            if (m_dispatcherQueueController == null)
+            {
+                DispatcherQueueOptions options;
+                options.dwSize = Marshal.SizeOf(typeof(DispatcherQueueOptions));
+                options.threadType = 2;
+                options.apartmentType = 2;
+
+                CreateDispatcherQueueController(options, ref m_dispatcherQueueController);
+            }
         }
     }
 }
