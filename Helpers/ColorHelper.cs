@@ -45,10 +45,11 @@ namespace JustBedwars.Helpers
         public static Color GetUsernameColor(int score)
         {
             if (score < 20) return GetStatColor(0, StatType.FKDR);
-            if (score < 250) return GetStatColor(3, StatType.FKDR);
-            if (score < 10000) return GetStatColor(5, StatType.FKDR);
-            if (score < 100000) return GetStatColor(10, StatType.FKDR);
-            if (score < 2500000) return GetStatColor(25, StatType.FKDR);
+            if (score < 250) return GetStatColor(1, StatType.FKDR);
+            if (score < 10000) return GetStatColor(3, StatType.FKDR);
+            if (score < 100000) return GetStatColor(5, StatType.FKDR);
+            if (score < 2500000) return GetStatColor(10, StatType.FKDR);
+            if (score < 50000000) return GetStatColor(25, StatType.FKDR);
             return GetStatColor(30.1, StatType.FKDR);
         }
 

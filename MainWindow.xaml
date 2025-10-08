@@ -18,9 +18,6 @@
     <Window.Content>
         <Page>
             <Grid>
-                <Grid.Background>
-                    <media:AcrylicBrush BlurAmount="50" TintColor="Black" TintOpacity="0"/>
-                </Grid.Background>
                 <!-- App Title -->
                 <TextBlock Text="JustBedwars" 
                            HorizontalAlignment="Center" 
@@ -159,7 +156,7 @@
                     </animations:Implicit.ShowAnimations>
                 </NavigationView>
                 <!-- Splash Screen -->
-                <Image Source="/Assets/SplashScreen.png" MaxWidth="620" Stretch="Uniform" Canvas.ZIndex="-1">
+                <Image Source="/Assets/SplashScreen.scale-200.png" MaxWidth="620" Stretch="Uniform" Canvas.ZIndex="-1">
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="0" To="0,-350,0"/>
                         <animations:OpacityAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="1.0" To="0"/>
