@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using JustBedwars.Services;
 
 namespace JustBedwars.Services
 {
@@ -63,7 +63,6 @@ namespace JustBedwars.Services
                             string? line;
                                 while ((line = await sr.ReadLineAsync()) != null)
                                 {
-                                    DebugService.Instance.Log($"[LogReader] Read line: {line}");
                                     ParseLine(line);
                                 }
                                 _lastPosition = fs.Position;
@@ -72,7 +71,7 @@ namespace JustBedwars.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    DebugService.Instance.Log($"[LogReader] Error: {ex}");
                 }
                 await Task.Delay(1000, cancellationToken);
             }
@@ -80,6 +79,7 @@ namespace JustBedwars.Services
 
         private void ParseLine(string line)
         {
+            DebugService.Instance.Log($"[LogReader] Parsing line: {line}");
             // /who command
             if (line.Contains("ONLINE:"))
             {

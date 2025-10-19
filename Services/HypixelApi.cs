@@ -11,6 +11,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using JustBedwars.Services;
 
 namespace JustBedwars.Services
 {
@@ -75,7 +76,7 @@ namespace JustBedwars.Services
 
                 _apiStopwatch.Restart();
 
-                Debug.WriteLine(response);
+                DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
                 var json = JObject.Parse(response);
 
                 if (json["success"] != null && !(bool)json["success"])
