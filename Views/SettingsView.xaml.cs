@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Navigation;
 using System;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
+using System.Diagnostics;
 
 namespace JustBedwars.Views
 {
@@ -14,6 +15,7 @@ namespace JustBedwars.Views
         private const string LogFileSettingName = "LogFilePath";
         private const string PlayerSortingSettingName = "PlayerSorting";
         private const string MediaPlayerSettingName = "ShowMediaPlayer";
+        private const string SaveDebugLogsSettingName = "SaveDebugLogs";
         private SettingsService _settingsService;
         public string Version { get; }
 
@@ -31,6 +33,7 @@ namespace JustBedwars.Views
             LoadLogFilePath();
             LoadPlayerSorting();
             LoadMediaPlayerSetting();
+            LoadSaveDebugLogsSetting();
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -126,6 +129,29 @@ namespace JustBedwars.Views
             {
                 MediaPlayerToggle.IsOn = (bool)showMediaPlayer;
             }
+        }
+
+        private void SaveDebugLogsToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var isOn = ((ToggleSwitch)sender).IsOn;
+            _settingsService.SetValue(SaveDebugLogsSettingName, isOn);
+            string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "debug.log");
+            DebugService.Instance.SetFileLogging(isOn, logPath);
+        }
+
+        private void LoadSaveDebugLogsSetting()
+        {
+            var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName);
+            if (saveDebugLogs != null)
+            {
+                SaveDebugLogsToggle.IsOn = (bool)saveDebugLogs;
+            }
+        }
+
+        private void OpenLogFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            string logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars");
+            Process.Start("explorer.exe", logFolderPath);
         }
     }
 }

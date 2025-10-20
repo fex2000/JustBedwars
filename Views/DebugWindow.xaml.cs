@@ -12,6 +12,11 @@ namespace JustBedwars.Views
         {
             this.InitializeComponent();
             DebugService.Instance.LogAdded += OnLogAdded;
+            var logHistory = DebugService.Instance.GetLogHistory();
+            foreach (var log in logHistory)
+            {
+                DebugTextBox.Text += log + "\n";
+            }
             ExtendsContentIntoTitleBar = true;
             OverlappedPresenter presenter = OverlappedPresenter.Create();
             presenter.PreferredMinimumWidth = 500;
