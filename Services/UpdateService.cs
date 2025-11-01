@@ -48,7 +48,7 @@ namespace JustBedwars.Services
             var updateDialog = new ContentDialog
             {
                 Title = "Update Available",
-                Content = "Please update to the newest version for the best experience. Updates may be required because of Backend changed.",
+                Content = "Please update to the newest version for the best experience. Updates may be required because of Backend changes.",
                 PrimaryButtonText = "Download now",
                 CloseButtonText = "Later"
             };
