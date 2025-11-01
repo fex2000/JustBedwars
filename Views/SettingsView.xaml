@@ -43,7 +43,7 @@
                 <toolkit:SettingsExpander.HeaderIcon>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9F5;"/>
                 </toolkit:SettingsExpander.HeaderIcon>
-                <TextBlock Text="Coming soon"/>
+                <TextBlock Text="Coming soon™️"/>
             </toolkit:SettingsExpander>
 
             <!-- Log -->
@@ -110,34 +110,40 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE756;"/>
                         </toolkit:SettingsCard.HeaderIcon>
                     </toolkit:SettingsCard>
-                    <toolkit:SettingsExpander Header="Save debug logs" CornerRadius="0" BorderBrush="Transparent" BorderThickness="0">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <ToggleSwitch x:Name="SaveDebugLogsToggle" Toggled="SaveDebugLogsToggle_Toggled"/>
-                            <Button x:Name="OpenLogFolderButton" Content="Open Folder" Click="OpenLogFolderButton_Click"/>
-                        </StackPanel>
-                        <toolkit:SettingsExpander.Items>
-                            <toolkit:SettingsCard Header="Save Log History" Description="Save a history of logs.">
-                                <ToggleSwitch x:Name="EnableLogHistoryToggle" Toggled="EnableLogHistoryToggle_Toggled"/>
-                            </toolkit:SettingsCard>
-                            <toolkit:SettingsCard Header="Enable Minecraft Logging" Description="Disables the Logging of Minecraft Messages">
-                                <ToggleSwitch x:Name="EnableLogReaderLoggingToggle" Toggled="EnableLogReaderLoggingToggle_Toggled"/>
-                            </toolkit:SettingsCard>
-                        </toolkit:SettingsExpander.Items>
-                    </toolkit:SettingsExpander>
                     <toolkit:SettingsCard Header="Hypixel API Key"
                       Description="For development, not recommended for regular users, can be bannable.">
                         <PasswordBox x:Name="ApiKeyPasswordBox" PasswordChanged="ApiKeyPasswordBox_PasswordChanged" IsPasswordRevealButtonEnabled="True"/>
                         <toolkit:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D7;"/>
                         </toolkit:SettingsCard.HeaderIcon>
-                        <toolkit:SettingsCard.Transitions>
-                            <RepositionThemeTransition IsStaggeringEnabled="True"/>
-                        </toolkit:SettingsCard.Transitions>
                     </toolkit:SettingsCard>
                 </toolkit:SettingsExpander.Items>
                 <toolkit:SettingsExpander.HeaderIcon>
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9F5;"/>
                 </toolkit:SettingsExpander.HeaderIcon>
+            </toolkit:SettingsExpander>
+            <toolkit:SettingsExpander Header="Save Logs" Description="Save the latest application log, can be helpful for catching application issues.">
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <ToggleSwitch x:Name="SaveDebugLogsToggle" Toggled="SaveDebugLogsToggle_Toggled"/>
+                    <Button x:Name="OpenLogFolderButton" Content="Open Folder" Click="OpenLogFolderButton_Click"/>
+                </StackPanel>
+                <toolkit:SettingsExpander.HeaderIcon>
+                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE7C3;"/>
+                </toolkit:SettingsExpander.HeaderIcon>
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard Header="Save Log History" Description="Save a history of logs.">
+                        <ToggleSwitch x:Name="EnableLogHistoryToggle" Toggled="EnableLogHistoryToggle_Toggled"/>
+                        <toolkit:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE81C;"/>
+                        </toolkit:SettingsCard.HeaderIcon>
+                    </toolkit:SettingsCard>
+                    <toolkit:SettingsCard Header="Enable Minecraft Logging" Description="Toggle wether enable the Minecraft Chat Logs should be included.">
+                        <ToggleSwitch x:Name="EnableLogReaderLoggingToggle" Toggled="EnableLogReaderLoggingToggle_Toggled"/>
+                        <toolkit:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE756;"/>
+                        </toolkit:SettingsCard.HeaderIcon>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
             </toolkit:SettingsExpander>
         </StackPanel>
     </ScrollView>
