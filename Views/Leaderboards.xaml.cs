@@ -16,7 +16,6 @@ namespace JustBedwars.Views
         private string _selectedTimeFilter = "Weekly";
         private Dictionary<string, List<LeaderboardEntry>> _fullLeaderboardCache = new Dictionary<string, List<LeaderboardEntry>>();
         private Dictionary<string, ObservableCollection<LeaderboardEntry>> _leaderboardDataCache = new Dictionary<string, ObservableCollection<LeaderboardEntry>>();
-        private const int PageSize = 20;
 
         public LeaderboardsPage()
         {
@@ -71,8 +70,6 @@ namespace JustBedwars.Views
             if (_leaderboardDataCache.ContainsKey(cacheKey))
             {
                 LeaderboardList.ItemsSource = _leaderboardDataCache[cacheKey];
-                var fullList = _fullLeaderboardCache[cacheKey];
-                LoadMoreButton.Visibility = _leaderboardDataCache[cacheKey].Count < fullList.Count ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
@@ -89,76 +86,29 @@ namespace JustBedwars.Views
             LoadingIndicator.IsActive = true;
             LoadingIndicator.IsIndeterminate = true;
             LeaderboardList.ItemsSource = null;
-            LoadMoreButton.Visibility = Visibility.Collapsed;
 
             var api = new HypixelApi();
             var fullLeaderboard = await api.GetLeaderboard(_selectedLeaderboard, _selectedTimeFilter);
             _fullLeaderboardCache[cacheKey] = fullLeaderboard;
-            
+
             var collection = new ObservableCollection<LeaderboardEntry>();
             LeaderboardList.ItemsSource = collection;
             _leaderboardDataCache[cacheKey] = collection;
 
-            await LoadMorePlayers(true);
+            IProgress<double> progress = new Progress<double>(value =>
+            {
+                LoadingIndicator.IsIndeterminate = false;
+                LoadingIndicator.Value = value;
+            });
+
+            await api.GetNamesForLeaderboardEntries(fullLeaderboard, progress);
+
+            foreach (var item in fullLeaderboard)
+            {
+                collection.Add(item);
+            }
 
             LoadingIndicator.IsActive = false;
-        }
-
-        private async Task LoadMorePlayers(bool isInitialLoad = false)
-        {
-            string cacheKey = $"{_selectedLeaderboard}_{_selectedTimeFilter}";
-            var fullLeaderboard = _fullLeaderboardCache[cacheKey];
-            var collection = _leaderboardDataCache[cacheKey];
-
-            int startIndex = collection.Count;
-            var itemsToLoad = fullLeaderboard.Skip(startIndex).Take(PageSize).ToList();
-
-            if (itemsToLoad.Any())
-            {
-                IProgress<double> progress;
-                if (isInitialLoad)
-                {
-                    progress = new Progress<double>(value =>
-                    {
-                        LoadingIndicator.IsIndeterminate = false;
-                        LoadingIndicator.Value = value;
-                    });
-                }
-                else
-                {
-                    progress = new Progress<double>(value =>
-                    {
-                        LoadMoreProgressBar.Value = value;
-                    });
-                }
-
-                var api = new HypixelApi();
-                await api.GetNamesForLeaderboardEntries(itemsToLoad, progress);
-
-                foreach (var item in itemsToLoad)
-                {
-                    collection.Add(item);
-                }
-            }
-
-            if (collection.Count < fullLeaderboard.Count)
-            {
-                LoadMoreButton.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                LoadMoreButton.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private async void LoadMoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            LoadMoreButton.Visibility = Visibility.Collapsed;
-            LoadMoreProgressBar.Visibility = Visibility.Visible;
-            
-            await LoadMorePlayers();
-            
-            LoadMoreProgressBar.Visibility = Visibility.Collapsed;
         }
 
         private void LeaderboardList_ItemClick(object sender, ItemClickEventArgs e)

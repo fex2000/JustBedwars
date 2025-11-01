@@ -17,19 +17,159 @@ namespace JustBedwars.Services
 {
     public class HypixelApi
     {
-        private readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         private string? _apiKey;
-        private readonly SemaphoreSlim _apiSemaphore = new SemaphoreSlim(1, 1);
-        private readonly Stopwatch _apiStopwatch = new Stopwatch();
-        private readonly SemaphoreSlim _errorDialogSemaphore = new SemaphoreSlim(1, 1);
-        private readonly MemoryCache _playerCache = new MemoryCache("PlayerCache");
-        private readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
-        private readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
+        private static readonly SemaphoreSlim _apiSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly Stopwatch _apiStopwatch = new Stopwatch();
+        private static readonly SemaphoreSlim _errorDialogSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly MemoryCache _playerCache = new MemoryCache("PlayerCache");
+        private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
+        private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
+        private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
+        // NEW: Max concurrent requests to Mojang's sessionserver API to prevent connection/network exhaustion errors.
+        private const int MaxConcurrentMojangLookups = 25;
 
         public void SetApiKey(string apiKey)
         {
             _apiKey = apiKey;
         }
+
+        public async Task<Guild?> GetGuildAsync(string query, string type)
+        {
+            string cacheKey = $"{type}_{query}";
+            if (_guildCache.Contains(cacheKey))
+            {
+                DebugService.Instance.Log($"[HypixelApi] Returning guild {query} from cache.");
+                return (Guild)_guildCache.Get(cacheKey);
+            }
+
+            await _apiSemaphore.WaitAsync();
+            try
+            {
+                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 10)
+                {
+                    await Task.Delay(10 - (int)_apiStopwatch.ElapsedMilliseconds);
+                }
+
+                string url = "";
+                string queryParam = "";
+                switch (type)
+                {
+                    case "Guild Name":
+                        queryParam = $"name={query}";
+                        break;
+                    case "Guild ID":
+                        queryParam = $"id={query}";
+                        break;
+                    case "Member Name":
+                        var uuid = await GetUuidFromUsername(query);
+                        if (uuid == null)
+                        {
+                            DebugService.Instance.Log($"[HypixelApi] Couldn't find UUID for {query}.");
+                            return null;
+                        }
+                        queryParam = $"player={uuid}";
+                        break;
+                    case "Member UUID":
+                        queryParam = $"player={query}";
+                        break;
+                }
+
+                url = $"http://185.194.216.210:3000/guild?{queryParam}";
+
+                if (!string.IsNullOrEmpty(_apiKey))
+                {
+                    url = $"https://api.hypixel.net/guild?key={_apiKey}&{queryParam}";
+                }
+
+                DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
+
+                var response = await _httpClient.GetStringAsync(url);
+
+                _apiStopwatch.Restart();
+
+                DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
+                var json = JObject.Parse(response);
+
+                if (json["success"] != null && !(bool)json["success"])
+                {
+                    DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
+                    return null;
+                }
+
+                if (json["guild"] == null)
+                {
+                    DebugService.Instance.Log("[HypixelApi] Guild not found.");
+                    return null;
+                }
+
+                var guild = new Guild
+                {
+                    Id = (string)json["guild"]["_id"],
+                    Name = (string)json["guild"]["name"],
+                    Exp = (long)json["guild"]["exp"],
+                    Tag = (string)json["guild"]["tag"],
+                    Created = (long)json["guild"]["created"],
+                    Description = (string)json["guild"]["description"],
+                    PreferredGames = json["guild"]["preferredGames"]?.ToObject<List<string>>() ?? new List<string>(),
+                    ExpByGameType = json["guild"]["guildExpByGameType"]?.ToObject<Dictionary<string, long>>() ?? new Dictionary<string, long>(),
+                    OnlinePlayers = (int?)json["guild"]?["achievements"]?["ONLINE_PLAYERS"] ?? 0,
+                    Members = json["guild"]["members"].Select(m => new GuildMember
+                    {
+                        Uuid = (string)m["uuid"],
+                        Rank = (string)m["rank"],
+                        Joined = (long)m["joined"]
+                    }).ToList(),
+                    Ranks = json["guild"]["ranks"].Select(r => new GuildRank
+                    {
+                        Name = (string)r["name"],
+                        Priority = (int)r["priority"],
+                        Tag = (string)r["tag"]
+                    }).ToList()
+                };
+
+                guild.Level = GetGuildLevel(guild.Exp);
+
+                await GetNamesForGuildMembers(guild.Members, null);
+
+                var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(10) };
+                _guildCache.Add(cacheKey, guild, policy);
+
+                return guild;
+            }
+            catch (HttpRequestException ex)
+            {
+                DebugService.Instance.Log($"[HypixelApi] HTTP request failed: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                DebugService.Instance.Log($"[HypixelApi] An error occurred: {ex.Message}");
+                return null;
+            }
+            finally
+            {
+                _apiSemaphore.Release();
+            }
+        }
+
+        public async Task GetNamesForGuildMembers(List<GuildMember> members, IProgress<double> progress)
+        {
+            var uuidsToFetch = members.Where(m => string.IsNullOrEmpty(m.Name)).Select(m => m.Uuid).ToList();
+            var names = await GetUsernamesFromUuids(uuidsToFetch, progress);
+            foreach (var member in members)
+            {
+                if (names.ContainsKey(member.Uuid))
+                {
+                    member.Name = names[member.Uuid];
+                }
+                else if (string.IsNullOrEmpty(member.Name))
+                {
+                    member.Name = "Unknown";
+                }
+            }
+        }
+
 
         public async Task<Player?> GetPlayerStats(string username)
         {
@@ -62,7 +202,7 @@ namespace JustBedwars.Services
                     return nickplayer;
                 }
 
-               
+
                 var url = $"http://185.194.216.210:3000/player?uuid={uuid}";
 
                 if (!string.IsNullOrEmpty(_apiKey))
@@ -101,7 +241,7 @@ namespace JustBedwars.Services
                     return nickplayer;
                 }
 
-                                var player = new Player
+                var player = new Player
                 {
                     Username = (string?)json["player"]?["displayname"],
                     Star = (int?)json["player"]?["achievements"]?["bedwars_level"] ?? 0,
@@ -292,47 +432,127 @@ namespace JustBedwars.Services
 
             if (uuidsToFetch.Count > 0)
             {
-                int fetchedCount = 0;
-                foreach (var uuid in uuidsToFetch)
+                // PERFORMANCE IMPROVEMENT: Concurrently fetch all uncached usernames using Task.WhenAll
+                // Throttle concurrency to prevent hitting client-side connection limits and IOExceptions.
+                using var throttle = new SemaphoreSlim(MaxConcurrentMojangLookups);
+
+                // We use a local counter and a lock to atomically track progress and update the main dictionary,
+                // maintaining the IProgress functionality while fetching in parallel.
+                int completedCount = 0;
+                int totalToFetch = uuidsToFetch.Count;
+                object progressLock = new object();
+
+                var fetchTasks = uuidsToFetch.Select(uuid => Task.Run(async () =>
                 {
+                    await throttle.WaitAsync(); // Wait for a slot in the throttle before starting network request
+
                     try
                     {
-                        var url = $"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}";
-                        var response = await _httpClient.GetStringAsync(url);
-                        var json = JObject.Parse(response);
-                        var name = (string)json["name"];
-                        names[uuid] = name;
-                        var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
-                        _uuidCache.Add(uuid, name, policy);
-                    }
-                    catch (Exception ex)
-                    {
-                        DebugService.Instance.Log($"[HypixelApi] Couldn't get username for uuid {uuid}: {ex.Message}");
+                        for (int i = 0; i < 5; i++)
+                        {
+                            try
+                            {
+                                var url = $"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}";
+                                // The network request is awaited here, allowing other requests to run concurrently.
+                                var response = await _httpClient.GetStringAsync(url);
+
+                                var json = JObject.Parse(response);
+                                var name = (string)json["name"];
+
+                                // Use lock to ensure thread safety when updating the shared dictionary and cache
+                                lock (progressLock)
+                                {
+                                    var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
+                                    _uuidCache.Add(uuid, name, policy);
+                                    names[uuid] = name; // Update the names dictionary directly
+                                }
+                                return; // Success, exit the loop and task
+                            }
+                            catch (TaskCanceledException)
+                            {
+                                DebugService.Instance.Log($"[HypixelApi] Timeout getting username for uuid {uuid}. Retry {i + 1}/5");
+                                if (i < 2) await Task.Delay(1000);
+                            }
+                            catch (Exception ex)
+                            {
+                                // Log errors for failed UUIDs but allow others to succeed
+                                DebugService.Instance.Log($"[HypixelApi] Couldn't get username for uuid {uuid}: {ex.Message}. Retry {i + 1}/5");
+                                if (i < 2) await Task.Delay(1000);
+                            }
+                        }
+                        DebugService.Instance.Log($"[HypixelApi] Failed to get username for uuid {uuid} after 5 retries.");
                     }
                     finally
                     {
-                        fetchedCount++;
-                        progress?.Report((double)fetchedCount / uuidsToFetch.Count * 100);
+                        throttle.Release(); // Release the slot so another task can run
+
+                        // Safely report progress after each attempt (success or failure)
+                        // This allows the progress bar to move, even with concurrent fetching.
+                        lock (progressLock)
+                        {
+                            completedCount++;
+                            progress?.Report((double)completedCount / totalToFetch * 100);
+                        }
                     }
-                }
+                })).ToList();
+
+                // Wait for all concurrent requests to complete
+                await Task.WhenAll(fetchTasks);
             }
+
             return names;
         }
 
-        private async Task<string?> GetUuidFromUsername(string username)
+        public async Task<string?> GetUuidFromUsername(string username)
         {
-            try
+            var url = $"https://api.mojang.com/users/profiles/minecraft/{username}";
+            for (int i = 0; i < 3; i++)
             {
-                var url = $"https://api.mojang.com/users/profiles/minecraft/{username}";
-                var response = await _httpClient.GetStringAsync(url);
-                var json = JObject.Parse(response);
-                return (string?)json["id"];
+                try
+                {
+                    var response = await _httpClient.GetStringAsync(url);
+                    var json = JObject.Parse(response);
+                    return (string?)json["id"];
+                }
+                catch (HttpRequestException)
+                {
+                    // This could happen if the user doesn't exist, so no retry
+                    return null;
+                }
+                catch (TaskCanceledException)
+                {
+                    // Timeout
+                    DebugService.Instance.Log($"[HypixelApi] Timeout getting UUID for {username}. Retry {i + 1}/3");
+                    await Task.Delay(1000); // Wait 1s before retrying
+                }
+                catch (Exception ex)
+                {
+                    DebugService.Instance.Log($"[HypixelApi] Error getting UUID for {username}: {ex.Message}. Retry {i + 1}/3");
+                    await Task.Delay(1000); // Wait 1s before retrying
+                }
             }
-            catch (HttpRequestException)
+            DebugService.Instance.Log($"[HypixelApi] Failed to get UUID for {username} after 3 retries.");
+            return null;
+        }
+
+        private double GetGuildLevel(double exp)
+        {
+            double[] expNeeded = {
+                100000, 150000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000,
+                2500000, 2500000, 2500000, 2500000, 2500000, 3000000
+            };
+
+            double level = 0;
+            for (int i = 0; i < expNeeded.Length; i++)
             {
-                // This could happen if the user doesn't exist
-                return null;
+                if (exp < expNeeded[i])
+                {
+                    return level + exp / expNeeded[i];
+                }
+                exp -= expNeeded[i];
+                level++;
             }
+            return level + exp / 3000000;
         }
 
         private async Task ShowErrorDialog(string message)

@@ -28,11 +28,13 @@ namespace JustBedwars
             this.UnhandledException += App_UnhandledException;
 
             // Ensure file logging is enabled if the setting is on
-            var saveDebugLogs = _settingsService.GetValue("SaveDebugLogs");
-            if (saveDebugLogs != null && (bool)saveDebugLogs)
+            var saveDebugLogs = _settingsService.GetValue("SaveDebugLogs") as bool? ?? true;
+            var enableLogHistory = _settingsService.GetValue("EnableLogHistory") as bool? ?? true;
+            if (saveDebugLogs)
             {
-                string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "debug.log");
-                DebugService.Instance.SetFileLogging(true, logPath);
+                string logFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "logs");
+                string logFilePath = Path.Combine(logFolderPath, "latest.log");
+                DebugService.Instance.SetFileLogging(true, logFilePath, enableLogHistory);
             }
         }
 

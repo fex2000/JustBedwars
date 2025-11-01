@@ -19,8 +19,8 @@ namespace JustBedwars.Views
             }
             ExtendsContentIntoTitleBar = true;
             OverlappedPresenter presenter = OverlappedPresenter.Create();
-            presenter.PreferredMinimumWidth = 500;
-            presenter.PreferredMinimumHeight = 400;
+            presenter.PreferredMinimumWidth = 900;
+            presenter.PreferredMinimumHeight = 500;
             AppWindow.SetPresenter(presenter);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         }

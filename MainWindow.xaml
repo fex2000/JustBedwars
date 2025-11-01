@@ -84,6 +84,11 @@
                                 <FontIcon Glyph="&#xECA7;" FontFamily="Segoe Fluent Icons"/>
                             </NavigationViewItem.Icon>
                         </NavigationViewItem>
+                        <NavigationViewItem Content="Guilds" Tag="JustBedwars.Views.GuildLookupPage">
+                            <NavigationViewItem.Icon>
+                                <FontIcon Glyph="&#xE902;" FontFamily="Segoe Fluent Icons"/>
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
                     </NavigationView.MenuItems>
                     <NavigationView.Content>
                         <Frame x:Name="ContentFrame"/>
