@@ -19,6 +19,9 @@ namespace JustBedwars.Services
         private readonly string _logFilePath;
         private long _lastPosition;
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly SettingsService _settingsService;
+        private bool _enableLogging;
+        private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
 
         public LogReader(string? logFilePath = null)
         {
@@ -32,6 +35,22 @@ namespace JustBedwars.Services
                 _lastPosition = 0;
             }
             _cancellationTokenSource = new CancellationTokenSource();
+            _settingsService = new SettingsService();
+            LoadLoggingSetting();
+            _settingsService.SettingChanged += OnSettingChanged;
+        }
+
+        private void OnSettingChanged(object sender, string key)
+        {
+            if (key == EnableLogReaderLoggingSettingName)
+            {
+                LoadLoggingSetting();
+            }
+        }
+
+        private void LoadLoggingSetting()
+        {
+            _enableLogging = _settingsService.GetValue(EnableLogReaderLoggingSettingName) as bool? ?? true;
         }
 
         public void Start()
@@ -42,6 +61,7 @@ namespace JustBedwars.Services
         public void Stop()
         {
             _cancellationTokenSource.Cancel();
+            _settingsService.SettingChanged -= OnSettingChanged;
         }
 
         private async Task WatchLogFile(CancellationToken cancellationToken)
@@ -79,13 +99,16 @@ namespace JustBedwars.Services
 
         private void ParseLine(string line)
         {
-            DebugService.Instance.Log($"[LogReader] Parsing line: {line}");
+            if (_enableLogging)
+            {
+                DebugService.Instance.Log($"[LogReader] Parsing line: {line}");
+            }
             // /who command
             if (line.Contains("ONLINE:"))
             {
                 var cleanedLine = Regex.Replace(line, @"^.*\[CHAT\]\s*", "");
                 var players = cleanedLine.Replace("ONLINE: ", "").Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
-                                  .Select(p => p.Trim()).ToList();
+                                  .Select(p => Regex.Replace(p.Trim(), @"\s*\(\d+\)$", "")).ToList();
                 if (players.Any())
                 {
                     WhoResult?.Invoke(players);
@@ -110,7 +133,7 @@ namespace JustBedwars.Services
             }
 
             // Sent message
-            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] .*\uFFFD.\[.*\]\s(\w+)\uFFFD.:\s.*|\[.*\] \[Client thread/INFO\]: \[CHAT\] .* \uFFFD.(\w+)\uFFFD.:\s");
+            match = Regex.Match(line, @"\[.*\] \[Client thread/INFO\]: \[CHAT\] .*\uFFFD.\[.*\]\s(\w+)\uFFFD.:\s.*|\[.*\] \[Client thread/INFO\]: \[CHAT\].* \uFFFD.(\w+)\uFFFD.:\s");
             if (match.Success)
             {
                 if (match.Groups[1].Success)

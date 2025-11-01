@@ -32,8 +32,7 @@ namespace JustBedwars.Views
             base.OnNavigatedTo(e);
             if (e.Parameter is string username)
             {
-                UsernameAutoSuggestBox.Text = username;
-                SearchPlayer();
+                LoadPlayerStats(username);
             }
         }
 
@@ -46,13 +45,13 @@ namespace JustBedwars.Views
             }
         }
 
-        private async void SearchPlayer()
+        public async void LoadPlayerStats(string username)
         {
-            var username = UsernameAutoSuggestBox.Text;
             if (string.IsNullOrWhiteSpace(username))
             {
                 return;
             }
+            UsernameAutoSuggestBox.Text = username;
 
             ProgressBars.Visibility = Visibility.Collapsed;
             SetLoaderVisibility(Visibility.Visible);
@@ -168,7 +167,7 @@ namespace JustBedwars.Views
         private void UsernameAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             sender.Text = args.SelectedItem.ToString();
-            SearchPlayer();
+            LoadPlayerStats(sender.Text);
         }
 
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)
@@ -255,7 +254,7 @@ namespace JustBedwars.Views
 
         private void UsernameAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            SearchPlayer();
+            LoadPlayerStats(sender.Text);
         }
     }
 }

@@ -16,6 +16,8 @@ namespace JustBedwars.Views
         private const string PlayerSortingSettingName = "PlayerSorting";
         private const string MediaPlayerSettingName = "ShowMediaPlayer";
         private const string SaveDebugLogsSettingName = "SaveDebugLogs";
+        private const string EnableLogHistorySettingName = "EnableLogHistory";
+        private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
         private SettingsService _settingsService;
         public string Version { get; }
 
@@ -34,6 +36,8 @@ namespace JustBedwars.Views
             LoadPlayerSorting();
             LoadMediaPlayerSetting();
             LoadSaveDebugLogsSetting();
+            LoadEnableLogHistorySetting();
+            LoadEnableLogReaderLoggingSetting();
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -135,23 +139,53 @@ namespace JustBedwars.Views
         {
             var isOn = ((ToggleSwitch)sender).IsOn;
             _settingsService.SetValue(SaveDebugLogsSettingName, isOn);
-            string logPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "debug.log");
-            DebugService.Instance.SetFileLogging(isOn, logPath);
+            UpdateDebugServiceLogging();
         }
 
         private void LoadSaveDebugLogsSetting()
         {
             var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName);
-            if (saveDebugLogs != null)
-            {
-                SaveDebugLogsToggle.IsOn = (bool)saveDebugLogs;
-            }
+            SaveDebugLogsToggle.IsOn = saveDebugLogs as bool? ?? true;
+        }
+
+        private void EnableLogHistoryToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var isOn = ((ToggleSwitch)sender).IsOn;
+            _settingsService.SetValue(EnableLogHistorySettingName, isOn);
+            UpdateDebugServiceLogging();
+        }
+
+        private void LoadEnableLogHistorySetting()
+        {
+            var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName);
+            EnableLogHistoryToggle.IsOn = enableLogHistory as bool? ?? true;
+        }
+
+        private void UpdateDebugServiceLogging()
+        {
+            var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName) as bool? ?? true;
+            var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName) as bool? ?? true;
+            string logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "logs");
+            string logFilePath = System.IO.Path.Combine(logFolderPath, "latest.log");
+            DebugService.Instance.SetFileLogging(saveDebugLogs, logFilePath, enableLogHistory);
         }
 
         private void OpenLogFolderButton_Click(object sender, RoutedEventArgs e)
         {
             string logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars");
             Process.Start("explorer.exe", logFolderPath);
+        }
+
+        private void EnableLogReaderLoggingToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var isOn = ((ToggleSwitch)sender).IsOn;
+            _settingsService.SetValue(EnableLogReaderLoggingSettingName, isOn);
+        }
+
+        private void LoadEnableLogReaderLoggingSetting()
+        {
+            var enableLogReaderLogging = _settingsService.GetValue(EnableLogReaderLoggingSettingName);
+            EnableLogReaderLoggingToggle.IsOn = enableLogReaderLogging as bool? ?? true;
         }
     }
 }

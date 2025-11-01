@@ -23,16 +23,13 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Composition;
 using System.Runtime.InteropServices;
 using WinRT;
-
+using JustBedwars.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace JustBedwars
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
         OverlappedPresenter presenter = OverlappedPresenter.Create();
@@ -57,6 +54,19 @@ namespace JustBedwars
             _settingsService.SettingChanged += SettingsService_SettingChanged;
             LoadMediaPlayerSetting();
             InitializeMedia();
+        }
+
+        public void OpenStatsPage(string username)
+        {
+            if (ContentFrame.CurrentSourcePageType == typeof(StatsPage))
+            {
+                (ContentFrame.Content as StatsPage).LoadPlayerStats(username);
+            }
+            else
+            {
+                NavView_Navigate(typeof(StatsPage), new EntranceNavigationTransitionInfo(), username);
+            }
+            this.Activate();
         }
 
         private async void InitializeMedia()
@@ -213,7 +223,7 @@ namespace JustBedwars
             // If navigation occurs on SelectionChanged, this isn't needed.
             // Because we use ItemInvoked to navigate, we need to call Navigate
             // here to load the home page.
-            NavView_Navigate(typeof(Views.PlayerList), new EntranceNavigationTransitionInfo());
+            NavView_Navigate(typeof(Views.PlayerList), new EntranceNavigationTransitionInfo(), null);
         }
 
         private void NavView_ItemInvoked(NavigationView sender,
@@ -221,12 +231,12 @@ namespace JustBedwars
         {
             if (args.IsSettingsInvoked == true)
             {
-                NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo, _settingsService);
             }
             else if (args.InvokedItemContainer != null)
             {
                 Type navPageType = Type.GetType(args.InvokedItemContainer.Tag.ToString());
-                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
             }
         }
 
@@ -238,18 +248,18 @@ namespace JustBedwars
         {
             if (args.IsSettingsSelected == true)
             {
-                NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo, _settingsService);
             }
             else if (args.SelectedItemContainer != null)
             {
                 Type navPageType = Type.GetType(args.SelectedItemContainer.Tag.ToString());
-                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo);
+                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
             }
         }
 
         private void NavView_Navigate(
             Type navPageType,
-            NavigationTransitionInfo transitionInfo)
+            NavigationTransitionInfo transitionInfo, object parameter = null)
         {
             // Get the page type before navigation so you can prevent duplicate
             // entries in the backstack.
@@ -258,14 +268,7 @@ namespace JustBedwars
             // Only navigate if the selected page isn't currently loaded.
             if (navPageType is not null && !Type.Equals(preNavPageType, navPageType))
             {
-                if (navPageType == typeof(Views.SettingsView))
-                {
-                    ContentFrame.Navigate(navPageType, _settingsService, transitionInfo);
-                }
-                else
-                {
-                    ContentFrame.Navigate(navPageType, null, transitionInfo);
-                }
+                ContentFrame.Navigate(navPageType, parameter, transitionInfo);
             }
         }
 
@@ -302,14 +305,14 @@ namespace JustBedwars
             }
             else if (ContentFrame.SourcePageType != null)
             {
-                // Select the nav view item that corresponds to the page being navigated to.
-                NavView.SelectedItem = NavView.MenuItems
-                            .OfType<NavigationViewItem>()
-                            .First(i => i.Tag.Equals(ContentFrame.SourcePageType.FullName.ToString()));
-
-                NavView.Header =
-                    ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
-
+                var selectedItem = NavView.MenuItems
+                    .OfType<NavigationViewItem>()
+                    .FirstOrDefault(i => i.Tag.Equals(ContentFrame.SourcePageType.FullName.ToString()));
+                if (selectedItem != null)
+                {
+                    NavView.SelectedItem = selectedItem;
+                    NavView.Header = ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
+                }
             }
         }
 
@@ -489,4 +492,3 @@ namespace JustBedwars
         }
     }
 }
-
