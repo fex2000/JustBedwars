@@ -202,13 +202,11 @@ namespace JustBedwars.Services
                     return nickplayer;
                 }
 
+                bool useV2Api = string.IsNullOrEmpty(_apiKey);
+                var url = useV2Api
+                    ? $"http://185.194.216.210:3000/api/justbedwars/v2/player?uuid={uuid}"
+                    : $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
 
-                var url = $"http://185.194.216.210:3000/player?uuid={uuid}";
-
-                if (!string.IsNullOrEmpty(_apiKey))
-                {
-                    url = $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
-                }
 
                 DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
 
@@ -219,50 +217,90 @@ namespace JustBedwars.Services
                 DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
                 var json = JObject.Parse(response);
 
-                if (json["success"] != null && !(bool)json["success"])
+                Player player;
+                if (useV2Api)
                 {
-                    DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
-                    var errorplayer = new Player
+                    if (json["FKDR"] == null)
                     {
-                        Username = username,
-                        PlayerTag = (string?)"ERROR",
-                    };
-                    return errorplayer;
-                }
+                        DebugService.Instance.Log("[HypixelApi] Player not found in v2 API.");
+                        var nickplayer = new Player
+                        {
+                            Username = username,
+                            PlayerTag = (string?)"NICK",
+                        };
+                        return nickplayer;
+                    }
 
-                if (json["player"] == null)
-                {
-                    DebugService.Instance.Log("[HypixelApi] Player not found.");
-                    var nickplayer = new Player
+                    player = new Player
                     {
-                        Username = username,
-                        PlayerTag = (string?)"NICK",
+                        Username = (string?)json["Username"],
+                        Star = (int?)json["Stars"] ?? 0,
+                        FKDR = (double?)json["FKDR"] ?? 0,
+                        WLR = (double?)json["WLR"] ?? 0,
+                        KDR = (double?)json["KDR"] ?? 0,
+                        BBLR = (double?)json["BBLR"] ?? 0,
+                        Finals = (int?)json["Finals"] ?? 0,
+                        FinalDeaths = (int?)json["FinalDeaths"] ?? 0,
+                        Wins = (int?)json["Wins"] ?? 0,
+                        Losses = (int?)json["Losses"] ?? 0,
+                        Kills = (int?)json["Kills"] ?? 0,
+                        Deaths = (int?)json["Deaths"] ?? 0,
+                        Beds = (int?)json["Beds"] ?? 0,
+                        BedsLost = (int?)json["BedsLost"] ?? 0,
+                        FirstLogin = (long?)json["FirstLogin"] ?? 0,
+                        PlayerTag = (string?)"-",
+                        PlayerUUID = uuid,
+                        NetworkExp = (long?)json["NetworkExp"] ?? 0,
+                        BedwarsExperience = (int?)json["BedwarsExperience"] ?? 0,
                     };
-                    return nickplayer;
                 }
-
-                var player = new Player
+                else
                 {
-                    Username = (string?)json["player"]?["displayname"],
-                    Star = (int?)json["player"]?["achievements"]?["bedwars_level"] ?? 0,
-                    FKDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 1), 2),
-                    WLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 1), 2),
-                    KDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 1), 2),
-                    BBLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["beds_broken_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["beds_lost_bedwars"] ?? 1), 2),
-                    Finals = (int?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0,
-                    FinalDeaths = (int?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 0,
-                    Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
-                    Losses = (int?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 0,
-                    Kills = (int?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0,
-                    Deaths = (int?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 0,
-                    Beds = (int?)json["player"]?["stats"]?["Bedwars"]?["beds_broken_bedwars"] ?? 0,
-                    BedsLost = (int?)json["player"]?["stats"]?["Bedwars"]?["beds_lost_bedwars"] ?? 0,
-                    FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
-                    PlayerTag = (string?)"-",
-                    PlayerUUID = uuid,
-                    NetworkExp = (long?)json["player"]?["networkExp"] ?? 0,
-                    BedwarsExperience = (int?)json["player"]?["stats"]?["Bedwars"]?["Experience"] ?? 0,
-                };
+                    if (json["success"] != null && !(bool)json["success"])
+                    {
+                        DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
+                        var errorplayer = new Player
+                        {
+                            Username = username,
+                            PlayerTag = (string?)"ERROR",
+                        };
+                        return errorplayer;
+                    }
+
+                    if (json["player"] == null)
+                    {
+                        DebugService.Instance.Log("[HypixelApi] Player not found.");
+                        var nickplayer = new Player
+                        {
+                            Username = username,
+                            PlayerTag = (string?)"NICK",
+                        };
+                        return nickplayer;
+                    }
+
+                    player = new Player
+                    {
+                        Username = (string?)json["player"]?["displayname"],
+                        Star = (int?)json["player"]?["achievements"]?["bedwars_level"] ?? 0,
+                        FKDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 1), 2),
+                        WLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 1), 2),
+                        KDR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 1), 2),
+                        BBLR = Math.Round(((double?)json["player"]?["stats"]?["Bedwars"]?["beds_broken_bedwars"] ?? 0) / ((double?)json["player"]?["stats"]?["Bedwars"]?["beds_lost_bedwars"] ?? 1), 2),
+                        Finals = (int?)json["player"]?["stats"]?["Bedwars"]?["final_kills_bedwars"] ?? 0,
+                        FinalDeaths = (int?)json["player"]?["stats"]?["Bedwars"]?["final_deaths_bedwars"] ?? 0,
+                        Wins = (int?)json["player"]?["stats"]?["Bedwars"]?["wins_bedwars"] ?? 0,
+                        Losses = (int?)json["player"]?["stats"]?["Bedwars"]?["losses_bedwars"] ?? 0,
+                        Kills = (int?)json["player"]?["stats"]?["Bedwars"]?["kills_bedwars"] ?? 0,
+                        Deaths = (int?)json["player"]?["stats"]?["Bedwars"]?["deaths_bedwars"] ?? 0,
+                        Beds = (int?)json["player"]?["stats"]?["Bedwars"]?["beds_broken_bedwars"] ?? 0,
+                        BedsLost = (int?)json["player"]?["stats"]?["Bedwars"]?["beds_lost_bedwars"] ?? 0,
+                        FirstLogin = (long?)json["player"]?["firstLogin"] ?? 0,
+                        PlayerTag = (string?)"-",
+                        PlayerUUID = uuid,
+                        NetworkExp = (long?)json["player"]?["networkExp"] ?? 0,
+                        BedwarsExperience = (int?)json["player"]?["stats"]?["Bedwars"]?["Experience"] ?? 0,
+                    };
+                }
 
                 // Add to cache
                 var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };

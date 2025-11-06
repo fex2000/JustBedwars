@@ -40,10 +40,10 @@ namespace JustBedwars.Views
             switch (selectedItem.Content.ToString())
             {
                 case "Member Name":
-                    endpoint = $"http://185.194.216.210:3000/autocomplete?query={query}&limit=10";
+                    endpoint = $"http://185.194.216.210:3000/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=name";
                     break;
                 case "Guild Name":
-                    endpoint = $"http://185.194.216.210:3000/guildautocomplete?query={query}&limit=10";
+                    endpoint = $"http://185.194.216.210:3000/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=guild";
                     break;
             }
 
