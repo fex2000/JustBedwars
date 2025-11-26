@@ -1,5 +1,5 @@
 # Info
-JUstBedwars is a Hypixel Bedwars Companion App for finding Player Stats.
+JustBedwars is a Hypixel Bedwars Companion App for finding Player Stats.
 
 # Installation
 Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening a file.
