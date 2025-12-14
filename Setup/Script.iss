@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JustBedwars"
-#define MyAppVersion "1.6.2"
+#define MyAppVersion "1.6.3"
 #define MyAppPublisher "fex2000"
 #define MyAppURL "https://fex2000.github.io/JustBedwars"
 #define MyAppExeName "JustBedwars.exe"
@@ -55,3 +55,22 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Code]
+// This procedure is called when the installer moves to a new step.
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // 'ssInstall' is the step just before files are actually copied.
+  if (CurStep = ssInstall) then
+  begin
+    // Clean the directory if it exists.
+    if DirExists(ExpandConstant('{app}')) then
+    begin
+      // DelTree(Path, IsDir, DeleteFiles, DeleteSubdirs)
+      // Path='{app}\*' targets content inside the folder, not the folder itself.
+      // IsDir=False (we are using a wildcard)
+      // DeleteFiles=True
+      // DeleteSubdirs=True
+      DelTree(ExpandConstant('{app}\*'), False, True, True);
+    end;
+  end;
+end;
