@@ -1,0 +1,605 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "JustBedwars API",
+        "version": "2.0.0",
+        "description": "# Info  \n    Backend API for JustBedwars for getting basic bedwars information of hypixel players.  \n    Will stay public, when people don't abuse and hypixel has no problem with it.  \n    Hosted in the EU, so go there if u want low ping.",
+        "x-logo": {
+            "url": "https://fex2000.github.io/JustBedwars/src/logo.png",
+            "altText": "JustBedwars Logo"
+        }
+    },
+    "tags": [
+        {
+            "name": "Bedwars v2",
+            "description": "Current stable API endpoints for JustBedwars."
+        },
+        {
+            "name": "Deprecated Endpoints",
+            "description": "These endpoints are deprecated and will be removed after JustBedwars App has moved to v2."
+        }
+    ],
+    "x-tagGroups": [
+        {
+            "name": "API",
+            "tags": [
+                "Bedwars v2"
+            ]
+        },
+        {
+            "name": "Legacy",
+            "tags": [
+                "Deprecated Endpoints"
+            ]
+        }
+    ],
+    "paths": {
+        "/api/justbedwars/v2/player": {
+            "get": {
+                "tags": [
+                    "Bedwars v2"
+                ],
+                "summary": "Get player bedwars stats",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Username": {
+                                            "type": "string"
+                                        },
+                                        "Stars": {
+                                            "type": "integer"
+                                        },
+                                        "FKDR": {
+                                            "type": "number"
+                                        },
+                                        "WLR": {
+                                            "type": "number"
+                                        },
+                                        "KDR": {
+                                            "type": "number"
+                                        },
+                                        "BBLR": {
+                                            "type": "number"
+                                        },
+                                        "Finals": {
+                                            "type": "integer"
+                                        },
+                                        "FinalDeaths": {
+                                            "type": "integer"
+                                        },
+                                        "Wins": {
+                                            "type": "integer"
+                                        },
+                                        "Losses": {
+                                            "type": "integer"
+                                        },
+                                        "Kills": {
+                                            "type": "integer"
+                                        },
+                                        "Deaths": {
+                                            "type": "integer"
+                                        },
+                                        "Beds": {
+                                            "type": "integer"
+                                        },
+                                        "BedsLost": {
+                                            "type": "integer"
+                                        },
+                                        "FirstLogin": {
+                                            "type": "integer"
+                                        },
+                                        "NetworkExp": {
+                                            "type": "integer"
+                                        },
+                                        "BedwarsExperience": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "Username": "exampleuser",
+                                    "Star": 100,
+                                    "FKDR": 2.5,
+                                    "WLR": 1.5,
+                                    "KDR": 1,
+                                    "BBLR": 0.8,
+                                    "Finals": 1000,
+                                    "FinalDeaths": 400,
+                                    "Wins": 300,
+                                    "Losses": 200,
+                                    "Kills": 500,
+                                    "Deaths": 500,
+                                    "Beds": 200,
+                                    "BedsLost": 250,
+                                    "FirstLogin": 1609459200000,
+                                    "NetworkExp": 1000000,
+                                    "BedwarsExperience": 500000
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing UUID"
+                    },
+                    "404": {
+                        "description": "Player not found"
+                    },
+                    "500": {
+                        "description": "Failed to fetch player data from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/api/justbedwars/v2/autocomplete": {
+            "get": {
+                "tags": [
+                    "Bedwars v2"
+                ],
+                "summary": "Autocomplete usernames or guild names",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "mode",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "name",
+                                "guild"
+                            ],
+                            "default": "name"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": [
+                                    "exampleuser1",
+                                    "exampleuser2"
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing query or invalid mode"
+                    }
+                }
+            }
+        },
+        "/api/justbedwars/v2/leaderboards": {
+            "get": {
+                "tags": [
+                    "Bedwars v2"
+                ],
+                "summary": "Get Bedwars leaderboards",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "path": "level",
+                                        "prefix": "Level",
+                                        "title": "Overall Level",
+                                        "location": "BEDWARS",
+                                        "count": 100,
+                                        "leaders": [
+                                            "uuid1",
+                                            "uuid2"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch leaderboards from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/api/justbedwars/v2/guild": {
+            "get": {
+                "tags": [
+                    "Bedwars v2"
+                ],
+                "summary": "Get guild data",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "player",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "guild": {
+                                            "type": "object",
+                                            "properties": {
+                                                "_id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "created": {
+                                                    "type": "integer"
+                                                },
+                                                "members": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "uuid": {
+                                                                "type": "string"
+                                                            },
+                                                            "rank": {
+                                                                "type": "string"
+                                                            },
+                                                            "joined": {
+                                                                "type": "integer"
+                                                            },
+                                                            "mutedTill": {
+                                                                "type": "integer"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "ranks": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "default": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "tag": {
+                                                                "type": "string"
+                                                            },
+                                                            "created": {
+                                                                "type": "integer"
+                                                            },
+                                                            "priority": {
+                                                                "type": "integer"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "achievements": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "EXPERIENCE_KINGS": {
+                                                            "type": "integer"
+                                                        },
+                                                        "WINNERS": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ONLINE_PLAYERS": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                },
+                                                "exp": {
+                                                    "type": "integer"
+                                                },
+                                                "tagColor": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "preferredGames": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "tag": {
+                                                    "type": "string"
+                                                },
+                                                "guildExpByGameType": {
+                                                    "type": "object"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "success": true,
+                                    "guild": {
+                                        "_id": "guild_id",
+                                        "name": "Example Guild Name",
+                                        "created": 1234567890123,
+                                        "members": [
+                                            {
+                                                "uuid": "member_uuid_1",
+                                                "rank": "Member",
+                                                "joined": 1234567890123
+                                            }
+                                        ],
+                                        "ranks": [
+                                            {
+                                                "name": "Member",
+                                                "default": true,
+                                                "tag": "MEM",
+                                                "created": 1234567890123,
+                                                "priority": 1
+                                            }
+                                        ],
+                                        "achievements": {
+                                            "EXPERIENCE_KINGS": 1000,
+                                            "WINNERS": 100,
+                                            "ONLINE_PLAYERS": 10
+                                        },
+                                        "exp": 1000000,
+                                        "tagColor": "GOLD",
+                                        "description": "This is an example guild description.",
+                                        "preferredGames": [
+                                            "GAME_A",
+                                            "GAME_B"
+                                        ],
+                                        "tag": "EXMPL",
+                                        "guildExpByGameType": {
+                                            "GAME_TYPE_X": 50000,
+                                            "GAME_TYPE_Y": 25000
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing id, player, or name"
+                    },
+                    "500": {
+                        "description": "Failed to fetch guild data from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/player": {
+            "get": {
+                "tags": [
+                    "Deprecated Endpoints"
+                ],
+                "summary": "Get player data",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Missing UUID"
+                    },
+                    "500": {
+                        "description": "Failed to fetch player data from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/autocomplete": {
+            "get": {
+                "tags": [
+                    "Deprecated Endpoints"
+                ],
+                "summary": "Autocomplete usernames",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Missing query"
+                    }
+                }
+            }
+        },
+        "/leaderboards": {
+            "get": {
+                "tags": [
+                    "Deprecated Endpoints"
+                ],
+                "summary": "Get leaderboards",
+                "deprecated": true,
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "500": {
+                        "description": "Failed to fetch leaderboards from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/guild": {
+            "get": {
+                "tags": [
+                    "Deprecated Endpoints"
+                ],
+                "summary": "Get guild data",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "player",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Missing id, player, or name"
+                    },
+                    "500": {
+                        "description": "Failed to fetch guild data from Hypixel API"
+                    }
+                }
+            }
+        },
+        "/guildautocomplete": {
+            "get": {
+                "tags": [
+                    "Deprecated Endpoints"
+                ],
+                "summary": "Autocomplete guild names",
+                "deprecated": true,
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "description": "Missing query"
+                    }
+                }
+            }
+        }
+    }
+}

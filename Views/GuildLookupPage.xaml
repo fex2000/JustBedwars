@@ -26,6 +26,38 @@
                           QueryIcon="Find"
                           TextChanged="SearchAutoSuggestBox_TextChanged"
                           QuerySubmitted="SearchAutoSuggestBox_QuerySubmitted"/>
+
+            <TextBlock Text="History"
+                       FontWeight="SemiBold"
+                       FontSize="16"
+                       Margin="0,16,0,0"/>
+            <ListView x:Name="HistoryListView"
+                      IsItemClickEnabled="True"
+                      ItemClick="HistoryListView_ItemClick"
+                      SelectionMode="None"
+                      Background="{ThemeResource SmokeFillColorDefaultBrush}"
+                      CornerRadius="{ThemeResource ControlCornerRadius}"
+                      BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                      BorderThickness="1">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" />
+                            <Button Grid.Column="1" 
+                                    Click="DeleteHistory_Click" 
+                                    DataContext="{Binding}"
+                                    Background="Transparent"
+                                    BorderThickness="0">
+                                <FontIcon Glyph="&#xE74D;" FontSize="14"/>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
     </Grid>
 </Page>

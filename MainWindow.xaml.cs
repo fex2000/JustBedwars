@@ -45,6 +45,7 @@ namespace JustBedwars
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
+            SetTitleBar(TitleBar);
             presenter.PreferredMinimumWidth = 900;
             presenter.PreferredMinimumHeight = 620;
             AppWindow.SetPresenter(presenter);
@@ -295,7 +296,7 @@ namespace JustBedwars
 
         private void On_Navigated(object sender, NavigationEventArgs e)
         {
-            BackButton.IsEnabled = ContentFrame.CanGoBack;
+            // BackButton.IsEnabled = ContentFrame.CanGoBack;
 
             if (ContentFrame.SourcePageType == typeof(Views.SettingsView))
             {
@@ -339,7 +340,9 @@ namespace JustBedwars
                 alwaysontop.Restore();
                 AppWindow.Resize(new Windows.Graphics.SizeInt32(800, 500));
 
-                AlwaysOnTopButton.HorizontalAlignment = HorizontalAlignment.Left;
+                Thickness otThickness = new Thickness();
+                otThickness.Right = AppWindow.TitleBar.RightInset;
+                AlwaysOnTopButton.Margin = otThickness;
                 AlwaysOnTopButton.Content = "\uE944";
                 SystemBackdrop = null;
                 TrySetAcrylicBackdrop();
@@ -360,11 +363,11 @@ namespace JustBedwars
                 Thickness padding = ContentFrame.Margin;
                 margin.Top = 24;
                 ContentFrame.Margin = margin;
-                AppTitle.Text = "JustBedwars Overlay";
+                TitleBar.Subtitle = "Overlay";
+                TitleBar.IsPaneButtonVisible = false;
             }
             else
             {
-                AlwaysOnTopButton.HorizontalAlignment = HorizontalAlignment.Right;
                 isOnTop = false;
                 AppWindow.SetPresenter(presenter);
                 NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
@@ -375,8 +378,8 @@ namespace JustBedwars
                 Thickness padding = ContentFrame.Margin;
                 margin.Top = 0;
                 ContentFrame.Margin = margin;
-                NavView.IsPaneToggleButtonVisible = true;
-                AppTitle.Text = "JustBedwars";
+                TitleBar.Subtitle = "App";
+                TitleBar.IsPaneButtonVisible = true;
                 AlwaysOnTopButton.Content = "\uE8A7";
                 if (m_acrylicController != null)
                 {
@@ -386,6 +389,9 @@ namespace JustBedwars
                 SystemBackdrop = new MicaBackdrop();
                 NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
                 NavView.IsPaneOpen = false;
+                Thickness otThickness = new Thickness();
+                otThickness.Right = AppWindow.TitleBar.RightInset;
+                AlwaysOnTopButton.Margin = otThickness;
             }
         }
 
@@ -456,6 +462,11 @@ namespace JustBedwars
             }
 
             return false;
+        }
+
+        private void TitleBar_OnPaneToggleRequested(object? sender, RoutedEventArgs args)
+        {
+            NavView.IsPaneOpen = !NavView.IsPaneOpen;
         }
     }
 

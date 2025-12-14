@@ -153,7 +153,7 @@ namespace JustBedwars.Views
 
                 try
                 {
-                    var response = await _httpClient.GetStringAsync($"http://185.194.216.210:3000/autocomplete?query={query}&limit=10");
+                    var response = await _httpClient.GetStringAsync($"http://185.194.216.210:3000/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=name");
                     var suggestions = JsonConvert.DeserializeObject<List<string>>(response);
                     sender.ItemsSource = suggestions;
                 }

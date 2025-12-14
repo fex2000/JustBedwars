@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.Controls;
 
 namespace JustBedwars.Views
 {
@@ -28,39 +29,52 @@ namespace JustBedwars.Views
             SwitchLeaderboard();
         }
 
-        private void LeaderboardSelector_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+        private void LeaderboardSelector_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            SelectorBarItem selectedItem = sender.SelectedItem;
-            if (selectedItem != null)
+            var newSelection = "";
+
+            if (LeaderboardSelector.SelectedIndex==0)
+                newSelection = "Stars";
+            else if (LeaderboardSelector.SelectedIndex == 1)
+                newSelection = "Wins";
+            else
+                newSelection = "Finals";
+
+
+            if (newSelection != _selectedLeaderboard)
             {
-                var newSelection = selectedItem.Text;
-                if (newSelection != _selectedLeaderboard)
+                _selectedLeaderboard = newSelection;
+                if (_selectedLeaderboard == "Wins" || _selectedLeaderboard == "Finals")
                 {
-                    _selectedLeaderboard = newSelection;
-                    if (_selectedLeaderboard == "Wins" || _selectedLeaderboard == "Finals")
-                    {
-                        TimeFilterSelector.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        TimeFilterSelector.Visibility = Visibility.Collapsed;
-                    }
-                    SwitchLeaderboard();
+                    TimeFilterSelector.Visibility = Visibility.Visible;
                 }
+                else
+                {
+                    TimeFilterSelector.Visibility = Visibility.Collapsed;
+                }
+                SwitchLeaderboard();
             }
         }
 
-        private void TimeFilterSelector_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
+        private void TimeFilterSelector_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
-            SelectorBarItem selectedItem = sender.SelectedItem;
-            if (selectedItem != null)
+            var newSelection = "";
+
+            if (TimeFilterSelector.SelectedIndex == 0)
+                newSelection = "Weekly";
+            else
+                newSelection = "Lifetime";
+            if (LeaderboardSelector != null)
             {
-                var newSelection = selectedItem.Text;
-                if (newSelection != _selectedTimeFilter)
-                {
-                    _selectedTimeFilter = newSelection;
-                    SwitchLeaderboard();
-                }
+                if (LeaderboardSelector.SelectedIndex == 0)
+                    newSelection = "Weekly";
+            }
+
+
+            if (newSelection != _selectedTimeFilter)
+            {
+                _selectedTimeFilter = newSelection;
+                SwitchLeaderboard();
             }
         }
 
