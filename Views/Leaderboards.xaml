@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:media="using:CommunityToolkit.WinUI.Media"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
     <Grid>
@@ -15,30 +16,52 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="6">
-            <Grid>
+            <Grid ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <SelectorBar x:Name="LeaderboardSelector" SelectionChanged="LeaderboardSelector_SelectionChanged">
-                    <SelectorBarItem x:Name="StarsItem" Text="Stars" IsSelected="True"/>
-                    <SelectorBarItem x:Name="WinsItem" Text="Wins"/>
-                    <SelectorBarItem x:Name="FinalsItem" Text="Finals"/>
-                </SelectorBar>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="8" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+
+                
+
+                <controls:Segmented x:Name="TimeFilterSelector"
+                                    SelectionChanged="TimeFilterSelector_SelectionChanged"
+                                    Visibility="Collapsed"
+                                    SelectedIndex="0"
+                                    Grid.Column="1">
+                    <controls:SegmentedItem Content="Weekly"/>
+                    <controls:SegmentedItem Content="Lifetime"/>
+
+                    <animations:Implicit.ShowAnimations>
+                        <animations:ScaleAnimation Duration="0:0:0.5" From="0.9" To="1"/>
+                        <animations:TranslationAnimation Duration="0:0:0.5" From="-24,1,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:ScaleAnimation Duration="0:0:0.5" From="1" To="0.9"/>
+                        <animations:TranslationAnimation Duration="0:0:0.5" From="0" To="-24,1,0"/>
+                        <animations:OpacityAnimation Duration="0:0:0.5" From="1" To="0"/>
+                    </animations:Implicit.HideAnimations>
+                </controls:Segmented>
+
+                <controls:Segmented SelectedIndex="0"
+                                    SelectionChanged="LeaderboardSelector_SelectionChanged"
+                                    x:Name="LeaderboardSelector"
+                                    Grid.Column="0">
+                    <controls:SegmentedItem Content="Stars"/>
+                    <controls:SegmentedItem Content="Wins"/>
+                    <controls:SegmentedItem Content="Finals"/>
+                </controls:Segmented>
+
+                <TextBlock Grid.Column="2"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Margin="8"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                     Click players for their Stats!
                 </TextBlock>
             </Grid>
-            <SelectorBar x:Name="TimeFilterSelector" SelectionChanged="TimeFilterSelector_SelectionChanged" Visibility="Collapsed">
-                <SelectorBarItem x:Name="WeeklyItem" Text="Weekly" IsSelected="True"/>
-                <SelectorBarItem x:Name="LifetimeItem" Text="Lifetime"/>
-                <animations:Implicit.ShowAnimations>
-                    <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
-                </animations:Implicit.ShowAnimations>
-                <animations:Implicit.HideAnimations>
-                    <animations:OpacityAnimation Duration="0:0:0.5" From="1" To="0"/>
-                </animations:Implicit.HideAnimations>
-            </SelectorBar>
         </StackPanel>
 
         <ListView x:Name="LeaderboardList" Grid.Row="1" IsItemClickEnabled="True" ItemClick="LeaderboardList_ItemClick">

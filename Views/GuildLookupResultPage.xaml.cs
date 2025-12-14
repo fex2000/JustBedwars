@@ -1,61 +1,70 @@
-using JustBedwars.Models;
+﻿using JustBedwars.Models;
 using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
-using System;
-using Windows.Media.ClosedCaptioning;
-using Microsoft.Windows.AppLifecycle;
 
 namespace JustBedwars.Views
 {
-    public sealed partial class GuildWindow : Window
+    public class GuildLookupParameter
     {
-        private readonly string _query;
-        private readonly string _type;
+        public string Query { get; set; }
+        public string Type { get; set; }
+    }
+
+    public sealed partial class GuildLookupResultPage : Page
+    {
+        private string _query;
+        private string _type;
         private readonly HypixelApi _hypixelApi;
+        private readonly SettingsService _settingsService;
         private Guild guild;
 
-        public GuildWindow(string query, string type)
+        public GuildLookupResultPage()
         {
             InitializeComponent();
-            ExtendsContentIntoTitleBar = true;
-            _query = query;
-            _type = type;
             _hypixelApi = new HypixelApi();
-            LoadGuildDataAsync();
+            _settingsService = new SettingsService();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter is GuildLookupParameter args)
+            {
+                _query = args.Query;
+                _type = args.Type;
+                LoadGuildDataAsync();
+            }
         }
 
         private async Task LoadGuildDataAsync()
         {
-            GuildTitleBar.Subtitle = "Loading...";
             LoadingOverlay.Visibility = Visibility.Visible;
 
             guild = await _hypixelApi.GetGuildAsync(_query, _type);
 
             if (guild != null)
             {
+                _settingsService.SetValue("LastSearchedName", guild.Name);
                 LoadingProgressRing.Visibility = Visibility.Collapsed;
                 LoadingDetails.Visibility = Visibility.Visible;
 
                 var progress = new Progress<double>(p =>
                 {
                     LoadingProgressBar.Value = p;
-                    LoadingPercentage.Text = $"{p:0}%";
+                    if(LoadingPercentage != null)
+                        LoadingPercentage.Text = $"{p:0}%";
                 });
 
                 await _hypixelApi.GetNamesForGuildMembers(guild.Members, progress);
 
-                LoadingOverlay.Visibility = Visibility.Collapsed;
-                SelectorBar.Visibility = Visibility.Visible;
-                TopBar.Visibility = Visibility.Visible;
-                InfoView.Visibility = Visibility.Visible;
-
-                GuildTitleBar.Title = guild.Name;
-                GuildTitleBar.Subtitle = guild.Tag;
+                // Set data before showing controls to avoid animation conflicts
                 GuildNameTextBlock.Text = guild.Name;
                 GuildTagTextBlock.Text = guild.Tag;
 
@@ -71,12 +80,12 @@ namespace JustBedwars.Views
                 MembersListView.ItemsSource = sortedMembers;
 
                 // Populate rank filter
+                RankFilter.Items.Clear();
                 RankFilter.Items.Add(new SegmentedItem { Content = "All" });
                 foreach (var rank in sortedRanks)
                 {
                     RankFilter.Items.Add(new SegmentedItem { Content = rank.Name });
                 }
-
                 RankFilter.SelectedIndex = 0;
 
                 DescriptionTextBlock.Text = string.IsNullOrEmpty(guild.Description) ? "No description available." : guild.Description;
@@ -87,11 +96,17 @@ namespace JustBedwars.Views
                 CreatedAtTextBlock.Text = DateTimeOffset.FromUnixTimeMilliseconds(guild.Created).ToString("D");
                 GuildIdTextBlock.Text = guild.Id;
                 ExpByGameTypeListView.ItemsSource = guild.ExpByGameType;
+
+                LoadingOverlay.Visibility = Visibility.Collapsed;
+
+                SelectorBar.Visibility = Visibility.Visible;
+                TopBar.Visibility = Visibility.Visible;
+                InfoView.Visibility = Visibility.Visible;
             }
             else
             {
-                GuildTitleBar.Subtitle = "Error loading guild.";
                 LoadingOverlay.Visibility = Visibility.Collapsed;
+                await Task.Delay(100);
                 ErrorGrid.Visibility = Visibility.Visible;
             }
         }
@@ -139,9 +154,12 @@ namespace JustBedwars.Views
             }
         }
 
-        private void CloseButton_Clicked(object sender, RoutedEventArgs e)
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+            }
         }
 
         private void RanksListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -162,8 +180,9 @@ namespace JustBedwars.Views
         {
             if (e.ClickedItem is GuildMember clickedMember)
             {
+                // This might need adjustment depending on the main navigation structure.
                 var mainWindow = App.Window as MainWindow;
-                mainWindow.OpenStatsPage(clickedMember.Name);
+                mainWindow?.OpenStatsPage(clickedMember.Name);
             }
         }
     }
