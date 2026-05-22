@@ -96,6 +96,7 @@ namespace JustBedwars.Views
                 CreatedAtTextBlock.Text = DateTimeOffset.FromUnixTimeMilliseconds(guild.Created).ToString("D");
                 GuildIdTextBlock.Text = guild.Id;
                 ExpByGameTypeListView.ItemsSource = guild.ExpByGameType;
+                GuildTagGrid.Visibility = string.IsNullOrEmpty(guild.Tag) ? Visibility.Collapsed : Visibility.Visible;
 
                 LoadingOverlay.Visibility = Visibility.Collapsed;
 

@@ -366,3 +366,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /.idea/.idea.JustBedwars/.idea
 /.vscode
+
+# Installer Build Source
+Setup/Source/

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using JustBedwars.Services;
+using DevWinUI;
 
 namespace JustBedwars.Services
 {
@@ -45,33 +46,49 @@ namespace JustBedwars.Services
 
         private static async Task ShowUpdateDialog()
         {
+            var infoText = new TextBlock
+            {
+                Text = "Please update to the newest version for the best experience. Updates may be required because of Backend changes.",
+                TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords
+            };
+
+            var downloadButton = new ProgressButton
+            {
+                Content = "Download now",
+                CheckedContent = "Downloading...",
+                Progress = 0,
+                IsIndeterminate = false,
+                HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Stretch
+            };
+
+            var dialogContent = new StackPanel
+            {
+                Spacing = 12
+            };
+            dialogContent.Children.Add(infoText);
+            dialogContent.Children.Add(downloadButton);
+
             var updateDialog = new ContentDialog
             {
                 Title = "Update Available",
-                Content = "Please update to the newest version for the best experience. Updates may be required because of Backend changes.",
-                PrimaryButtonText = "Download now",
+                Content = dialogContent,
                 CloseButtonText = "Later"
             };
 
             if (App.Window?.Content?.XamlRoot is not null)
             {
+                var downloadStarted = false;
                 updateDialog.XamlRoot = App.Window.Content.XamlRoot;
 
-                var downloadStarted = false;
-                updateDialog.PrimaryButtonClick += async (dialog, args) =>
+                downloadButton.Click += async (_, _) =>
                 {
-                    // Prevent the dialog from closing
-                    args.Cancel = true;
-
-                    // Prevent starting multiple downloads
                     if (downloadStarted) return;
                     downloadStarted = true;
 
-                    dialog.IsPrimaryButtonEnabled = false;
-                    dialog.IsSecondaryButtonEnabled = false;
-                    
-                    var progressBar = new ProgressBar { IsIndeterminate = false, Minimum = 0, Maximum = 100, Value = 0 };
-                    dialog.Content = progressBar;
+                    downloadButton.IsChecked = true;
+                    downloadButton.IsEnabled = false;
+                    downloadButton.Progress = 0;
+                    downloadButton.IsIndeterminate = true;
 
                     try
                     {
@@ -85,6 +102,8 @@ namespace JustBedwars.Services
                                 var totalBytes = response.Content.Headers.ContentLength ?? -1L;
                                 var downloadedBytes = 0L;
 
+                                downloadButton.IsIndeterminate = totalBytes <= 0;
+
                                 using (var contentStream = await response.Content.ReadAsStreamAsync())
                                 using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
                                 {
@@ -96,30 +115,37 @@ namespace JustBedwars.Services
                                         downloadedBytes += bytesRead;
                                         if (totalBytes != -1)
                                         {
-                                            progressBar.Value = (int)((double)downloadedBytes / totalBytes * 100);
+                                            downloadButton.Progress = (double)downloadedBytes / totalBytes * 100;
                                         }
                                     }
                                 }
                             }
                         }
 
-                        dialog.Content = "Download complete. Please continue in the new window to finish the installation.";
-                        dialog.CloseButtonText = "Ok";
-                        dialog.IsSecondaryButtonEnabled = true;
+                        infoText.Text = "Download complete. Please continue in the new window to finish the installation.";
+                        downloadButton.Progress = 100;
+                        downloadButton.Content = "Installer started";
+                        downloadButton.CheckedContent = "Installer started";
 
 
                         var processStartInfo = new ProcessStartInfo
                         {
                             FileName = tempPath,
-                            UseShellExecute = true
+                            UseShellExecute = true,
+                            Arguments = "/NOCANCEL /NORESTARTAPPLICATIONS /CLOSEAPPLICATIONS /SP-"
                         };
                         Process.Start(processStartInfo);
                     }
                     catch (Exception ex)
                     {
-                        dialog.Content = $"An error occurred during download: {ex.Message}";
-                        dialog.CloseButtonText = "Ok";
-                        dialog.IsSecondaryButtonEnabled = true;
+                        infoText.Text = $"An error occurred during download: {ex.Message}";
+                        downloadButton.IsChecked = false;
+                        downloadButton.IsEnabled = true;
+                        downloadButton.Content = "Retry download";
+                        downloadButton.CheckedContent = "Downloading...";
+                        downloadButton.Progress = 0;
+                        downloadButton.IsIndeterminate = false;
+                        downloadStarted = false;
                     }
                 };
 

@@ -10,6 +10,7 @@
     xmlns:media="using:CommunityToolkit.WinUI.Media"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:dev="using:DevWinUI"
     mc:Ignorable="d"
     Title="JustBedwars">
 
@@ -20,16 +21,16 @@
         <Page>
             <Grid>
                 <!-- App Title -->
-                <controls:TitleBar x:Name="TitleBar"
+                <TitleBar x:Name="TitleBar"
                           VerticalAlignment="Top"
                           Title="JustBedwars"
                           Subtitle="App"
-                          IsPaneButtonVisible="True"
-                          PaneButtonClick="TitleBar_OnPaneToggleRequested">
+                          IsPaneToggleButtonVisible="True"
+                          PaneToggleRequested="TitleBar_OnPaneToggleRequested">
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Delay="0:0:4" Duration="0:0:1" From="0,-50,0" To="0"/>
                     </animations:Implicit.ShowAnimations>
-                </controls:TitleBar>
+                </TitleBar>
                 <!-- Always on Top-->
                 <Button Click="AlwaysOnTopButton_Click"
                         CornerRadius="0"
@@ -153,10 +154,19 @@
                 <!-- Splash Screen -->
                 <Image Source="/Assets/SplashScreen.scale-200.png" MaxWidth="620" Stretch="Uniform" Canvas.ZIndex="-1">
                     <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="0" To="0,-350,0"/>
-                        <animations:OpacityAnimation Duration="0:0:1.5" Delay="0:0:3.2" From="1.0" To="0"/>
+                        <animations:TranslationAnimation Duration="0:0:1.5" Delay="0:0:2.5" From="0" To="0,-350,0" EasingMode="EaseIn"/>
+                        <animations:ScalarAnimation Target="Opacity" Duration="0:0:3.8" Delay="0:0:0.3" To="0" From="0">
+                            <animations:ScalarKeyFrame Key="0.2" Value="1"/>
+                            <animations:ScalarKeyFrame Key="0.8" Value="1"/>
+                        </animations:ScalarAnimation>
                     </animations:Implicit.ShowAnimations>
                 </Image>
+                <Grid Canvas.ZIndex="-2">
+                    <dev:Stars/>
+                    <animations:Implicit.ShowAnimations>
+                        <animations:OpacityAnimation Duration="0:0:1.5" Delay="0:0:3.5" From="1.0" To="0"/>
+                    </animations:Implicit.ShowAnimations>
+                </Grid>
             </Grid>
         </Page>
     </Window.Content>

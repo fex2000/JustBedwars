@@ -26,7 +26,6 @@ namespace JustBedwars.Services
         private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
         private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
         private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
-        // NEW: Max concurrent requests to Mojang's sessionserver API to prevent connection/network exhaustion errors.
         private const int MaxConcurrentMojangLookups = 25;
 
         public void SetApiKey(string apiKey)
@@ -75,7 +74,7 @@ namespace JustBedwars.Services
                         break;
                 }
 
-                url = $"http://185.194.216.210:3000/guild?{queryParam}";
+                url = $"https://jbw.fexei.at/api/justbedwars/v2/guild?{queryParam}";
 
                 if (!string.IsNullOrEmpty(_apiKey))
                 {
@@ -204,7 +203,7 @@ namespace JustBedwars.Services
 
                 bool useV2Api = string.IsNullOrEmpty(_apiKey);
                 var url = useV2Api
-                    ? $"http://185.194.216.210:3000/api/justbedwars/v2/player?uuid={uuid}"
+                    ? $"https://jbw.fexei.at/api/justbedwars/v2/player?uuid={uuid}"
                     : $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
 
 

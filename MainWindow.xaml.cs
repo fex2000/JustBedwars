@@ -1,29 +1,31 @@
 using JustBedwars.Services;
+using JustBedwars.Views;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.UI.ApplicationSettings;
-using Microsoft.UI.Windowing;
-using System.Threading.Tasks;
 using Windows.Media.Control;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Composition;
-using System.Runtime.InteropServices;
+using Windows.UI.ApplicationSettings;
 using WinRT;
-using JustBedwars.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -317,11 +319,6 @@ namespace JustBedwars
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            TryGoBack();
-        }
-
         private void AlwaysOnTopButton_Click(object sender, RoutedEventArgs e)
         {
             if (isOnTop == false)
@@ -364,7 +361,7 @@ namespace JustBedwars
                 margin.Top = 24;
                 ContentFrame.Margin = margin;
                 TitleBar.Subtitle = "Overlay";
-                TitleBar.IsPaneButtonVisible = false;
+                TitleBar.IsPaneToggleButtonVisible = false;
             }
             else
             {
@@ -379,7 +376,7 @@ namespace JustBedwars
                 margin.Top = 0;
                 ContentFrame.Margin = margin;
                 TitleBar.Subtitle = "App";
-                TitleBar.IsPaneButtonVisible = true;
+                TitleBar.IsPaneToggleButtonVisible = true;
                 AlwaysOnTopButton.Content = "\uE8A7";
                 if (m_acrylicController != null)
                 {
@@ -455,6 +452,10 @@ namespace JustBedwars
 
                 m_acrylicController = new DesktopAcrylicController();
 
+                m_acrylicController.TintColor = Microsoft.UI.Colors.Black;
+                m_acrylicController.TintOpacity = 0.4f;
+                m_acrylicController.LuminosityOpacity = 0f;
+
                 m_acrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
                 m_acrylicController.SetSystemBackdropConfiguration(m_configurationSource);
 
@@ -464,7 +465,7 @@ namespace JustBedwars
             return false;
         }
 
-        private void TitleBar_OnPaneToggleRequested(object? sender, RoutedEventArgs args)
+        private void TitleBar_OnPaneToggleRequested(TitleBar? sender, object args)
         {
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
         }
