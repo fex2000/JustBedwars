@@ -483,7 +483,7 @@ namespace JustBedwars.Services
                             {
                                 var url = $"https://playerdb.co/api/player/minecraft/{uuid}";
                                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
-                                request.Headers.UserAgent.ParseAdd($"JustBedwars github/fex2000/JustBedwars v{Assembly.GetExecutingAssembly().GetName().Version}");
+                                request.Headers.UserAgent.ParseAdd($"JustBedwars /v{Assembly.GetExecutingAssembly().GetName().Version}");
                                 using var responseMessage = await _httpClient.SendAsync(request);
                                 responseMessage.EnsureSuccessStatusCode();
                                 var response = await responseMessage.Content.ReadAsStringAsync();
