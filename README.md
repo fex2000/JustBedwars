@@ -1,23 +1,23 @@
 # Info
-JustBedwars is a Hypixel Bedwars Companion App for finding Player Stats.
+JustBedwars is a Hypixel Bedwars Companion App for finding Player Stats.  
+It was strongly inspired by [Abyss Overlay](https://github.com/Chit132/abyss-overlay) and is basically just a recreation of it running on WinUI with some extra features and optimization with how Hypixel hides usernames while waiting. 
 
 # Installation
-Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening a file.
-You may need to install .NET 9 after the installation finishes.
-Updates are found automatically.
+Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening a file.  
+Only Windows 11 (and maybe 10, but untested) on x64 is supported.
 
 # Usage
-1. Set your log file location (usually %appdata%\.minecraft\logs\latest.log when playing with the default launcher) in the settings
-2. Start playing bedwars, run /who after the round started and see all players in your lobby get listed.
+1. Set your log file location (usually %appdata%\\.minecraft\\logs\\latest.log)
+2. Start playing bedwars, run /who after the round started and see all players in your round get listed.
 
 # Features
-- Sorting Players by different Stats
-- Find all player stats by username
-- FInd out more about player skill by clicking on their name
-- Auto player adding and removal based on chatting, Finals and disconnects
-- BedWars Leaderboards
-- Guild Lookup
-- Always on top mode
-  
-## Planned
-- More settings to change things like auto adding and sorting
+- Showing stats of players in your current round
+  - Ordering players based on their skill from stats
+  - Detecting Nicks
+- Exploring Hypixel Bedwars Leaderboards
+- Finding stats for a specific player
+- Showing information about a guild
+
+# Linux/Mac Support?
+Not for now.  
+It is possible using Uno Platform but would take significant changes to make the windowing (Always-On-Top mode) work and the application currently uses some WinUI-Only libraries that would need to be replaced.

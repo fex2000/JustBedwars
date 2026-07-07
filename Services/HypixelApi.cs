@@ -1,23 +1,24 @@
 using JustBedwars.Models;
+using JustBedwars.Services;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Runtime.Caching;
 using System;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml;
-using System.Threading;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using JustBedwars.Services;
+using System.Net.Http;
+using System.Reflection;
+using System.Runtime.Caching;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JustBedwars.Services
 {
     public class HypixelApi
     {
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
         private string? _apiKey;
         private static readonly SemaphoreSlim _apiSemaphore = new SemaphoreSlim(1, 1);
         private static readonly Stopwatch _apiStopwatch = new Stopwatch();
@@ -26,8 +27,7 @@ namespace JustBedwars.Services
         private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
         private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
         private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
-        // NEW: Max concurrent requests to Mojang's sessionserver API to prevent connection/network exhaustion errors.
-        private const int MaxConcurrentMojangLookups = 25;
+        private const int MaxConcurrentMojangLookups = 50;
 
         public void SetApiKey(string apiKey)
         {
@@ -75,7 +75,7 @@ namespace JustBedwars.Services
                         break;
                 }
 
-                url = $"http://185.194.216.210:3000/guild?{queryParam}";
+                url = $"https://jbw.fexei.at/api/justbedwars/v2/guild?{queryParam}";
 
                 if (!string.IsNullOrEmpty(_apiKey))
                 {
@@ -165,7 +165,7 @@ namespace JustBedwars.Services
                 }
                 else if (string.IsNullOrEmpty(member.Name))
                 {
-                    member.Name = "Unknown";
+                    member.Name = "-- Username Error --";
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace JustBedwars.Services
 
                 bool useV2Api = string.IsNullOrEmpty(_apiKey);
                 var url = useV2Api
-                    ? $"http://185.194.216.210:3000/api/justbedwars/v2/player?uuid={uuid}"
+                    ? $"https://jbw.fexei.at/api/justbedwars/v2/player?uuid={uuid}"
                     : $"https://api.hypixel.net/player?key={_apiKey}&uuid={uuid}";
 
 
@@ -342,11 +342,6 @@ namespace JustBedwars.Services
             await _apiSemaphore.WaitAsync();
             try
             {
-                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 10)
-                {
-                    await Task.Delay(10 - (int)_apiStopwatch.ElapsedMilliseconds);
-                }
-
                 string boardPath = "";
                 switch (leaderboard)
                 {
@@ -375,7 +370,7 @@ namespace JustBedwars.Services
                         break;
                 }
 
-                var url = $"http://185.194.216.210:3000/leaderboards";
+                var url = $"https://jbw.fexei.at/leaderboards";
                 if (!string.IsNullOrEmpty(_apiKey))
                 {
                     url = $"https://api.hypixel.net/leaderboards?key={_apiKey}";
@@ -445,7 +440,7 @@ namespace JustBedwars.Services
                 }
                 else if (string.IsNullOrEmpty(entry.Name))
                 {
-                    entry.Name = "Unknown";
+                    entry.Name = "-- Username Error --";
                 }
             }
         }
@@ -470,19 +465,15 @@ namespace JustBedwars.Services
 
             if (uuidsToFetch.Count > 0)
             {
-                // PERFORMANCE IMPROVEMENT: Concurrently fetch all uncached usernames using Task.WhenAll
-                // Throttle concurrency to prevent hitting client-side connection limits and IOExceptions.
                 using var throttle = new SemaphoreSlim(MaxConcurrentMojangLookups);
 
-                // We use a local counter and a lock to atomically track progress and update the main dictionary,
-                // maintaining the IProgress functionality while fetching in parallel.
                 int completedCount = 0;
                 int totalToFetch = uuidsToFetch.Count;
                 object progressLock = new object();
 
                 var fetchTasks = uuidsToFetch.Select(uuid => Task.Run(async () =>
                 {
-                    await throttle.WaitAsync(); // Wait for a slot in the throttle before starting network request
+                    await throttle.WaitAsync();
 
                     try
                     {
@@ -490,21 +481,23 @@ namespace JustBedwars.Services
                         {
                             try
                             {
-                                var url = $"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}";
-                                // The network request is awaited here, allowing other requests to run concurrently.
-                                var response = await _httpClient.GetStringAsync(url);
+                                var url = $"https://playerdb.co/api/player/minecraft/{uuid}";
+                                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                                request.Headers.UserAgent.ParseAdd($"JustBedwars github/fex2000/JustBedwars v{Assembly.GetExecutingAssembly().GetName().Version}");
+                                using var responseMessage = await _httpClient.SendAsync(request);
+                                responseMessage.EnsureSuccessStatusCode();
+                                var response = await responseMessage.Content.ReadAsStringAsync();
 
                                 var json = JObject.Parse(response);
-                                var name = (string)json["name"];
+                                var name = (string)json["data"]["player"]["username"];
 
-                                // Use lock to ensure thread safety when updating the shared dictionary and cache
                                 lock (progressLock)
                                 {
                                     var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
                                     _uuidCache.Add(uuid, name, policy);
-                                    names[uuid] = name; // Update the names dictionary directly
+                                    names[uuid] = name;
                                 }
-                                return; // Success, exit the loop and task
+                                return;
                             }
                             catch (TaskCanceledException)
                             {

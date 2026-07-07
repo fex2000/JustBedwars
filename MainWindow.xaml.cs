@@ -1,29 +1,31 @@
 using JustBedwars.Services;
+using JustBedwars.Views;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+
 using Windows.UI.ApplicationSettings;
-using Microsoft.UI.Windowing;
-using System.Threading.Tasks;
-using Windows.Media.Control;
-using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Composition;
-using System.Runtime.InteropServices;
 using WinRT;
-using JustBedwars.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,8 +36,7 @@ namespace JustBedwars
     {
         OverlappedPresenter presenter = OverlappedPresenter.Create();
         private readonly SettingsService _settingsService;
-        private GlobalSystemMediaTransportControlsSessionManager _mediaManager;
-        private GlobalSystemMediaTransportControlsSession _currentSession;
+
 
         WindowsSystemDispatcherQueueHelper m_wsdqHelper;
         DesktopAcrylicController m_acrylicController;
@@ -52,9 +53,7 @@ namespace JustBedwars
             _ = UpdateService.CheckForUpdates();
 
             _settingsService = settingsService;
-            _settingsService.SettingChanged += SettingsService_SettingChanged;
-            LoadMediaPlayerSetting();
-            InitializeMedia();
+
         }
 
         public void OpenStatsPage(string username)
@@ -70,137 +69,7 @@ namespace JustBedwars
             this.Activate();
         }
 
-        private async void InitializeMedia()
-        {
-            _mediaManager = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
-            _mediaManager.CurrentSessionChanged += MediaManager_CurrentSessionChanged;
-            UpdateCurrentSession();
-        }
 
-        private void MediaManager_CurrentSessionChanged(GlobalSystemMediaTransportControlsSessionManager sender, CurrentSessionChangedEventArgs args)
-        {
-            UpdateCurrentSession();
-        }
-
-        private void UpdateCurrentSession()
-        {
-            if (_currentSession != null)
-            {
-                _currentSession.MediaPropertiesChanged -= CurrentSession_MediaPropertiesChanged;
-                _currentSession.PlaybackInfoChanged -= CurrentSession_PlaybackInfoChanged;
-                _currentSession.TimelinePropertiesChanged -= CurrentSession_TimelinePropertiesChanged;
-            }
-
-            _currentSession = _mediaManager.GetCurrentSession();
-
-            if (_currentSession != null)
-            {
-                _currentSession.MediaPropertiesChanged += CurrentSession_MediaPropertiesChanged;
-                _currentSession.PlaybackInfoChanged += CurrentSession_PlaybackInfoChanged;
-                _currentSession.TimelinePropertiesChanged += CurrentSession_TimelinePropertiesChanged;
-                DispatcherQueue.TryEnqueue(async () => await UpdateMediaProperties());
-                DispatcherQueue.TryEnqueue(() => UpdatePlaybackInfo());
-                DispatcherQueue.TryEnqueue(() => UpdateTimeline());
-            }
-        }
-
-        private void CurrentSession_MediaPropertiesChanged(GlobalSystemMediaTransportControlsSession sender, MediaPropertiesChangedEventArgs args)
-        {
-            DispatcherQueue.TryEnqueue(async () =>
-            {
-                await UpdateMediaProperties();
-            });
-        }
-
-        private async Task UpdateMediaProperties()
-        {
-            if (_currentSession == null) return;
-
-            var mediaProperties = await _currentSession.TryGetMediaPropertiesAsync();
-
-            MediaTitle.Text = mediaProperties.Title ?? "Unknown Title";
-            MediaAuthor.Text = mediaProperties.Artist ?? "Unknown Artist";
-
-            var thumbnail = mediaProperties.Thumbnail;
-            if (thumbnail != null)
-            {
-                using (var stream = await thumbnail.OpenReadAsync())
-                {
-                    var bitmap = new BitmapImage();
-                    await bitmap.SetSourceAsync(stream);
-                    MediaImage.Source = bitmap;
-                    MediaImageBG.Source = bitmap;
-                }
-            }
-            else
-            {
-                MediaImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/Icon.ico"));
-                MediaImageBG.Source = new BitmapImage(new Uri("ms-appx:///Assets/Icon.ico"));
-            }
-        }
-
-        private void CurrentSession_PlaybackInfoChanged(GlobalSystemMediaTransportControlsSession sender, PlaybackInfoChangedEventArgs args)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                UpdatePlaybackInfo();
-            });
-        }
-
-        private void UpdatePlaybackInfo()
-        {
-            if (_currentSession == null) return;
-
-            var playbackInfo = _currentSession.GetPlaybackInfo();
-            if (PlayPauseButton != null)
-            {
-                PlayPauseButton.Content = playbackInfo.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ? "\uE769" : "\uE768";
-            }
-        }
-
-        private void CurrentSession_TimelinePropertiesChanged(GlobalSystemMediaTransportControlsSession sender, TimelinePropertiesChangedEventArgs args)
-        {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                UpdateTimeline();
-            });
-        }
-
-        private void UpdateTimeline()
-        {
-            if (_currentSession == null) return;
-
-            var timelineProperties = _currentSession.GetTimelineProperties();
-            if (timelineProperties.EndTime > TimeSpan.Zero)
-            {
-                MediaProgressBar.Maximum = timelineProperties.EndTime.TotalSeconds;
-                MediaProgressBar.Value = timelineProperties.Position.TotalSeconds;
-            }
-        }
-
-        private void SettingsService_SettingChanged(object sender, string key)
-        {
-            if (key == "ShowMediaPlayer")
-            {
-                    LoadMediaPlayerSetting();
-            }
-        }
-
-        private void LoadMediaPlayerSetting()
-        {
-            var showMediaPlayer = _settingsService.GetValue("ShowMediaPlayer");
-            if (showMediaPlayer != null && (bool)showMediaPlayer)
-            {
-                if ((bool)showMediaPlayer == true) {
-                    if (NavView.IsPaneOpen == true)
-                        MediaPlayerGrid.Visibility = Visibility.Visible;
-                    else
-                        MediaPlayerGrid.Visibility = Visibility.Collapsed;
-                }
-                else MediaPlayerGrid.Visibility = Visibility.Collapsed;
-            }
-            else MediaPlayerGrid.Visibility = Visibility.Collapsed;
-        }
 
         private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
@@ -317,11 +186,6 @@ namespace JustBedwars
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            TryGoBack();
-        }
-
         private void AlwaysOnTopButton_Click(object sender, RoutedEventArgs e)
         {
             if (isOnTop == false)
@@ -364,7 +228,7 @@ namespace JustBedwars
                 margin.Top = 24;
                 ContentFrame.Margin = margin;
                 TitleBar.Subtitle = "Overlay";
-                TitleBar.IsPaneButtonVisible = false;
+                TitleBar.IsPaneToggleButtonVisible = false;
             }
             else
             {
@@ -379,7 +243,7 @@ namespace JustBedwars
                 margin.Top = 0;
                 ContentFrame.Margin = margin;
                 TitleBar.Subtitle = "App";
-                TitleBar.IsPaneButtonVisible = true;
+                TitleBar.IsPaneToggleButtonVisible = true;
                 AlwaysOnTopButton.Content = "\uE8A7";
                 if (m_acrylicController != null)
                 {
@@ -387,7 +251,10 @@ namespace JustBedwars
                     m_acrylicController = null;
                 }
                 SystemBackdrop = new MicaBackdrop();
-                NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
+                if(preTopPage == typeof(SettingsView))
+                    NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo(), _settingsService);
+                else
+                    NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
                 NavView.IsPaneOpen = false;
                 Thickness otThickness = new Thickness();
                 otThickness.Right = AppWindow.TitleBar.RightInset;
@@ -395,39 +262,7 @@ namespace JustBedwars
             }
         }
 
-        private async void PreviousButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentSession != null)
-            {
-                await _currentSession.TrySkipPreviousAsync();
-            }
-        }
 
-        private async void PlayPauseButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentSession != null)
-            {
-                await _currentSession.TryTogglePlayPauseAsync();
-            }
-        }
-
-        private async void NextButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentSession != null)
-            {
-                await _currentSession.TrySkipNextAsync();
-            }
-        }
-
-        private void NavView_PaneOpening(NavigationView sender, object args)
-        {
-            LoadMediaPlayerSetting();
-        }
-
-        private void NavView_PaneClosing(NavigationView sender, NavigationViewPaneClosingEventArgs args)
-        {
-            LoadMediaPlayerSetting();
-        }
 
         bool TrySetAcrylicBackdrop()
         {
@@ -455,6 +290,10 @@ namespace JustBedwars
 
                 m_acrylicController = new DesktopAcrylicController();
 
+                m_acrylicController.TintColor = Microsoft.UI.Colors.Black;
+                m_acrylicController.TintOpacity = 0.4f;
+                m_acrylicController.LuminosityOpacity = 0f;
+
                 m_acrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
                 m_acrylicController.SetSystemBackdropConfiguration(m_configurationSource);
 
@@ -464,7 +303,7 @@ namespace JustBedwars
             return false;
         }
 
-        private void TitleBar_OnPaneToggleRequested(object? sender, RoutedEventArgs args)
+        private void TitleBar_OnPaneToggleRequested(TitleBar? sender, object args)
         {
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
         }

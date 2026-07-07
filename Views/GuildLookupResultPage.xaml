@@ -37,7 +37,8 @@
                           VerticalAlignment="Bottom"
                           HorizontalAlignment="Left"
                           Padding="16,12"
-                          Margin="8,0,0,8">
+                          Margin="8,0,0,8"
+                          x:Name="GuildTagGrid">
                         <TextBlock x:Name="GuildTagTextBlock" Text="TAG" FontSize="16" FontWeight="Medium"/>
                     </Grid>
                 </Grid>

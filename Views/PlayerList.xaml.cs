@@ -60,7 +60,8 @@ namespace JustBedwars.Views
                 Content = inputTextBox,
                 PrimaryButtonText = "Add",
                 CloseButtonText = "Cancel",
-                XamlRoot = this.XamlRoot
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style
             };
 
             var result = await dialog.ShowAsync();
@@ -152,7 +153,7 @@ namespace JustBedwars.Views
                             Losses = stats.Losses,
                             PlayerTag = stats.PlayerTag,
                             FirstLogin = stats.FirstLogin,
-                            IsLoading = false // Set to false as stats are loaded
+                            IsLoading = false
 
                         };
 
@@ -167,7 +168,6 @@ namespace JustBedwars.Views
                     else
                     {
                         // If stats are null, it could be a nick or an API error.
-                        // Let's retry.
                         DebugService.Instance.Log($"[PlayerList] No stats received for {username}. Initiating retry logic.");
                         RetryPlayerFetch(username, 1);
                     }
@@ -182,21 +182,21 @@ namespace JustBedwars.Views
             switch (attempt)
             {
                 case 1:
-                    delay = 3000; // 3 seconds
+                    delay = 3000;
                     break;
                 case 2:
-                    delay = 5000; // 5 seconds
+                    delay = 5000;
                     break;
                 case 3:
-                    delay = 10000; // 10 seconds
+                    delay = 10000;
                     break;
                 default:
                     // Max retries reached
                     var player = _players.FirstOrDefault(p => p.Username == username);
                     if (player != null)
                     {
-                        player.IsLoading = false; // Give up
-                        player.PlayerTag = "ERROR"; // Indicate error
+                        player.IsLoading = false;
+                        player.PlayerTag = "ERROR";
                     }
                     return;
             }
@@ -207,11 +207,9 @@ namespace JustBedwars.Views
             var existingPlayer = _players.FirstOrDefault(p => p.Username == username);
             if (existingPlayer == null)
             {
-                // Player left, no need to retry
                 return;
             }
 
-            // It's good practice to set IsLoading to true before fetching
             existingPlayer.IsLoading = true;
 
             var stats = await _hypixelApi.GetPlayerStats(username);
@@ -223,7 +221,6 @@ namespace JustBedwars.Views
                 {
                     if (stats != null)
                     {
-                        // Update player with stats, same logic as in OnPlayerJoined
                         var updatedPlayer = new Player
                         {
                             Username = stats.Username,
@@ -255,7 +252,6 @@ namespace JustBedwars.Views
                     }
                     else
                     {
-                        // Retry again
                         RetryPlayerFetch(username, attempt + 1);
                     }
                 }
@@ -297,28 +293,28 @@ namespace JustBedwars.Views
             {
                 case "Abyss Index":
                     sortedPlayers = _players
-                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.Star * p.FKDR * p.FKDR);
                     break;
                 case "FKDR":
                     sortedPlayers = _players
-                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.FKDR);
                     break;
                 case "WLR":
                     sortedPlayers = _players
-                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.WLR);
                     break;
                 case "Stars":
                     sortedPlayers = _players
-                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.Star);
                     break;
                 case "JustBedwars Score":
                 default:
                     sortedPlayers = _players
-                        .OrderBy(p => string.IsNullOrEmpty(p.PlayerTag))
+                        .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.Star * Math.Pow(p.FKDR, 2) * Math.Pow(p.WLR, 1.2) * Math.Pow(p.BBLR, 1.1) * (1 + p.Finals / 1000.0 + p.Kills / 2000.0 + p.Beds / 500.0 + p.Wins / 1000.0));
                     break;
             }
