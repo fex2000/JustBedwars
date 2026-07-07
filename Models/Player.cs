@@ -417,7 +417,15 @@ namespace JustBedwars.Models
         {
             get
             {
-                return new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{_username}/face"));
+                return new BitmapImage(new Uri($"https://skins.jbw.fexei.at/bust/{_username}"));
+            }
+        }
+
+        public BitmapImage PlayerImageIcon
+        {
+            get
+            {
+                return new BitmapImage(new Uri($"https://skins.jbw.fexei.at/face/{_username}"));
             }
         }
 

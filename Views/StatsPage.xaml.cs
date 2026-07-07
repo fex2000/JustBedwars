@@ -69,7 +69,7 @@ namespace JustBedwars.Views
                 {
                     HypixelLevelText.Text = $"Hypixel Level: {player.HypixelLevel}";
                     HypixelLevelProgress.Value = player.HypixelLevelProgress;
-                    BedwarsLevelText.Text = $"Bedwars Stars: {player.Star}";
+                    BedwarsLevelText.Text = $"Bedwars Level: {player.Star}";
                     BedwarsLevelProgress.Value = player.BedwarsLevelProgress;
                     ProgressBars.Visibility = Visibility.Visible;
                 }
@@ -94,7 +94,7 @@ namespace JustBedwars.Views
 
                 if (!string.IsNullOrEmpty(player.PlayerUUID))
                 {
-                    PlayerImage.Source = new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full"));
+                    PlayerImage.Source = new BitmapImage(new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}"));
                 }
                 else
                 {
@@ -153,7 +153,7 @@ namespace JustBedwars.Views
 
                 try
                 {
-                    var response = await _httpClient.GetStringAsync($"http://185.194.216.210:3000/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=name");
+                    var response = await _httpClient.GetStringAsync($"http://jbw.fexei.at/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=name");
                     var suggestions = JsonConvert.DeserializeObject<List<string>>(response);
                     sender.ItemsSource = suggestions;
                 }

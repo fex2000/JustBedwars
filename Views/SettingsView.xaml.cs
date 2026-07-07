@@ -14,7 +14,6 @@ namespace JustBedwars.Views
         private const string ApiKeySettingName = "HypixelApiKey";
         private const string LogFileSettingName = "LogFilePath";
         private const string PlayerSortingSettingName = "PlayerSorting";
-        private const string MediaPlayerSettingName = "ShowMediaPlayer";
         private const string SaveDebugLogsSettingName = "SaveDebugLogs";
         private const string EnableLogHistorySettingName = "EnableLogHistory";
         private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
@@ -34,7 +33,6 @@ namespace JustBedwars.Views
             LoadApiKey();
             LoadLogFilePath();
             LoadPlayerSorting();
-            LoadMediaPlayerSetting();
             LoadSaveDebugLogsSetting();
             LoadEnableLogHistorySetting();
             LoadEnableLogReaderLoggingSetting();
@@ -118,20 +116,6 @@ namespace JustBedwars.Views
             if (SortingComboBox.SelectedItem != null)
             {
                 _settingsService.SetValue(PlayerSortingSettingName, SortingComboBox.SelectedItem.ToString());
-            }
-        }
-
-        private void MediaPlayerToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            _settingsService.SetValue(MediaPlayerSettingName, MediaPlayerToggle.IsOn);
-        }
-
-        private void LoadMediaPlayerSetting()
-        {
-            var showMediaPlayer = _settingsService.GetValue(MediaPlayerSettingName);
-            if (showMediaPlayer != null)
-            {
-                MediaPlayerToggle.IsOn = (bool)showMediaPlayer;
             }
         }
 

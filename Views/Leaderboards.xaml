@@ -70,12 +70,14 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Rank}" Margin="0,0,12,0"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Name}" />
-                        <TextBlock Grid.Column="2" Text="{Binding Value}" />
+                        <Image Grid.Column="1" Source="{Binding PlayerImageIconUri}" Height="20" Width="20" Margin="8, 0"></Image>
+                        <TextBlock Grid.Column="2" Text="{Binding Name}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Value}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

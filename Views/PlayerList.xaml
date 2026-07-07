@@ -48,7 +48,7 @@
                 <TextBlock Text="KDR" Grid.Column="5" TextAlignment="Center"/>
                 <TextBlock Text="Finals" Grid.Column="6" TextAlignment="Center"/>
                 <TextBlock Text="Wins" Grid.Column="7" TextAlignment="Center"/>
-                <TextBlock Text="Stars" Grid.Column="8" TextAlignment="Center"/>
+                <TextBlock Text="Level" Grid.Column="8" TextAlignment="Center"/>
             </Grid>
         </Border>
         <!-- Players -->
@@ -72,7 +72,10 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="50"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{x:Bind Username}" Grid.Column="0" Visibility="{x:Bind IsContentVisible}" Foreground="{x:Bind Score, Converter={StaticResource UsernameColorConverter}}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Image Source="{x:Bind PlayerImageIcon}" Height="20" Width="20" ></Image>
+                                    <TextBlock Text="{x:Bind Username}" Foreground="{x:Bind Score, Converter={StaticResource UsernameColorConverter}}"/>
+                                </StackPanel>
                                 <TextBlock Text="{x:Bind PlayerTag}" Grid.Column="1" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center"/>
                                 <TextBlock Text="{x:Bind FKDR}" Grid.Column="2" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind FKDR, Converter={StaticResource FkdrColorConverter}}"/>
                                 <TextBlock Text="{x:Bind WLR}" Grid.Column="3" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind WLR, Converter={StaticResource WlrColorConverter}}"/>
@@ -81,7 +84,7 @@
                                 <TextBlock Text="{x:Bind Finals}" Grid.Column="6" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Finals, Converter={StaticResource FinalsColorConverter}}"/>
                                 <TextBlock Text="{x:Bind Wins}" Grid.Column="7" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Wins, Converter={StaticResource WinsColorConverter}}"/>
                                 <TextBlock Text="{x:Bind Star}" Grid.Column="8" Visibility="{x:Bind IsContentVisible}" TextAlignment="Center" Foreground="{x:Bind Star, Converter={StaticResource StarsColorConverter}}"/>
-                                <ProgressBar Grid.ColumnSpan="7" Grid.Column="3" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
+                                <ProgressBar Grid.ColumnSpan="7" Grid.Column="1" IsIndeterminate="True" Visibility="{x:Bind IsLoaderVisible}"/>
                             </Grid>
                         </Border>
                         <!-- Advanced -->
@@ -130,7 +133,7 @@
                                     <TextBlock Text="{x:Bind BedsLost}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Text="Stars" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                    <TextBlock Text="Level" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                                     <TextBlock Text="{x:Bind Star}" Foreground="{x:Bind Star, Converter={StaticResource StarsColorConverter}}"/>
                                     <TextBlock Text="First Login" FontWeight="SemiBold" FontSize="16" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                                     <TextBlock Text="{x:Bind FirstLoginDate}"/>

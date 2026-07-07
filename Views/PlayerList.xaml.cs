@@ -60,7 +60,8 @@ namespace JustBedwars.Views
                 Content = inputTextBox,
                 PrimaryButtonText = "Add",
                 CloseButtonText = "Cancel",
-                XamlRoot = this.XamlRoot
+                XamlRoot = this.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style
             };
 
             var result = await dialog.ShowAsync();

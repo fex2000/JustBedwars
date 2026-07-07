@@ -93,7 +93,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Grid.ColumnSpan="2" x:Name="Stars" Visibility="Collapsed" CornerRadius="4" Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}" Padding="10">
-                            <TextBlock x:Name="StarLabel" Text="Stars:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                            <TextBlock x:Name="StarLabel" Text="Level:" FontWeight="Bold" Visibility="Collapsed" FontSize="22" Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
                             <TextBlock x:Name="StarTextBlock" Visibility="Collapsed" FontSize="18" IsTextSelectionEnabled="True"/>
                         </StackPanel>
 
