@@ -27,11 +27,25 @@ namespace JustBedwars.Services
         private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
         private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
         private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
+        private static readonly MemoryCache _starlightCache = new MemoryCache("StarlightCache");
         private const int MaxConcurrentMojangLookups = 50;
 
         public void SetApiKey(string apiKey)
         {
             _apiKey = apiKey;
+        }
+
+        public async Task<bool> IsStarlightOnlineAsync()
+        {
+            string cacheKey = "StarlightStatus";
+            if (_starlightCache.Contains(cacheKey))
+            {
+                return (bool)_starlightCache.Get(cacheKey);
+            }
+            var result = await _httpClient.GetAsync("https://starlightskins.lunareclipse.studio/");
+            var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(10) };
+            _starlightCache.Add(cacheKey, result.IsSuccessStatusCode, policy);
+            return result.IsSuccessStatusCode;
         }
 
         public async Task<Guild?> GetGuildAsync(string query, string type)
@@ -46,11 +60,6 @@ namespace JustBedwars.Services
             await _apiSemaphore.WaitAsync();
             try
             {
-                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 10)
-                {
-                    await Task.Delay(10 - (int)_apiStopwatch.ElapsedMilliseconds);
-                }
-
                 string url = "";
                 string queryParam = "";
                 switch (type)

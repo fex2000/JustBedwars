@@ -1,5 +1,4 @@
 using System;
-using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace JustBedwars.Models
 {
@@ -14,7 +13,7 @@ namespace JustBedwars.Models
         {
             get
             {
-                return new Uri($"https://skins.jbw.fexei.at/face/{Name}");
+                return new Uri($"https://skins.jbw.fexei.at/face/{Uuid}");
             }
         }
     }
