@@ -94,10 +94,11 @@ namespace JustBedwars.Views
 
                 if (!string.IsNullOrEmpty(player.PlayerUUID))
                 {
-                    if (await _hypixelApi.IsStarlightOnlineAsync())
+                    PlayerImage.Source = new BitmapImage(new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}"));
+                    var response = await _httpClient
+                        .GetAsync($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full");
+                    if (response.IsSuccessStatusCode)
                         PlayerImage.Source = new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full"));
-                    else
-                        PlayerImage.Source = new BitmapImage(new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}"));
                 }
                 else
                 {

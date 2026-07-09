@@ -8,6 +8,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml.Hosting;
 
 namespace JustBedwars.Views
 {

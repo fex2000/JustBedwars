@@ -53,6 +53,11 @@
         </Border>
         <!-- Players -->
         <ListView x:Name="PlayersListView" Grid.Row="1" SelectionMode="None">
+            <ListView.ItemContainerTransitions>
+                <AddDeleteThemeTransition/>
+                <EntranceThemeTransition IsStaggeringEnabled="True"/>
+                <ContentThemeTransition/>
+            </ListView.ItemContainerTransitions>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:Player">
                     <Grid>

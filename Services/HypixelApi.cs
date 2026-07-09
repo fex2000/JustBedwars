@@ -27,25 +27,11 @@ namespace JustBedwars.Services
         private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
         private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
         private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
-        private static readonly MemoryCache _starlightCache = new MemoryCache("StarlightCache");
-        private const int MaxConcurrentMojangLookups = 50;
+        private const int MaxConcurrentMojangLookups = 100;
 
         public void SetApiKey(string apiKey)
         {
             _apiKey = apiKey;
-        }
-
-        public async Task<bool> IsStarlightOnlineAsync()
-        {
-            string cacheKey = "StarlightStatus";
-            if (_starlightCache.Contains(cacheKey))
-            {
-                return (bool)_starlightCache.Get(cacheKey);
-            }
-            var result = await _httpClient.GetAsync("https://starlightskins.lunareclipse.studio/");
-            var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(10) };
-            _starlightCache.Add(cacheKey, result.IsSuccessStatusCode, policy);
-            return result.IsSuccessStatusCode;
         }
 
         public async Task<Guild?> GetGuildAsync(string query, string type)
@@ -57,7 +43,6 @@ namespace JustBedwars.Services
                 return (Guild)_guildCache.Get(cacheKey);
             }
 
-            await _apiSemaphore.WaitAsync();
             try
             {
                 string url = "";
@@ -94,8 +79,6 @@ namespace JustBedwars.Services
                 DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
 
                 var response = await _httpClient.GetStringAsync(url);
-
-                _apiStopwatch.Restart();
 
                 DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
                 var json = JObject.Parse(response);
@@ -155,10 +138,6 @@ namespace JustBedwars.Services
             {
                 DebugService.Instance.Log($"[HypixelApi] An error occurred: {ex.Message}");
                 return null;
-            }
-            finally
-            {
-                _apiSemaphore.Release();
             }
         }
 

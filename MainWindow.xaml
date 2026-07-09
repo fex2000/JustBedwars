@@ -17,13 +17,16 @@
         <MicaBackdrop Kind="Base"/>
     </Window.SystemBackdrop>
     <Window.Content>
-        <Page>
-            <Grid>
+        <Page
+            PointerEntered="OnPointerEntered"
+            PointerExited="OnPointerExited">
+            <Grid x:Name="TitleBarItems">
                 <!-- App Title -->
                 <TitleBar x:Name="TitleBar"
                           VerticalAlignment="Top"
                           Title="JustBedwars"
                           Subtitle="App"
+                          Canvas.ZIndex="1"
                           IsPaneToggleButtonVisible="True"
                           PaneToggleRequested="TitleBar_OnPaneToggleRequested">
                     <animations:Implicit.ShowAnimations>
