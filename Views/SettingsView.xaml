@@ -33,19 +33,6 @@
                 </toolkit:SettingsCard.HeaderIcon>
             </toolkit:SettingsCard>
 
-            <!-- Auto-Adding -->
-            <toolkit:SettingsExpander Header="Auto player adding" Description="Select which Events add or remove players" IsEnabled="False">
-                <toolkit:SettingsExpander.Items>
-                    <toolkit:SettingsCard>
-
-                    </toolkit:SettingsCard>
-                </toolkit:SettingsExpander.Items>
-                <toolkit:SettingsExpander.HeaderIcon>
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9F5;"/>
-                </toolkit:SettingsExpander.HeaderIcon>
-                <TextBlock Text="Coming soon™️"/>
-            </toolkit:SettingsExpander>
-
             <!-- Log -->
             <toolkit:SettingsCard Header="Log Location"
                               Description="Set to your .minecraft/logs/latest.log location to use">
@@ -91,6 +78,39 @@
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE946;"/>
                 </toolkit:SettingsExpander.HeaderIcon>
             </toolkit:SettingsExpander>
+
+            <toolkit:SettingsExpander Header="Usage Statistics" Description="Send usage info for diagnostics">
+                <ToggleSwitch></ToggleSwitch>
+                <toolkit:SettingsExpander.HeaderIcon>
+                    <FontIcon Glyph="&#xE9D9;" />
+                </toolkit:SettingsExpander.HeaderIcon>
+                <toolkit:SettingsExpander.Items>
+                    <toolkit:SettingsCard HorizontalContentAlignment="Left"
+                                          ContentAlignment="Left">
+                        <StackPanel Margin="12,0,0,0"
+                                    Orientation="Vertical">
+                            <TextBlock Text="Saved Information" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock>- Windows Version</TextBlock>
+                            <TextBlock>- App Version</TextBlock>
+                            <TextBlock>- Timestamp</TextBlock>
+                            <TextBlock>- App Build Type</TextBlock>
+                            <TextBlock>- Session Duration</TextBlock>
+                            <TextBlock>- Source Country/City (From IP)</TextBlock>
+                            <TextBlock>- Sent Events</TextBlock>
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                    <toolkit:SettingsCard HorizontalContentAlignment="Left"
+                                          ContentAlignment="Left">
+                        <StackPanel Margin="12,0,0,0"
+                                    Orientation="Vertical">
+                            <TextBlock Text="Events that send a message" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock>- App gets launched</TextBlock>
+                            <TextBlock>- An unhandled exception occurs</TextBlock>
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                </toolkit:SettingsExpander.Items>
+            </toolkit:SettingsExpander>
+
             <toolkit:SettingsExpander Header="Developer Settings" Description="Additional Setting primarily made for Development">
                 <toolkit:SettingsExpander.Items>
                     <toolkit:SettingsCard Header="Debug Utilities">
@@ -111,6 +131,7 @@
                     <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE9F5;"/>
                 </toolkit:SettingsExpander.HeaderIcon>
             </toolkit:SettingsExpander>
+
             <toolkit:SettingsExpander Header="Save Logs" Description="Save the latest application log, can be helpful for catching application issues.">
                 <StackPanel Orientation="Horizontal" Spacing="16">
                     <ToggleSwitch x:Name="SaveDebugLogsToggle" Toggled="SaveDebugLogsToggle_Toggled"/>

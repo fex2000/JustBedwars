@@ -39,7 +39,7 @@ namespace JustBedwars.Services
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., no internet connection, API rate limit)
+                // Handle exceptions
                 DebugService.Instance.Log($"[UpdateService] Error checking for updates: {ex.Message}");
             }
         }

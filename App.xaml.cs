@@ -2,6 +2,7 @@ using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO;
+using AptabaseClient = JustBedwars.Services.AptabaseClient;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,6 +17,7 @@ namespace JustBedwars
         private static Window? _window;
         public static Window? Window { get { return _window; } }
         private readonly SettingsService _settingsService;
+        public AptabaseClient AptabaseClient;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -25,7 +27,10 @@ namespace JustBedwars
         {
             InitializeComponent();
             _settingsService = new SettingsService();
+            AptabaseClient = new AptabaseClient("https://stat.fexei.at", "A-SH-5040461685");
             this.UnhandledException += App_UnhandledException;
+
+            _ = AptabaseClient.TrackEvent("AppLaunch");
 
             // Ensure file logging is enabled if the setting is on
             var saveDebugLogs = _settingsService.GetValue("SaveDebugLogs") as bool? ?? true;
@@ -41,7 +46,8 @@ namespace JustBedwars
         private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             DebugService.Instance.Log($"[UnhandledException] {e.Exception}");
-            e.Handled = true; // Optional: Mark the exception as handled
+            _ = AptabaseClient.TrackEvent("UnhandledException", e.Exception);
+            e.Handled = true;
         }
 
         /// <summary>
