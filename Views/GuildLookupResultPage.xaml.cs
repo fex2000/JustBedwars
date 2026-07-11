@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
+using Microsoft.Web.WebView2.Core;
 
 namespace JustBedwars.Views
 {
@@ -23,6 +24,7 @@ namespace JustBedwars.Views
         private string _type;
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
+        private readonly AptabaseClient _aptabaseClient;
         private Guild guild;
 
         public GuildLookupResultPage()
@@ -30,6 +32,8 @@ namespace JustBedwars.Views
             InitializeComponent();
             _hypixelApi = new HypixelApi();
             _settingsService = new SettingsService();
+            var instance = (App)Application.Current;
+            _aptabaseClient = instance.AptabaseClient;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -103,6 +107,13 @@ namespace JustBedwars.Views
                 SelectorBar.Visibility = Visibility.Visible;
                 TopBar.Visibility = Visibility.Visible;
                 InfoView.Visibility = Visibility.Visible;
+
+                var trackProps = new
+                {
+                    Name = guild.Name,
+                };
+
+                _ = _aptabaseClient.TrackEvent("GuildLookup", trackProps);
             }
             else
             {

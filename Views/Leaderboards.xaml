@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:media="using:CommunityToolkit.WinUI.Media"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
 
@@ -16,43 +17,43 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="6">
-            <Grid ColumnSpacing="16">
+            <Grid ColumnSpacing="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                
-
-                <controls:Segmented x:Name="TimeFilterSelector"
-                                    SelectionChanged="TimeFilterSelector_SelectionChanged"
-                                    Visibility="Collapsed"
-                                    SelectedIndex="0"
-                                    Grid.Column="1">
-                    <controls:SegmentedItem Content="Weekly"/>
-                    <controls:SegmentedItem Content="Lifetime"/>
-
-                    <animations:Implicit.ShowAnimations>
-                        <animations:ScaleAnimation Duration="0:0:0.5" From="0.9" To="1"/>
-                        <animations:TranslationAnimation Duration="0:0:0.5" From="-24,1,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:ScaleAnimation Duration="0:0:0.5" From="1" To="0.9"/>
-                        <animations:TranslationAnimation Duration="0:0:0.5" From="0" To="-24,1,0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.5" From="1" To="0"/>
-                    </animations:Implicit.HideAnimations>
-                </controls:Segmented>
-
                 <controls:Segmented SelectedIndex="0"
+                                    Canvas.ZIndex="1"
                                     SelectionChanged="LeaderboardSelector_SelectionChanged"
                                     x:Name="LeaderboardSelector"
                                     Grid.Column="0">
-                    <controls:SegmentedItem Content="Stars"/>
+                    <controls:SegmentedItem Content="Level" Width="100"/>
                     <controls:SegmentedItem Content="Wins"/>
                     <controls:SegmentedItem Content="Finals"/>
                 </controls:Segmented>
+
+                <Grid Grid.Column="1">
+                    <Grid.Clip>
+                        <RectangleGeometry Rect="0,0,205,50"/>
+                    </Grid.Clip>
+                    <controls:Segmented x:Name="TimeFilterSelector"
+                                        SelectionChanged="TimeFilterSelector_SelectionChanged"
+                                        Visibility="Collapsed"
+                                        Margin="4,0,0,0"
+                                        SelectedIndex="0">
+                        <controls:SegmentedItem Content="Weekly" Width="100"/>
+                        <controls:SegmentedItem Content="Lifetime"/>
+
+                        <animations:Implicit.ShowAnimations>
+                            <animations:TranslationAnimation Duration="0:0:0.5" From="-206,1,0" To="0"/>
+                        </animations:Implicit.ShowAnimations>
+                        <animations:Implicit.HideAnimations>
+                            <animations:TranslationAnimation Duration="0:0:0.5" From="0" To="-206,1,-1"/>
+                        </animations:Implicit.HideAnimations>
+                    </controls:Segmented>
+                </Grid>
 
                 <TextBlock Grid.Column="2"
                            HorizontalAlignment="Right"
@@ -67,17 +68,36 @@
         <ListView x:Name="LeaderboardList" Grid.Row="1" IsItemClickEnabled="True" ItemClick="LeaderboardList_ItemClick">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Padding="4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Rank}" Margin="0,0,12,0"/>
-                        <Image Grid.Column="1" Source="{Binding PlayerImageIconUri}" Height="20" Width="20" Margin="8, 0"></Image>
-                        <TextBlock Grid.Column="2" Text="{Binding Name}" />
-                        <TextBlock Grid.Column="3" Text="{Binding Value}" />
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding Rank}"
+                                   Margin="0,0,12,0"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        <labs:Shimmer Grid.Column="1"
+                                      Height="40"
+                                      Width="40"
+                                      HorizontalAlignment="Left"/>
+                        <Image Grid.Column="1"
+                               Source="{Binding PlayerImageIconUri}"
+                               Height="40"
+                               Width="40"
+                               Margin="0,0,16, 0">
+                        </Image>
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Name}"
+                                   VerticalAlignment="Center"
+                                   FontSize="16"/>
+                        <TextBlock Grid.Column="3"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Value}" />
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

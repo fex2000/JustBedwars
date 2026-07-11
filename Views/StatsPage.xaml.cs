@@ -15,6 +15,7 @@ namespace JustBedwars.Views
     {
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
+        private readonly AptabaseClient _aptabaseClient;
         private readonly HttpClient _httpClient;
         private const string ApiKeySettingName = "HypixelApiKey";
 
@@ -25,6 +26,9 @@ namespace JustBedwars.Views
             _settingsService = new SettingsService();
             _httpClient = new HttpClient();
             LoadApiKey();
+
+            var instance = (App)Application.Current;
+            _aptabaseClient = instance.AptabaseClient;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -47,6 +51,13 @@ namespace JustBedwars.Views
 
         public async void LoadPlayerStats(string username)
         {
+            var props = new
+            {
+                username = username,
+                source = "SearchPage"
+            };
+            _ = _aptabaseClient.TrackEvent("PlayerSearched", props);
+
             if (string.IsNullOrWhiteSpace(username))
             {
                 return;
@@ -95,6 +106,10 @@ namespace JustBedwars.Views
                 if (!string.IsNullOrEmpty(player.PlayerUUID))
                 {
                     PlayerImage.Source = new BitmapImage(new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}"));
+                    var response = await _httpClient
+                        .GetAsync($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full");
+                    if (response.IsSuccessStatusCode)
+                        PlayerImage.Source = new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full"));
                 }
                 else
                 {
@@ -167,7 +182,7 @@ namespace JustBedwars.Views
         private void UsernameAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             sender.Text = args.SelectedItem.ToString();
-            LoadPlayerStats(sender.Text);
+            // LoadPlayerStats(sender.Text);
         }
 
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)

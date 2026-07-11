@@ -27,7 +27,7 @@ namespace JustBedwars.Services
         private static readonly MemoryCache _leaderboardCache = new MemoryCache("LeaderboardCache");
         private static readonly MemoryCache _uuidCache = new MemoryCache("UuidCache");
         private static readonly MemoryCache _guildCache = new MemoryCache("GuildCache");
-        private const int MaxConcurrentMojangLookups = 50;
+        private const int MaxConcurrentMojangLookups = 100;
 
         public void SetApiKey(string apiKey)
         {
@@ -43,14 +43,8 @@ namespace JustBedwars.Services
                 return (Guild)_guildCache.Get(cacheKey);
             }
 
-            await _apiSemaphore.WaitAsync();
             try
             {
-                if (_apiStopwatch.IsRunning && _apiStopwatch.ElapsedMilliseconds < 10)
-                {
-                    await Task.Delay(10 - (int)_apiStopwatch.ElapsedMilliseconds);
-                }
-
                 string url = "";
                 string queryParam = "";
                 switch (type)
@@ -85,8 +79,6 @@ namespace JustBedwars.Services
                 DebugService.Instance.Log($"[HypixelApi] Requesting: {url}");
 
                 var response = await _httpClient.GetStringAsync(url);
-
-                _apiStopwatch.Restart();
 
                 DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
                 var json = JObject.Parse(response);
@@ -146,10 +138,6 @@ namespace JustBedwars.Services
             {
                 DebugService.Instance.Log($"[HypixelApi] An error occurred: {ex.Message}");
                 return null;
-            }
-            finally
-            {
-                _apiSemaphore.Release();
             }
         }
 

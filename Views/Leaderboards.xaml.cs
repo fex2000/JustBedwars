@@ -8,6 +8,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Xaml.Hosting;
 
 namespace JustBedwars.Views
 {
@@ -15,6 +17,7 @@ namespace JustBedwars.Views
     {
         private string _selectedLeaderboard = "Stars";
         private string _selectedTimeFilter = "Weekly";
+        private readonly AptabaseClient _aptabaseClient;
         private Dictionary<string, List<LeaderboardEntry>> _fullLeaderboardCache = new Dictionary<string, List<LeaderboardEntry>>();
         private Dictionary<string, ObservableCollection<LeaderboardEntry>> _leaderboardDataCache = new Dictionary<string, ObservableCollection<LeaderboardEntry>>();
 
@@ -22,6 +25,9 @@ namespace JustBedwars.Views
         {
             this.InitializeComponent();
             this.Loaded += LeaderboardsPage_Loaded;
+
+            var instance = (App)Application.Current;
+            _aptabaseClient = instance.AptabaseClient;
         }
 
         private void LeaderboardsPage_Loaded(object sender, RoutedEventArgs e)
@@ -80,6 +86,13 @@ namespace JustBedwars.Views
 
         private void SwitchLeaderboard()
         {
+            var props = new
+            {
+                Board = _selectedLeaderboard,
+                Filter = _selectedTimeFilter
+            };
+            _ = _aptabaseClient.TrackEvent("OpenLeaderbaord", props);
+
             string cacheKey = $"{_selectedLeaderboard}_{_selectedTimeFilter}";
             if (_leaderboardDataCache.ContainsKey(cacheKey))
             {

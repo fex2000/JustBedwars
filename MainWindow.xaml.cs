@@ -23,8 +23,10 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-
+using Windows.Graphics;
 using Windows.UI.ApplicationSettings;
+using DevWinUI;
+using Microsoft.UI;
 using WinRT;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -37,12 +39,23 @@ namespace JustBedwars
         OverlappedPresenter presenter = OverlappedPresenter.Create();
         private readonly SettingsService _settingsService;
 
+        private AptabaseClient _aptabaseClient;
 
         WindowsSystemDispatcherQueueHelper m_wsdqHelper;
         DesktopAcrylicController m_acrylicController;
         SystemBackdropConfiguration m_configurationSource;
 
-        public MainWindow(Services.SettingsService settingsService)
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT lpPoint);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
+        public MainWindow(SettingsService settingsService, AptabaseClient aptabaseClient)
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
@@ -52,8 +65,16 @@ namespace JustBedwars
             AppWindow.SetPresenter(presenter);
             _ = UpdateService.CheckForUpdates();
 
+            _aptabaseClient = aptabaseClient;
             _settingsService = settingsService;
 
+            AppWindow.Closing += AppWindowOnClosing;
+        }
+
+        private void AppWindowOnClosing(AppWindow sender, AppWindowClosingEventArgs args)
+        {
+            _ = _aptabaseClient.TrackEvent("AppClosing");
+            args.Cancel = false;
         }
 
         public void OpenStatsPage(string username)
@@ -69,9 +90,6 @@ namespace JustBedwars
             this.Activate();
         }
 
-
-
-        private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
         public bool isOnTop;
         private Type preTopPage;
@@ -165,8 +183,6 @@ namespace JustBedwars
 
         private void On_Navigated(object sender, NavigationEventArgs e)
         {
-            // BackButton.IsEnabled = ContentFrame.CanGoBack;
-
             if (ContentFrame.SourcePageType == typeof(Views.SettingsView))
             {
                 // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
@@ -185,11 +201,11 @@ namespace JustBedwars
                 }
             }
         }
-
-        private void AlwaysOnTopButton_Click(object sender, RoutedEventArgs e)
+        private async void AlwaysOnTopButton_Click(object sender, RoutedEventArgs e)
         {
             if (isOnTop == false)
             {
+                WindowHelper.HideWindow(this);
                 isOnTop = true;
                 OverlappedPresenter alwaysontop = OverlappedPresenter.Create();
                 alwaysontop.IsAlwaysOnTop = true;
@@ -201,8 +217,8 @@ namespace JustBedwars
                 alwaysontop.PreferredMinimumWidth = 550;
                 alwaysontop.SetBorderAndTitleBar(true, true);
                 AppWindow.SetPresenter(alwaysontop);
-                alwaysontop.Restore();
                 AppWindow.Resize(new Windows.Graphics.SizeInt32(800, 500));
+                AppWindow.Move(new PointInt32(DisplayArea.Primary.WorkArea.Width - 812, 12));
 
                 Thickness otThickness = new Thickness();
                 otThickness.Right = AppWindow.TitleBar.RightInset;
@@ -222,22 +238,29 @@ namespace JustBedwars
                 NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
                 Thickness margin = NavView.Margin;
                 margin.Top = 0;
+                margin.Bottom = -32;
                 NavView.Margin = margin;
                 NavView.Header = null;
-                Thickness padding = ContentFrame.Margin;
                 margin.Top = 24;
+                margin.Bottom = 0;
                 ContentFrame.Margin = margin;
                 TitleBar.Subtitle = "Overlay";
                 TitleBar.IsPaneToggleButtonVisible = false;
+                SetAlwaysOnTopTitleBarVisible(false);
+
+                await Task.Delay(150);
+                WindowHelper.ShowWindow(this);
+                WindowHelper.SetForegroundWindow(this);
             }
             else
             {
                 isOnTop = false;
                 AppWindow.SetPresenter(presenter);
-                NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
                 presenter.Restore();
+                NavView.PaneDisplayMode = NavigationViewPaneDisplayMode.Auto;
                 Thickness margin = NavView.Margin;
                 margin.Top = 32;
+                margin.Bottom = 0;
                 NavView.Margin = margin;
                 Thickness padding = ContentFrame.Margin;
                 margin.Top = 0;
@@ -259,6 +282,7 @@ namespace JustBedwars
                 Thickness otThickness = new Thickness();
                 otThickness.Right = AppWindow.TitleBar.RightInset;
                 AlwaysOnTopButton.Margin = otThickness;
+                SetAlwaysOnTopTitleBarVisible(true);
             }
         }
 
@@ -306,6 +330,82 @@ namespace JustBedwars
         private void TitleBar_OnPaneToggleRequested(TitleBar? sender, object args)
         {
             NavView.IsPaneOpen = !NavView.IsPaneOpen;
+        }
+
+        public bool IsCursorInsideWindow()
+        {
+            if (!GetCursorPos(out POINT pointerPosition))
+                return false;
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            var winX = appWindow.Position.X;
+            var winY = appWindow.Position.Y;
+            var winWidth = appWindow.Size.Width;
+            var winHeight = appWindow.Size.Height;
+
+            return pointerPosition.X >= winX && pointerPosition.X <= (winX + winWidth) &&
+                   pointerPosition.Y >= winY && pointerPosition.Y <= (winY + winHeight);
+        }
+
+        private async void CheckCursorInWindow()
+        {
+            await Task.Delay(5);
+            SetAlwaysOnTopTitleBarVisible(IsCursorInsideWindow());
+            
+        }
+
+        private void OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (isOnTop)
+                CheckCursorInWindow();
+        }
+
+        private void OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (isOnTop)
+                CheckCursorInWindow();
+        }
+
+        private void SetAlwaysOnTopTitleBarVisible(bool visible)
+        {
+            var tempPresenter = AppWindow.Presenter as OverlappedPresenter;
+            var titleVisual = ElementCompositionPreview.GetElementVisual(TitleBar);
+            var titleCompositor = titleVisual.Compositor;
+
+            var contentVisual = ElementCompositionPreview.GetElementVisual(NavView);
+            var contentCompositor = contentVisual.Compositor;
+
+            var buttonVisual = ElementCompositionPreview.GetElementVisual(AlwaysOnTopButton);
+            var buttonCompositor = buttonVisual.Compositor;
+
+            var titleAnimation = titleCompositor.CreateVector3KeyFrameAnimation();
+            var contentAnimation = contentCompositor.CreateVector3KeyFrameAnimation();
+            var buttonAnimation = contentCompositor.CreateVector3KeyFrameAnimation();
+            titleAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+            contentAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+            if (visible)
+            {
+                titleAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
+                contentAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
+                buttonAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
+                tempPresenter.SetBorderAndTitleBar(true, true);
+            }
+            else
+            {
+                titleAnimation.InsertKeyFrame(1, new Vector3(0f, -32f, 0f));
+                contentAnimation.InsertKeyFrame(1, new Vector3(0f, -28f, 0f));
+                buttonAnimation.InsertKeyFrame(1, new Vector3(0f, -32f, 0f));
+                tempPresenter.SetBorderAndTitleBar(true, false);
+            }
+
+            AppWindow.SetPresenter(tempPresenter);
+
+            titleVisual.StartAnimation("Translation", titleAnimation);
+            contentVisual.StartAnimation("Translation", contentAnimation);
+            buttonVisual.StartAnimation("Translation", buttonAnimation);
         }
     }
 

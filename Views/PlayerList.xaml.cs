@@ -18,6 +18,7 @@ namespace JustBedwars.Views
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
         private readonly ObservableCollection<Player> _players = new ObservableCollection<Player>();
+        private readonly AptabaseClient _aptabaseClient;
         private const string ApiKeySettingName = "HypixelApiKey";
         private const string LogFileSettingName = "LogFilePath";
 
@@ -32,6 +33,9 @@ namespace JustBedwars.Views
 
             PlayersListView.ItemsSource = _players;
             Unloaded += PlayerList_Unloaded;
+
+            var instance = (App)Application.Current;
+            _aptabaseClient = instance.AptabaseClient;
         }
 
         private void PlayerList_Unloaded(object sender, RoutedEventArgs e)
@@ -115,6 +119,13 @@ namespace JustBedwars.Views
 
         public async void OnPlayerJoined(string username)
         {
+            var props = new
+            {
+                username = username,
+                source = "PlayerList"
+            };
+            _ = _aptabaseClient.TrackEvent("PlayerSearched", props);
+
             if (_players.Any(p => p.Username == username))
             {
                 return;

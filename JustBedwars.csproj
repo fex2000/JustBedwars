@@ -14,9 +14,9 @@
     <Nullable>enable</Nullable>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
-    <Version>1.7.1</Version>
-    <AssemblyVersion>1.7.1.0</AssemblyVersion>
-    <FileVersion>1.7.1.0</FileVersion>
+    <Version>1.7.2</Version>
+    <AssemblyVersion>1.7.2.0</AssemblyVersion>
+    <FileVersion>1.7.2.0</FileVersion>
   </PropertyGroup>
   <!-- Pages -->
   <ItemGroup>
@@ -24,6 +24,7 @@
     <None Remove="Views\PlayerList.xaml" />
     <None Remove="Views\SettingsView.xaml" />
     <None Remove="Views\StatsPage.xaml" />
+    <None Remove="Views\WelcomeWindow.xaml" />
   </ItemGroup>
   <!-- Images -->
   <ItemGroup>
@@ -65,6 +66,11 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Runtime.Caching" Version="10.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\WelcomeWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\GuildLookupPage.xaml">
