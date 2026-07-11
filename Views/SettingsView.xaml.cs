@@ -36,6 +36,7 @@ namespace JustBedwars.Views
             LoadSaveDebugLogsSetting();
             LoadEnableLogHistorySetting();
             LoadEnableLogReaderLoggingSetting();
+            LoadUsageSetting();
         }
 
         private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
@@ -170,6 +171,23 @@ namespace JustBedwars.Views
         {
             var enableLogReaderLogging = _settingsService.GetValue(EnableLogReaderLoggingSettingName);
             EnableLogReaderLoggingToggle.IsOn = enableLogReaderLogging as bool? ?? true;
+        }
+
+        private void ResetWelcomeStateButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _settingsService.SetValue("FirstLaunch", true);
+        }
+
+        private void LoadUsageSetting()
+        {
+            UsageToggleSwitch.IsOn = _settingsService.GetValue("SendUsageStats") as bool? ?? false;
+        }
+
+
+        private void UsageToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
+        {
+            var isOn = ((ToggleSwitch)sender).IsOn;
+            _settingsService.SetValue("SendUsageStats", isOn);
         }
     }
 }

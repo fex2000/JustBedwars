@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Newtonsoft.Json.Linq;
 using JustBedwars.Services;
 using DevWinUI;
+using Microsoft.UI.Xaml;
 
 namespace JustBedwars.Services
 {
@@ -39,13 +40,15 @@ namespace JustBedwars.Services
             }
             catch (Exception ex)
             {
-                // Handle exceptions
                 DebugService.Instance.Log($"[UpdateService] Error checking for updates: {ex.Message}");
             }
         }
 
         private static async Task ShowUpdateDialog()
         {
+            var instance = (App)Application.Current;
+            var aptabaseClient = instance.AptabaseClient;
+
             var infoText = new TextBlock
             {
                 Text = "Please update to the newest version for the best experience. Updates may be required because of Backend changes.",
@@ -89,6 +92,8 @@ namespace JustBedwars.Services
                     downloadButton.IsEnabled = false;
                     downloadButton.Progress = 0;
                     downloadButton.IsIndeterminate = true;
+
+                    _ = aptabaseClient.TrackEvent("UpdateDownloading");
 
                     try
                     {
@@ -149,7 +154,10 @@ namespace JustBedwars.Services
                     }
                 };
 
-                await updateDialog.ShowAsync();
+                var result = await updateDialog.ShowAsync();
+
+                if (result == ContentDialogResult.None)
+                    _ = aptabaseClient.TrackEvent("UpdateDismissed");
             }
         }
     }

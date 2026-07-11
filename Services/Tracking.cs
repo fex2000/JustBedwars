@@ -10,10 +10,12 @@ namespace JustBedwars.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _sessionId;
+        private readonly SettingsService _settingsService;
 
-        public AptabaseClient(string hostUrl, string appKey)
+        public AptabaseClient(string hostUrl, string appKey, SettingsService settingsService)
         {
             _sessionId = Guid.NewGuid().ToString().ToLowerInvariant();
+            _settingsService = settingsService;
 
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(hostUrl.TrimEnd('/') + "/api/v0/events");
@@ -23,6 +25,11 @@ namespace JustBedwars.Services
 
         public async Task TrackEvent(string eventName, object props = null)
         {
+            if (!(_settingsService.GetValue("SendUsageStats") as bool? ?? false))
+            {
+                DebugService.Instance.Log($"[Tracking] Skipped event {eventName} due to disabled usage statistics");
+                return;
+            }
             DebugService.Instance.Log($"[Tracking] Sent event {eventName} to {_httpClient.BaseAddress}");
             var eventData = new
             {
@@ -50,7 +57,6 @@ namespace JustBedwars.Services
             try
             {
                 var result = await _httpClient.PostAsJsonAsync("", payload);
-                DebugService.Instance.Log($"[Tracking] Got API Response {result}");
             }
             catch
             {

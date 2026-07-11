@@ -39,6 +39,7 @@ namespace JustBedwars
         OverlappedPresenter presenter = OverlappedPresenter.Create();
         private readonly SettingsService _settingsService;
 
+        private AptabaseClient _aptabaseClient;
 
         WindowsSystemDispatcherQueueHelper m_wsdqHelper;
         DesktopAcrylicController m_acrylicController;
@@ -54,7 +55,7 @@ namespace JustBedwars
             public int Y;
         }
 
-        public MainWindow(Services.SettingsService settingsService)
+        public MainWindow(SettingsService settingsService, AptabaseClient aptabaseClient)
         {
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
@@ -64,7 +65,16 @@ namespace JustBedwars
             AppWindow.SetPresenter(presenter);
             _ = UpdateService.CheckForUpdates();
 
+            _aptabaseClient = aptabaseClient;
             _settingsService = settingsService;
+
+            AppWindow.Closing += AppWindowOnClosing;
+        }
+
+        private void AppWindowOnClosing(AppWindow sender, AppWindowClosingEventArgs args)
+        {
+            _ = _aptabaseClient.TrackEvent("AppClosing");
+            args.Cancel = false;
         }
 
         public void OpenStatsPage(string username)
@@ -80,9 +90,6 @@ namespace JustBedwars
             this.Activate();
         }
 
-
-
-        private double NavViewCompactModeThresholdWidth { get { return NavView.CompactModeThresholdWidth; } }
 
         public bool isOnTop;
         private Type preTopPage;
@@ -176,8 +183,6 @@ namespace JustBedwars
 
         private void On_Navigated(object sender, NavigationEventArgs e)
         {
-            // BackButton.IsEnabled = ContentFrame.CanGoBack;
-
             if (ContentFrame.SourcePageType == typeof(Views.SettingsView))
             {
                 // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
@@ -329,22 +334,18 @@ namespace JustBedwars
 
         public bool IsCursorInsideWindow()
         {
-            // 1. Globale Mausposition abfragen
             if (!GetCursorPos(out POINT pointerPosition))
                 return false;
 
-            // 2. WinUI 3 AppWindow holen, um Fenstergröße/-position zu bekommen
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
 
-            // 3. Rechteck des Fensters definieren
             var winX = appWindow.Position.X;
             var winY = appWindow.Position.Y;
             var winWidth = appWindow.Size.Width;
             var winHeight = appWindow.Size.Height;
 
-            // 4. Prüfen, ob sich der Cursor innerhalb dieses Rechtecks befindet
             return pointerPosition.X >= winX && pointerPosition.X <= (winX + winWidth) &&
                    pointerPosition.Y >= winY && pointerPosition.Y <= (winY + winHeight);
         }

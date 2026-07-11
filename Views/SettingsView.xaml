@@ -80,7 +80,7 @@
             </toolkit:SettingsExpander>
 
             <toolkit:SettingsExpander Header="Usage Statistics" Description="Send usage info for diagnostics">
-                <ToggleSwitch></ToggleSwitch>
+                <ToggleSwitch x:Name="UsageToggleSwitch" Toggled="UsageToggleSwitch_OnToggled"/>
                 <toolkit:SettingsExpander.HeaderIcon>
                     <FontIcon Glyph="&#xE9D9;" />
                 </toolkit:SettingsExpander.HeaderIcon>
@@ -106,6 +106,24 @@
                             <TextBlock Text="Events that send a message" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
                             <TextBlock>- App gets launched</TextBlock>
                             <TextBlock>- An unhandled exception occurs</TextBlock>
+                            <TextBlock>- App gets closed</TextBlock>
+                            <TextBlock>- Setup is Finished</TextBlock>
+                            <TextBlock>- Guild is Searched</TextBlock>
+                            <TextBlock>- Update is Skipped or Installed</TextBlock>
+                            <TextBlock>- A player is looked up</TextBlock>
+                            <TextBlock>- Leaderboards are opened</TextBlock>
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                    <toolkit:SettingsCard HorizontalContentAlignment="Left"
+                                          ContentAlignment="Left">
+                        <StackPanel Margin="12,0,0,0"
+                                    Orientation="Vertical">
+                            <TextBlock Text="How does this data get used?" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock>Events: To see which areas need improvement</TextBlock>
+                            <TextBlock>OS Version: To see what the minimum Versions that need to be built to are</TextBlock>
+                            <TextBlock>App Version: To see who is too lazy to update</TextBlock>
+                            <TextBlock>Session Duration, Timestamp, Events: To see how activly the app is used</TextBlock>
+                            <TextBlock>Source Country: To see which languages would be good to localize to</TextBlock>
                         </StackPanel>
                     </toolkit:SettingsCard>
                 </toolkit:SettingsExpander.Items>
@@ -124,6 +142,13 @@
                         <PasswordBox x:Name="ApiKeyPasswordBox" PasswordChanged="ApiKeyPasswordBox_PasswordChanged" IsPasswordRevealButtonEnabled="True"/>
                         <toolkit:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D7;"/>
+                        </toolkit:SettingsCard.HeaderIcon>
+                    </toolkit:SettingsCard>
+                    <toolkit:SettingsCard Header="Reset welcome screen state"
+                                          Description="Show welcome window again on next app launch">
+                        <Button Content="Reset" Click="ResetWelcomeStateButton_OnClick"/>
+                        <toolkit:SettingsCard.HeaderIcon>
+                            <FontIcon Glyph="&#xE81C;" />
                         </toolkit:SettingsCard.HeaderIcon>
                     </toolkit:SettingsCard>
                 </toolkit:SettingsExpander.Items>

@@ -2,7 +2,9 @@ using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using System;
 using System.IO;
-using AptabaseClient = JustBedwars.Services.AptabaseClient;
+using System.Threading.Tasks;
+using JustBedwars.Views;
+using JustBedwars.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,10 +29,8 @@ namespace JustBedwars
         {
             InitializeComponent();
             _settingsService = new SettingsService();
-            AptabaseClient = new AptabaseClient("https://stat.fexei.at", "A-SH-5040461685");
+            AptabaseClient = new AptabaseClient("https://stat.fexei.at", "A-SH-5040461685", _settingsService);
             this.UnhandledException += App_UnhandledException;
-
-            _ = AptabaseClient.TrackEvent("AppLaunch");
 
             // Ensure file logging is enabled if the setting is on
             var saveDebugLogs = _settingsService.GetValue("SaveDebugLogs") as bool? ?? true;
@@ -54,10 +54,28 @@ namespace JustBedwars
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            _window = new MainWindow(_settingsService);
+            WelcomeWindow? welcomeWindow = null;
+            if (_settingsService.GetValue("FirstLaunch") as bool? ?? true)
+                try
+                {
+                    welcomeWindow = new(_settingsService);
+                    await welcomeWindow.RunSetup();
+
+                    _ = AptabaseClient.TrackEvent("WelcomeFinished");
+                }
+                catch
+                {
+                    // 
+                }
+            _window = new MainWindow(_settingsService, AptabaseClient);
             _window.Activate();
+
+            _ = AptabaseClient.TrackEvent("AppLaunch");
+
+            if (welcomeWindow is not null)
+                welcomeWindow!.Close();
         }
     }
 }
