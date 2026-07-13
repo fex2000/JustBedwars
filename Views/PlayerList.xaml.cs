@@ -119,6 +119,7 @@ namespace JustBedwars.Views
 
         public async void OnPlayerJoined(string username)
         {
+            NoPlayerMessage.Visibility = Visibility.Collapsed;
             var props = new
             {
                 username = username,

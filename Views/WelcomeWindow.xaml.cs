@@ -19,6 +19,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics;
 using Windows.Storage.Pickers;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -51,6 +53,8 @@ namespace JustBedwars.Views
             WindowHelper.SetWindowCornerRadius(this, NativeValues.DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND);
 
             _ = LoadValues();
+
+            FinishButton.BubbleForeground = new SolidColorBrush(App.Current.RequestedTheme == ApplicationTheme.Light ? new UISettings().GetColorValue(UIColorType.Accent) : new UISettings().GetColorValue(UIColorType.AccentLight2));
         }
 
         private async Task LoadValues()
@@ -91,6 +95,10 @@ namespace JustBedwars.Views
 
             FinishButton.Click += handler;
             await tcs.Task;
+
+            ScrollView.Visibility = Visibility.Collapsed;
+
+            await Task.Delay(100);
 
             BackdropElement.Visibility = Visibility.Collapsed;
             ContentGrid.Visibility = Visibility.Collapsed;

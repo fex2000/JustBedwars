@@ -6,6 +6,7 @@ using System;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace JustBedwars.Views
 {
@@ -173,9 +174,16 @@ namespace JustBedwars.Views
             EnableLogReaderLoggingToggle.IsOn = enableLogReaderLogging as bool? ?? true;
         }
 
-        private void ResetWelcomeStateButton_OnClick(object sender, RoutedEventArgs e)
+        private async void ResetWelcomeStateButton_OnClick(object sender, RoutedEventArgs e)
         {
             _settingsService.SetValue("FirstLaunch", true);
+
+            App.Window!.AppWindow.Hide();
+            var welcomeWindow = new WelcomeWindow(_settingsService);
+            await welcomeWindow.RunSetup();
+            welcomeWindow.Close();
+            await Task.Delay(150);
+            App.Window!.AppWindow.Show();
         }
 
         private void LoadUsageSetting()

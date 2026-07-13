@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:converters="using:JustBedwars.Converters"
+    xmlns:dev="using:DevWinUI"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -50,6 +51,39 @@
                 <TextBlock Text="Wins" Grid.Column="7" TextAlignment="Center"/>
                 <TextBlock Text="Level" Grid.Column="8" TextAlignment="Center"/>
             </Grid>
+        </Border>
+
+        <!-- No Players message -->
+        <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="NoPlayerMessage" Canvas.ZIndex="10">
+            <animations:Implicit.Animations>
+                <animations:OffsetAnimation Duration="0:0:0.3"/>
+                <animations:SizeAnimation Duration="0:0:0.3"/>
+                <animations:TranslationAnimation Duration="0:0:0.3"/>
+            </animations:Implicit.Animations>
+            <animations:Implicit.HideAnimations>
+                <animations:TranslationAnimation From="0" To="0,50,0" Duration="0:0:0.3"/>
+                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.3"/>
+            </animations:Implicit.HideAnimations>
+            <StackPanel>
+                <StackPanel.ChildrenTransitions>
+                    <RepositionThemeTransition IsStaggeringEnabled="False"/>
+                </StackPanel.ChildrenTransitions>
+                <TextBlock Text="Join a bedwars round and after it starts run '/who' to list players here!" FontSize="16"/>
+                <dev:Divider Width="450"/>
+                <Expander Header="Troubleshooting" HorizontalAlignment="Center" Width="450">
+                    <animations:Implicit.Animations>
+                        <animations:OffsetAnimation Duration="0:0:0.3"/>
+                        <animations:SizeAnimation Duration="0:0:0.3"/>
+                        <animations:TranslationAnimation Duration="0:0:0.3"/>
+                    </animations:Implicit.Animations>
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="• Check if the log file in settings is set correctly" TextWrapping="Wrap"/>
+                        <TextBlock Text="• Check if there are no mods/client that modifies the log format" TextWrapping="Wrap"/>
+                        <TextBlock Text="• Check if your Hypixel and Game Language is set to english, otherwhise the message detection might fail" TextWrapping="Wrap"/>
+                        <TextBlock Text="• Check if you are on Hypixel, this app only works with Hypixel and (somewhat) with bedwarspractice.club" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+            </StackPanel>
         </Border>
         <!-- Players -->
         <ListView x:Name="PlayersListView" Grid.Row="1" SelectionMode="None">

@@ -144,9 +144,9 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D7;"/>
                         </toolkit:SettingsCard.HeaderIcon>
                     </toolkit:SettingsCard>
-                    <toolkit:SettingsCard Header="Reset welcome screen state"
-                                          Description="Show welcome window again on next app launch">
-                        <Button Content="Reset" Click="ResetWelcomeStateButton_OnClick"/>
+                    <toolkit:SettingsCard Header="Return to welcome screen"
+                                          Description="Open the welcome screen again">
+                        <Button Content="Open" Click="ResetWelcomeStateButton_OnClick"/>
                         <toolkit:SettingsCard.HeaderIcon>
                             <FontIcon Glyph="&#xE81C;" />
                         </toolkit:SettingsCard.HeaderIcon>

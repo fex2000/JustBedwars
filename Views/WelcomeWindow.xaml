@@ -28,8 +28,8 @@
             </animations:Implicit.ShowAnimations>
 
             <animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1" To="0.8" Duration="0:0:0.5" EasingMode="EaseIn"/>
-                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.5" EasingMode="EaseIn"/>
+                <animations:ScaleAnimation From="1" To="0.8" Duration="0:0:0.3" Delay="0:0:0.2" EasingMode="EaseIn"/>
+                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.3" Delay="0:0:0.2" EasingMode="EaseIn"/>
             </animations:Implicit.HideAnimations>
         </SystemBackdropElement>
 
@@ -64,7 +64,7 @@
                 <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.4" EasingMode="EaseIn"/>
             </animations:Implicit.HideAnimations>
 
-            <ScrollView Loaded="SetCenter">
+            <ScrollView Loaded="SetCenter" x:Name="ScrollView">
                 <animations:Implicit.HideAnimations>
                     <animations:ScaleAnimation From="1" To="0.7" Duration="0:0:0.4" EasingMode="EaseIn"/>
                 </animations:Implicit.HideAnimations>
@@ -152,9 +152,26 @@
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Padding="16">
-                    <Button x:Name="FinishButton"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Content="Finish"/>
+                    <dev:BubbleButton x:Name="FinishButton"
+                                      Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                      Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                      Content="Finish">
+                        <dev:BubbleButton.Resources>
+                            <!-- Extra stuff because BubbleButton breaks with AccentButtonStyle -->
+                            <StaticResource x:Key="ButtonBackground" ResourceKey="AccentFillColorDefaultBrush" />
+                            <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="AccentFillColorSecondaryBrush" />
+                            <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="AccentFillColorTertiaryBrush" />
+                            <StaticResource x:Key="ButtonBackgroundDisabled" ResourceKey="AccentFillColorDisabledBrush" />
+                            <StaticResource x:Key="ButtonForeground" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
+                            <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
+                            <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="TextOnAccentFillColorSecondaryBrush" />
+                            <StaticResource x:Key="ButtonForegroundDisabled" ResourceKey="TextOnAccentFillColorDisabled" />
+                            <StaticResource x:Key="ButtonBorderBrush" ResourceKey="AccentControlElevationBorderBrush" />
+                            <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AccentControlElevationBorderBrush" />
+                            <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="ControlFillColorTransparentBrush" />
+                            <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="ControlFillColorTransparentBrush" />
+                        </dev:BubbleButton.Resources>
+                    </dev:BubbleButton>
                 </StackPanel>
             </Border>
         </Grid>
