@@ -48,6 +48,9 @@ namespace JustBedwars.Views
             AppWindow.SetPresenter(presenter);
             AppWindow.Resize(new SizeInt32(1000, 700));
 
+            ContentGrid.Lights.Add(new HoverLight());
+            ContentGrid.Lights.Add(new AmbLight());
+
             WindowHelper.RemoveWindowBorderAndTitleBar(this);
             WindowHelper.CenterOnScreen(this);
             WindowHelper.SetWindowCornerRadius(this, NativeValues.DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND);
@@ -83,6 +86,10 @@ namespace JustBedwars.Views
         public async Task RunSetup()
         {
             Activate();
+
+            await Task.Delay(100);
+
+            LogFilePathTextBox.Width = ContentGrid.ActualWidth - 108;
 
             var tcs = new TaskCompletionSource<bool>();
 

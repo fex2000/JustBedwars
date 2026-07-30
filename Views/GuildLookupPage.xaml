@@ -35,9 +35,9 @@
                       IsItemClickEnabled="True"
                       ItemClick="HistoryListView_ItemClick"
                       SelectionMode="None"
-                      Background="{ThemeResource SmokeFillColorDefaultBrush}"
+                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                       CornerRadius="{ThemeResource ControlCornerRadius}"
-                      BorderBrush="{ThemeResource CircleElevationBorderBrush}"
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                       BorderThickness="1">
                 <ListView.ItemTemplate>
                     <DataTemplate>
