@@ -7,6 +7,9 @@ using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using DevWinUI;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace JustBedwars.Views
@@ -51,6 +54,7 @@ namespace JustBedwars.Views
 
         public async void LoadPlayerStats(string username)
         {
+            AccentBgImage.Opacity = 0;
             var props = new
             {
                 username = username,
@@ -71,6 +75,7 @@ namespace JustBedwars.Views
             SetStatsVisibility(Visibility.Collapsed);
             ContentBorder.Visibility = Visibility.Visible;
             PlayerImage.Source = null;
+            PlayerImageShadow.Opacity = 0;
 
             var player = await _hypixelApi.GetPlayerStats(username);
 
@@ -83,6 +88,8 @@ namespace JustBedwars.Views
                     BedwarsLevelText.Text = $"Bedwars Level: {player.Star}";
                     BedwarsLevelProgress.Value = player.BedwarsLevelProgress;
                     ProgressBars.Visibility = Visibility.Visible;
+
+                    _ = GetAccentImage(player.Username??"");
                 }
                 UsernameTextBlock.Text = player.Username;
                 StarTextBlock.Text = player.Star.ToString();
@@ -105,11 +112,18 @@ namespace JustBedwars.Views
 
                 if (!string.IsNullOrEmpty(player.PlayerUUID))
                 {
+                    PlayerImageShadow.ImageUri = new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}");
                     PlayerImage.Source = new BitmapImage(new Uri($"https://skins.jbw.fexei.at/fullbody/{player.PlayerUUID}"));
                     var response = await _httpClient
                         .GetAsync($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full");
                     if (response.IsSuccessStatusCode)
-                        PlayerImage.Source = new BitmapImage(new Uri($"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full"));
+                    {
+                        PlayerImage.Source = new BitmapImage(new Uri(
+                            $"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full"));
+                        PlayerImageShadow.ImageUri =
+                            new Uri(
+                                $"https://starlightskins.lunareclipse.studio/render/default/{player.PlayerUUID}/full");
+                    }
                 }
                 else
                 {
@@ -156,6 +170,14 @@ namespace JustBedwars.Views
             }
         }
 
+        private async Task GetAccentImage(string playername)
+        {
+            AccentBgImage.Source =
+                new BitmapImage(new Uri(
+                    await _httpClient.GetStringAsync(
+                        $"https://jbw.fexei.at/api/justbedwars/v2/bgImage?username={playername}")));
+        }
+
         private async void UsernameAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
@@ -188,6 +210,7 @@ namespace JustBedwars.Views
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)
         {
             ImageLoader.Visibility = Visibility.Collapsed;
+            PlayerImageShadow.Opacity = 1;
         }
 
         private void PlayerImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)
@@ -270,6 +293,16 @@ namespace JustBedwars.Views
         private void UsernameAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             LoadPlayerStats(sender.Text);
+        }
+
+        private async void AccentBgImage_OnImageOpened(object sender, RoutedEventArgs e)
+        {
+            ScalarTransition transition = new()
+            {
+                Duration = new TimeSpan(0, 0, 0, 0, 800)
+            };
+            AccentBgImage.OpacityTransition = transition;
+            AccentBgImage.Opacity = 0.3;
         }
     }
 }
