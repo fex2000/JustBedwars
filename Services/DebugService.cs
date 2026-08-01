@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace JustBedwars.Services
@@ -27,6 +28,8 @@ namespace JustBedwars.Services
             {
                 _logHistory.Add(logEntry);
             }
+
+            Debug.WriteLine(logEntry);
 
             LogAdded?.Invoke(logEntry);
 

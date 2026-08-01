@@ -6,8 +6,10 @@ using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI.Controls;
+using Microsoft.UI.Xaml.Hosting;
 using Microsoft.Web.WebView2.Core;
 
 namespace JustBedwars.Views
@@ -22,6 +24,8 @@ namespace JustBedwars.Views
     {
         private string _query;
         private string _type;
+        private int _currentTab = 0;
+        private bool _navigationAllowed = false;
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
         private readonly AptabaseClient _aptabaseClient;
@@ -53,6 +57,9 @@ namespace JustBedwars.Views
 
             guild = await _hypixelApi.GetGuildAsync(_query, _type);
 
+            // Composition gives up if this isn't here
+            await Task.Delay(300);
+
             if (guild != null)
             {
                 _settingsService.SetValue("LastSearchedName", guild.Name);
@@ -68,7 +75,6 @@ namespace JustBedwars.Views
 
                 await _hypixelApi.GetNamesForGuildMembers(guild.Members, progress);
 
-                // Set data before showing controls to avoid animation conflicts
                 GuildNameTextBlock.Text = guild.Name;
                 GuildTagTextBlock.Text = guild.Tag;
 
@@ -86,6 +92,7 @@ namespace JustBedwars.Views
                 // Populate rank filter
                 RankFilter.Items.Clear();
                 RankFilter.Items.Add(new SegmentedItem { Content = "All" });
+                RankFilter.Items.Add(new SegmentedItem { Content = "Guild Master" });
                 foreach (var rank in sortedRanks)
                 {
                     RankFilter.Items.Add(new SegmentedItem { Content = rank.Name });
@@ -96,7 +103,6 @@ namespace JustBedwars.Views
                 PreferredGamesTextBlock.Text = guild.PreferredGames.Any() ? string.Join(", ", guild.PreferredGames) : "Not set.";
                 LevelTextBlock.Text = guild.Level.ToString("F2");
                 ExpTextBlock.Text = guild.Exp.ToString("N0");
-                OnlinePlayersTextBlock.Text = guild.OnlinePlayers.ToString();
                 CreatedAtTextBlock.Text = DateTimeOffset.FromUnixTimeMilliseconds(guild.Created).ToString("D");
                 GuildIdTextBlock.Text = guild.Id;
                 ExpByGameTypeListView.ItemsSource = guild.ExpByGameType;
@@ -104,9 +110,13 @@ namespace JustBedwars.Views
 
                 LoadingOverlay.Visibility = Visibility.Collapsed;
 
-                SelectorBar.Visibility = Visibility.Visible;
+                PageBar.Visibility = Visibility.Visible;
                 TopBar.Visibility = Visibility.Visible;
                 InfoView.Visibility = Visibility.Visible;
+                MainContentGrid.Visibility = Visibility.Visible;
+
+                GoBackDocked.Visibility = Visibility.Visible;
+                GoBackFloating.Visibility = Visibility.Collapsed;
 
                 var trackProps = new
                 {
@@ -114,37 +124,15 @@ namespace JustBedwars.Views
                 };
 
                 _ = _aptabaseClient.TrackEvent("GuildLookup", trackProps);
+
+                await Task.Delay(10);
+                _navigationAllowed = true;
             }
             else
             {
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 await Task.Delay(100);
                 ErrorGrid.Visibility = Visibility.Visible;
-            }
-        }
-
-        private void SelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
-        {
-            if (InfoSelector != null && PlayersSelector != null && RanksSelector != null)
-            {
-                if (SelectorBar.SelectedItem == InfoSelector)
-                {
-                    InfoView.Visibility = Visibility.Visible;
-                    PlayersView.Visibility = Visibility.Collapsed;
-                    RanksView.Visibility = Visibility.Collapsed;
-                }
-                else if (SelectorBar.SelectedItem == PlayersSelector)
-                {
-                    InfoView.Visibility = Visibility.Collapsed;
-                    PlayersView.Visibility = Visibility.Visible;
-                    RanksView.Visibility = Visibility.Collapsed;
-                }
-                else if (SelectorBar.SelectedItem == RanksSelector)
-                {
-                    InfoView.Visibility = Visibility.Collapsed;
-                    PlayersView.Visibility = Visibility.Collapsed;
-                    RanksView.Visibility = Visibility.Visible;
-                }
             }
         }
 
@@ -184,7 +172,7 @@ namespace JustBedwars.Views
                 {
                     RankFilter.SelectedItem = filterItem;
                 }
-                SelectorBar.SelectedItem = PlayersSelector;
+                PageBar.SelectedItem = PlayersSelector;
             }
         }
 
@@ -192,9 +180,95 @@ namespace JustBedwars.Views
         {
             if (e.ClickedItem is GuildMember clickedMember)
             {
-                // This might need adjustment depending on the main navigation structure.
                 var mainWindow = App.Window as MainWindow;
                 mainWindow?.OpenStatsPage(clickedMember.Name);
+            }
+        }
+
+        private void PageBar_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (PageBar.SelectedIndex != _currentTab)
+                _ = NavigateTab(PageBar.SelectedIndex);
+
+        }
+
+        private async Task NavigateTab(int tabIndex)
+        {
+            if (!_navigationAllowed)
+                return;
+
+            TabIndexToElement(tabIndex).Visibility = Visibility.Visible;
+
+            var currentVisual = ElementCompositionPreview.GetElementVisual(TabIndexToElement(_currentTab));
+            var currentCompositor = currentVisual.Compositor;
+            var nextVisual = ElementCompositionPreview.GetElementVisual(TabIndexToElement(tabIndex));
+            var nextCompositor = nextVisual.Compositor;
+
+            ElementCompositionPreview.SetIsTranslationEnabled(TabIndexToElement(tabIndex), true);
+            ElementCompositionPreview.SetIsTranslationEnabled(TabIndexToElement(_currentTab), true);
+
+            var currentTranslationAnimation = currentCompositor.CreateVector3KeyFrameAnimation();
+            var currentOpacityAnimation = currentCompositor.CreateScalarKeyFrameAnimation();
+            var nextTranslationAnimation = nextCompositor.CreateVector3KeyFrameAnimation();
+            var nextOpacityAnimation = nextCompositor.CreateScalarKeyFrameAnimation();
+
+            currentTranslationAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+            currentOpacityAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+            nextTranslationAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+            nextOpacityAnimation.Duration = new TimeSpan(0, 0, 0, 0, 300);
+
+            currentOpacityAnimation.InsertKeyFrame(0, 1);
+            currentOpacityAnimation.InsertKeyFrame(1, 0);
+            nextOpacityAnimation.InsertKeyFrame(0,0);
+            nextOpacityAnimation.InsertKeyFrame(1,1);
+
+            if (tabIndex > _currentTab)
+            {
+                currentTranslationAnimation.InsertKeyFrame(0, new Vector3(0,0,0));
+                currentTranslationAnimation.InsertKeyFrame(1, new Vector3(-50, 0, 0));
+                nextTranslationAnimation.InsertKeyFrame(0, new Vector3(100, 0, 0));
+                nextTranslationAnimation.InsertKeyFrame(1, new Vector3(0, 0, 0));
+            }
+            else
+            {
+                currentTranslationAnimation.InsertKeyFrame(0, new Vector3(0, 0, 0));
+                currentTranslationAnimation.InsertKeyFrame(1, new Vector3(50, 0, 0));
+                nextTranslationAnimation.InsertKeyFrame(0, new Vector3(-100, 0, 0));
+                nextTranslationAnimation.InsertKeyFrame(1, new Vector3(0, 0, 0));
+            }
+
+            currentVisual.StartAnimation("Translation", currentTranslationAnimation);
+            currentVisual.StartAnimation("Opacity", currentOpacityAnimation);
+            nextVisual.StartAnimation("Translation", nextTranslationAnimation);
+            nextVisual.StartAnimation("Opacity", nextOpacityAnimation);
+
+            await Task.Delay(300);
+            TabIndexToElement(_currentTab).Visibility = Visibility.Collapsed;
+            _currentTab = tabIndex;
+        }
+
+        private Grid TabIndexToElement(int tabIndex)
+        {
+            switch (tabIndex)
+            {
+                case 0: return InfoView;
+                case 1: return PlayersView;
+                case 2: return RanksView;
+                default: return InfoView;
+            }
+        }
+
+        private void MainScrollView_OnViewChanged(ScrollView sender, object args)
+        {
+            if (sender.VerticalOffset == 0)
+            {
+                GoBackDocked.Visibility = Visibility.Visible;
+                GoBackFloating.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GoBackDocked.Visibility = Visibility.Collapsed;
+                GoBackFloating.Visibility = Visibility.Visible;
             }
         }
     }

@@ -89,13 +89,12 @@
                                           ContentAlignment="Left">
                         <StackPanel Margin="12,0,0,0"
                                     Orientation="Vertical">
-                            <TextBlock Text="Saved Information" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="What data is collected?" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
                             <TextBlock>- Windows Version</TextBlock>
-                            <TextBlock>- App Version</TextBlock>
-                            <TextBlock>- Timestamp</TextBlock>
-                            <TextBlock>- App Build Type</TextBlock>
-                            <TextBlock>- Session Duration</TextBlock>
+                            <TextBlock>- App Version &amp; Build Type</TextBlock>
+                            <TextBlock>- Timestamp &amp; Session Duration</TextBlock>
                             <TextBlock>- Source Country/City (From IP)</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="8,0,0,0">- The IP address is immediately deleted after deriving the country and is never stored</TextBlock>
                             <TextBlock>- Sent Events</TextBlock>
                         </StackPanel>
                     </toolkit:SettingsCard>
@@ -103,27 +102,42 @@
                                           ContentAlignment="Left">
                         <StackPanel Margin="12,0,0,0"
                                     Orientation="Vertical">
-                            <TextBlock Text="Events that send a message" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
-                            <TextBlock>- App gets launched</TextBlock>
+                            <TextBlock Text="Which events trigger a message?" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock>- App launch &amp; close</TextBlock>
                             <TextBlock>- An unhandled exception occurs</TextBlock>
-                            <TextBlock>- App gets closed</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">Includes the exception type and basic crash details to help fix it</TextBlock>
                             <TextBlock>- Setup is Finished</TextBlock>
                             <TextBlock>- Guild is Searched</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">And the guild name</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">This also is used for improving the autocomplete database for guilds</TextBlock>
                             <TextBlock>- Update is Skipped or Installed</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">Includes the version numbers you are updating from and to</TextBlock>
                             <TextBlock>- A player is looked up</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">And the username of the player you're looking for and from where in the app it was searched</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">This also is used for improving the autocomplete database for players</TextBlock>
                             <TextBlock>- Leaderboards are opened</TextBlock>
+                            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="10,0,0,0" FontSize="11">And what tab you're on</TextBlock>
                         </StackPanel>
                     </toolkit:SettingsCard>
                     <toolkit:SettingsCard HorizontalContentAlignment="Left"
                                           ContentAlignment="Left">
                         <StackPanel Margin="12,0,0,0"
                                     Orientation="Vertical">
-                            <TextBlock Text="How does this data get used?" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="How is this data used?" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
                             <TextBlock>Events: To see which areas need improvement</TextBlock>
-                            <TextBlock>OS Version: To see what the minimum Versions that need to be built to are</TextBlock>
-                            <TextBlock>App Version: To see who is too lazy to update</TextBlock>
-                            <TextBlock>Session Duration, Timestamp, Events: To see how activly the app is used</TextBlock>
+                            <TextBlock>OS Version: To see what the oldest Windows Versions that need to be supported are</TextBlock>
+                            <TextBlock>App Version: To see how many people are too lazy to update</TextBlock>
+                            <TextBlock>Session Duration, Timestamp, Events: To see how actively the app is used</TextBlock>
                             <TextBlock>Source Country: To see which languages would be good to localize to</TextBlock>
+                        </StackPanel>
+                    </toolkit:SettingsCard>
+                    <toolkit:SettingsCard HorizontalContentAlignment="Left"
+                                          ContentAlignment="Left">
+                        <StackPanel Margin="12,0,0,0"
+                                    Orientation="Vertical">
+                            <TextBlock Text="Good to know" Margin="0, 6" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock>- There is no way to track you across sessions, nothing is permanent</TextBlock>
+                            <TextBlock>- Every time you launch the app, you get a session ID that is used to get a timeline of all events sent</TextBlock>
                         </StackPanel>
                     </toolkit:SettingsCard>
                 </toolkit:SettingsExpander.Items>
@@ -144,9 +158,9 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D7;"/>
                         </toolkit:SettingsCard.HeaderIcon>
                     </toolkit:SettingsCard>
-                    <toolkit:SettingsCard Header="Reset welcome screen state"
-                                          Description="Show welcome window again on next app launch">
-                        <Button Content="Reset" Click="ResetWelcomeStateButton_OnClick"/>
+                    <toolkit:SettingsCard Header="Return to welcome screen"
+                                          Description="Open the welcome screen again">
+                        <Button Content="Open" Click="ResetWelcomeStateButton_OnClick"/>
                         <toolkit:SettingsCard.HeaderIcon>
                             <FontIcon Glyph="&#xE81C;" />
                         </toolkit:SettingsCard.HeaderIcon>

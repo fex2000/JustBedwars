@@ -8,18 +8,19 @@
     xmlns:media="using:CommunityToolkit.WinUI.Media"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:dev="using:DevWinUI"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     mc:Ignorable="d">
 
     <Grid>
         
-        <ScrollView>
+        <ScrollView x:Name="MainScrollView" ViewChanged="MainScrollView_OnViewChanged">
             <StackPanel>
                 <!-- Top Title Bar -->
                 <Grid Padding="16,16,16,0" Height="150" x:Name="TopBar" Visibility="Collapsed">
                     <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.5" From="0,-100,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
+                        <animations:TranslationAnimation Duration="0:0:0.3" From="0,-30,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:0.3" From="0" To="1"/>
                     </animations:Implicit.ShowAnimations>
                     <Grid Background="{ThemeResource SystemFillColorAttentionBackgroundBrush}"
                           CornerRadius="{ThemeResource OverlayCornerRadius}"
@@ -42,144 +43,120 @@
                         <TextBlock x:Name="GuildTagTextBlock" Text="TAG" FontSize="16" FontWeight="Medium"/>
                     </Grid>
                 </Grid>
-                <SelectorBar x:Name="SelectorBar" SelectionChanged="SelectorBar_SelectionChanged" Visibility="Collapsed" Margin="10,0">
-                    <SelectorBarItem x:Name="InfoSelector" Text="Info" IsSelected="True"/>
-                    <SelectorBarItem x:Name="PlayersSelector" Text="Players"/>
-                    <SelectorBarItem x:Name="RanksSelector" Text="Ranks"/>
+                <controls:Segmented x:Name="PageBar" SelectionChanged="PageBar_OnSelectionChanged" Visibility="Collapsed" Margin="10,8 " SelectedIndex="0">
+                    <controls:SegmentedItem x:Name="InfoSelector" Content="Info"/>
+                    <controls:SegmentedItem x:Name="PlayersSelector" Content="Players"/>
+                    <controls:SegmentedItem x:Name="RanksSelector" Content="Ranks"/>
                     <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.5" From="0,-100,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.5" From="0" To="1"/>
+                        <animations:TranslationAnimation Duration="0:0:0.3" From="0,-30,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:0.3" From="0" To="1"/>
                     </animations:Implicit.ShowAnimations>
-                </SelectorBar>
+                </controls:Segmented>
 
-                <Grid x:Name="InfoView" Visibility="Collapsed">
+                <Grid x:Name="MainContentGrid" Visibility="Collapsed">
                     <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0,40,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0" To="1" />
+                        <animations:TranslationAnimation Duration="0:0:0.3" From="0,-30,0" To="0"/>
+                        <animations:OpacityAnimation Duration="0:0:0.3" From="0" To="1"/>
                     </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" From="0" To="0,40,0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" From="1" To="0" />
-                    </animations:Implicit.HideAnimations>
-                    <Grid Padding="12" ColumnSpacing="10" RowSpacing="10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <Grid x:Name="InfoView" Visibility="Collapsed">
+                        <Grid Padding="12" ColumnSpacing="10" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0" Grid.Column="0" Padding="10">
-                            <TextBlock Text="Description" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="DescriptionTextBlock" TextWrapping="Wrap" Text="No description available." IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="0" Padding="10">
+                                <TextBlock Text="Description" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="DescriptionTextBlock" TextWrapping="Wrap" Text="No description available." IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Row="0" Grid.Column="1" Padding="10">
-                            <TextBlock Text="Preferred Games" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="PreferredGamesTextBlock" Text="Not set." IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="0" Grid.Column="1" Padding="10">
+                                <TextBlock Text="Preferred Games" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="PreferredGamesTextBlock" Text="Not set." IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Row="1" Grid.Column="0" Padding="10">
-                            <TextBlock Text="Level" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="LevelTextBlock" IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="0" Padding="10">
+                                <TextBlock Text="Level" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="LevelTextBlock" IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Row="1" Grid.Column="1" Padding="10">
-                            <TextBlock Text="Experience" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="ExpTextBlock" IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Padding="10">
+                                <TextBlock Text="Experience" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="ExpTextBlock" IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <!-- Nevermind doesn't work -->
-                        <StackPanel Grid.Row="1" Grid.Column="2" Padding="10" Visibility="Collapsed">
-                            <TextBlock Text="Online Players" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="OnlinePlayersTextBlock" Text="N/A"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="0" Padding="10">
+                                <TextBlock Text="Created At" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="CreatedAtTextBlock" IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Row="2" Grid.Column="0" Padding="10">
-                            <TextBlock Text="Created At" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="CreatedAtTextBlock" IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Padding="10">
+                                <TextBlock Text="Guild ID" FontWeight="Bold" FontSize="18"/>
+                                <TextBlock x:Name="GuildIdTextBlock" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Row="2" Grid.Column="1" Padding="10">
-                            <TextBlock Text="Guild ID" FontWeight="Bold" FontSize="18"/>
-                            <TextBlock x:Name="GuildIdTextBlock" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
-                        </StackPanel>
+                            <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Padding="10">
+                                <Expander Width="800">
+                                    <ListView x:Name="ExpByGameTypeListView" Width="700" SelectionMode="None">
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="700">
+                                                    <TextBlock Text="{Binding Key}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Value}" HorizontalAlignment="Stretch" TextAlignment="Right" Margin="0,0,29,0"/>
+                                                    
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                    <Expander.Header>
+                                        <TextBlock Text="Experience by Game" FontWeight="Bold" FontSize="18"/>
+                                    </Expander.Header>
+                                </Expander>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
 
-                        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Padding="10">
-                            <Expander Width="800">
-                                <ListView x:Name="ExpByGameTypeListView" Width="700" SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Width="700">
-                                                <TextBlock Text="{Binding Key}" FontWeight="SemiBold"/>
-                                                <TextBlock Text="{Binding Value}" HorizontalAlignment="Stretch" TextAlignment="Right" Margin="0,0,29,0"/>
-                                                
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                                <Expander.Header>
-                                    <TextBlock Text="Experience by Game" FontWeight="Bold" FontSize="18"/>
-                                </Expander.Header>
-                            </Expander>
+                    <Grid x:Name="PlayersView" Visibility="Collapsed">
+                        <!-- Player List -->
+                        <StackPanel>
+                            <!-- Filters for Players List -->
+                            <controls:Segmented x:Name="RankFilter" SelectionChanged="RankFilter_SelectionChanged" Margin="16,8">
+                                <!-- Populate in code with guild ranks -->
+                            </controls:Segmented>
+
+                            <ListView x:Name="MembersListView" IsItemClickEnabled="True" ItemClick="MembersListView_ItemClick">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Rank}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </StackPanel>
                     </Grid>
-                </Grid>
 
-                <Grid x:Name="PlayersView" Visibility="Collapsed">
-                    <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0,40,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0" To="1" />
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" From="0" To="0,40,0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" From="1" To="0" />
-                    </animations:Implicit.HideAnimations>
-                    <!-- Player List -->
-                    <StackPanel>
-                        <!-- Filters for Players List -->
-                        <controls:Segmented x:Name="RankFilter" SelectionChanged="RankFilter_SelectionChanged" Margin="16,8">
-                            <!-- Populate in code with guild ranks -->
-                        </controls:Segmented>
-
-                        <ListView x:Name="MembersListView" IsItemClickEnabled="True" ItemClick="MembersListView_ItemClick">
+                    <Grid x:Name="RanksView" Visibility="Collapsed">
+                        <!-- Guild Rank list -->
+                        <ListView x:Name="RanksListView" IsItemClickEnabled="True" SelectionMode="None" ItemClick="RanksListView_ItemClick">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding Rank}"/>
+                                        <TextBlock Text="{Binding Tag}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="RanksView" Visibility="Collapsed">
-                    <animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0,40,0" To="0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" Delay="0:0:0.2" From="0" To="1" />
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:TranslationAnimation Duration="0:0:0.3" From="0" To="0,40,0"/>
-                        <animations:OpacityAnimation Duration="0:0:0.3" From="1" To="0" />
-                    </animations:Implicit.HideAnimations>
-                    <!-- Guild Rank list -->
-                    <ListView x:Name="RanksListView" IsItemClickEnabled="True" ItemClick="RanksListView_ItemClick">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding Tag}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    </Grid>
                 </Grid>
             </StackPanel>
         </ScrollView>
@@ -203,8 +180,7 @@
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                            VerticalAlignment="Center"/>
                 <Button Content="Go Back"
-                        Click="GoBackButton_Click"
-                        />
+                        Click="GoBackButton_Click"/>
             </StackPanel>
         </Grid>
 
@@ -220,14 +196,55 @@
             </StackPanel>
         </Grid>
 
-        <AppBarButton Icon="Back"
-                      Click="GoBackButton_Click"
-                      VerticalAlignment="Top"
-                      HorizontalAlignment="Left"
-                      Margin="10" IsCompact="True" Width="50">
+        <Button Click="GoBackButton_Click"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="16"
+                CornerRadius="8,0,4,0"
+                Width="40"
+                Height="40"
+                Visibility="Collapsed"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                x:Name="GoBackDocked">
+            <FontIcon Glyph="&#xE72B;" FontSize="14"/>
+
             <animations:Implicit.ShowAnimations>
-                <animations:TranslationAnimation Duration="0:0:1" From="-125,0,0" To="0,0,0"/>
+                <animations:OpacityAnimation From="0" To="1" Duration="0:0:0.3"/>
+                <animations:TranslationAnimation From="-12,-12,0" To="0" Duration="0:0:0.3"/>
             </animations:Implicit.ShowAnimations>
-        </AppBarButton>
+            <animations:Implicit.HideAnimations>
+                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.3"/>
+                <animations:TranslationAnimation From="0" To="-12,-12,0" Duration="0:0:0.3"/>
+            </animations:Implicit.HideAnimations>
+        </Button>
+
+        <Border x:Name="GoBackFloating"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="4"
+                CornerRadius="4"
+                Width="40"
+                Height="40">
+
+            <Grid>
+                <dev:BlurEffectControl BlurAmount="4"
+                                       Optimization="Speed"/>
+                <Button Click="GoBackButton_Click"
+                        Width="40"
+                        Height="40">
+                    <FontIcon Glyph="&#xE72B;" FontSize="14"/>
+                </Button>
+            </Grid>
+
+            <animations:Implicit.ShowAnimations>
+                <animations:OpacityAnimation From="0" To="1" Duration="0:0:0.3"/>
+                <animations:TranslationAnimation From="12,12,0" To="0" Duration="0:0:0.3"/>
+            </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.3"/>
+                <animations:TranslationAnimation From="0" To="12,12,0" Duration="0:0:0.3"/>
+            </animations:Implicit.HideAnimations>
+        </Border>
     </Grid>
 </Page>
