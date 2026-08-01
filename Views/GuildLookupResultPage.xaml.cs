@@ -92,6 +92,7 @@ namespace JustBedwars.Views
                 // Populate rank filter
                 RankFilter.Items.Clear();
                 RankFilter.Items.Add(new SegmentedItem { Content = "All" });
+                RankFilter.Items.Add(new SegmentedItem { Content = "Guild Master" });
                 foreach (var rank in sortedRanks)
                 {
                     RankFilter.Items.Add(new SegmentedItem { Content = rank.Name });

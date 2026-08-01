@@ -146,7 +146,7 @@
 
                     <Grid x:Name="RanksView" Visibility="Collapsed">
                         <!-- Guild Rank list -->
-                        <ListView x:Name="RanksListView" IsItemClickEnabled="True" ItemClick="RanksListView_ItemClick">
+                        <ListView x:Name="RanksListView" IsItemClickEnabled="True" SelectionMode="None" ItemClick="RanksListView_ItemClick">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="8">

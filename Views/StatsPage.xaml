@@ -8,32 +8,45 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:media="using:CommunityToolkit.WinUI.Media"
     xmlns:dev="using:DevWinUI"
     mc:Ignorable="d">
 
-    <Grid Padding="50, 0, 50, 50" MaxWidth="1000">
+    <Grid Padding="12, 0, 12, 4" MaxWidth="1000">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Height="60" Padding="13" ColumnSpacing="8" VerticalAlignment="Top" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+        <Grid Height="40" Padding="4" ColumnSpacing="8" VerticalAlignment="Top" Margin="12" MaxWidth="850">
             <AutoSuggestBox x:Name="UsernameAutoSuggestBox"
                             PlaceholderText="Username"
-                            Grid.Column="0"
                             TextChanged="UsernameAutoSuggestBox_TextChanged"
                             SuggestionChosen="UsernameAutoSuggestBox_SuggestionChosen"
                             QueryIcon="Find"
                             QuerySubmitted="UsernameAutoSuggestBox_QuerySubmitted"/>
         </Grid>
+        <ProgressRing Grid.Row="1"
+                      IsActive="True"
+                      IsIndeterminate="True"
+                      Visibility="Collapsed"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      x:Name="ScreenshotLoadingIndicator">
+            <animations:Implicit.ShowAnimations>
+                <animations:OpacityAnimation From="0" To="1" Delay="0:0:0.5" Duration="0:0:0.5"/>
+                <animations:TranslationAnimation From="0,-300,0" To="0" Delay="0:0:0.5" Duration="0:0:0.5"/>
+            </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:OpacityAnimation From="1" To="0" Duration="0:0:0.3"/>
+                <animations:TranslationAnimation From="0" To="0,100,0" Duration="0:0:0.3"/>
+            </animations:Implicit.HideAnimations>
+        </ProgressRing>
         <Border Background="{ThemeResource SolidBackgroundFillColorQuinaryBrush}"
                 CornerRadius="{ThemeResource ControlCornerRadius}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 Grid.Row="1"
                 MaxHeight="550"
+                Margin="0,0,0,16"
                 x:Name="ContentBorder"
                 Visibility="Collapsed">
             <animations:Implicit.ShowAnimations>
@@ -49,11 +62,39 @@
                 <dev:BlurEffectControl BlurAmount="32" x:Name="AccentBgBlur"/>
 
                 <ScrollView>
-                    <Grid Height="550">
+                    <Grid Height="550" x:Name="ScreenshotGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
+
+                        <Image Grid.Row="0"
+                               Grid.RowSpan="3"
+                               x:Name="AccentBgRenderImage"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               Stretch="UniformToFill"
+                               Visibility="Collapsed"/>
+
+                        <Grid Grid.Row="2"
+                              x:Name="ScreenshotAd"
+                              Background="#50000000"
+                              Visibility="Collapsed"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Bottom"
+                              Padding="6">
+                            <StackPanel>
+                                <TextBlock FontSize="12" Text="Made using JustBedwars"/>
+                                <TextBlock FontSize="10" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" Text="fex2000.github.io/JustBedwars"/>
+                            </StackPanel>
+                            <Grid ColumnDefinitions="*, Auto">
+                                <TextBlock HorizontalTextAlignment="Right"
+                                           Grid.Column="1"
+                                           x:Name="DateUpdatedTextBlock"
+                                           FontSize="10"/>
+                            </Grid>
+                        </Grid>
 
                         <StackPanel Grid.Row="0" Margin="12,12,12,0" x:Name="ProgressBars" Visibility="Collapsed">
                             <TextBlock x:Name="HypixelLevelText" />
@@ -89,13 +130,6 @@
                             <Image x:Name="PlayerImage" ImageOpened="PlayerImage_ImageOpened"
                                    ImageFailed="PlayerImage_ImageFailed" Grid.Column="0" Grid.ColumnSpan="1"
                                    Grid.Row="1" Grid.RowSpan="3" />
-                            <dev:ColorShadow Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="1"
-                                             x:Name="PlayerImageShadow"
-                                             ColorMaskBlurRadius="56"
-                                             ColorShadowBlurRadius="39"
-                                             ColorMaskPadding="47"
-                                             ColorShadowPadding="100"
-                                             ColorShadowOpacity="1"/>
                             <labs:Shimmer Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="1" Grid.RowSpan="3"
                                           x:Name="ImageLoader" Visibility="Collapsed" />
                             <labs:Shimmer Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="1" Grid.RowSpan="3"
@@ -294,5 +328,36 @@
                 </ScrollView>
             </Grid>
         </Border>
+        <Border Grid.Row="1"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                x:Name="ScreenshotButtonBorder"
+                Visibility="Collapsed"
+                CornerRadius="4">
+            <animations:Implicit.ShowAnimations>
+                <animations:TranslationAnimation From="0,50,0" To="0" Duration="0:0:0.3"/>
+            </animations:Implicit.ShowAnimations>
+            <Grid>
+                <dev:BlurEffectControl BlurAmount="3"/>
+                <Button x:Name="ScreenshotButton"
+                        Click="ScreenshotButton_OnClick">
+                    <StackPanel Spacing="8" Orientation="Horizontal">
+                        <FontIcon Glyph="&#xEE71;" FontSize="16"/>
+                        <TextBlock Text="Save Image"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <TeachingTip Grid.Row="1"
+                     Target="{x:Bind ScreenshotButtonBorder}"
+                     x:Name="TeachingTip"
+                     Title="Success!"
+                     Subtitle="Your image has been saved.">
+            <TeachingTip.HeroContent>
+                <Image x:Name="TeachingTipImage"/>
+            </TeachingTip.HeroContent>
+        </TeachingTip>
     </Grid>
 </Page>
