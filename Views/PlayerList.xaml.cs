@@ -303,7 +303,7 @@ namespace JustBedwars.Views
 
             switch (sortingMode)
             {
-                case "Abyss Index":
+                case "Skill Index":
                     sortedPlayers = _players
                         .OrderBy(p => string.IsNullOrWhiteSpace(p.PlayerTag) || p.PlayerTag == "-")
                         .ThenByDescending(p => p.Star * p.FKDR * p.FKDR);

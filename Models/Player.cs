@@ -391,6 +391,36 @@ namespace JustBedwars.Models
             }
         }
 
+        public double StatOpacity
+        {
+            get
+            {
+                if (PlayerTag == "NICK" || PlayerTag == "ERROR")
+                    return 0.2;
+                return 1;
+            }
+        }
+
+        public Visibility TagCardVisibility
+        {
+            get
+            {
+                if (IsContentVisible != Visibility.Visible || PlayerTag == "" || PlayerTag == "-")
+                    return Visibility.Collapsed;
+                return Visibility.Visible;
+            }
+        }
+
+        public Visibility UnknownStatsVisibility
+        {
+            get
+            {
+                if (PlayerTag == "NICK" || PlayerTag == "ERROR")
+                    return Visibility.Visible;
+                return Visibility.Collapsed;
+            }
+        }
+
         public Visibility IsCollapsedContentVisible
         {
             get

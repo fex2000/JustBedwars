@@ -66,6 +66,7 @@ namespace JustBedwars.Views
 
         public async void LoadPlayerStats(string username)
         {
+            ScreenshotButtonBorder.Visibility = Visibility.Collapsed;
             AccentBgImage.Opacity = 0;
             var props = new
             {
@@ -86,7 +87,6 @@ namespace JustBedwars.Views
             ImageError.Visibility = Visibility.Collapsed;
             SetStatsVisibility(Visibility.Collapsed);
             ContentBorder.Visibility = Visibility.Visible;
-            ScreenshotButtonBorder.Visibility = Visibility.Visible;
             PlayerImage.Source = null;
 
             var player = await _hypixelApi.GetPlayerStats(username);
@@ -100,6 +100,8 @@ namespace JustBedwars.Views
                     BedwarsLevelText.Text = $"Bedwars Level: {player.Star}";
                     BedwarsLevelProgress.Value = player.BedwarsLevelProgress;
                     ProgressBars.Visibility = Visibility.Visible;
+                    ScreenshotButton.IsEnabled = false;
+                    ScreenshotButtonBorder.Visibility = Visibility.Visible;
 
                     _ = GetAccentImage(player.Username??"");
                 }
@@ -218,6 +220,7 @@ namespace JustBedwars.Views
         private void PlayerImage_ImageOpened(object sender, RoutedEventArgs e)
         {
             ImageLoader.Visibility = Visibility.Collapsed;
+            ScreenshotButton.IsEnabled = true;
         }
 
         private void PlayerImage_ImageFailed(object sender, ExceptionRoutedEventArgs e)

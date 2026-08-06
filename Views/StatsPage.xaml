@@ -337,6 +337,9 @@
             <animations:Implicit.ShowAnimations>
                 <animations:TranslationAnimation From="0,50,0" To="0" Duration="0:0:0.3"/>
             </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:TranslationAnimation From="0" To="0,50,0" Duration="0:0:0.3"/>
+            </animations:Implicit.HideAnimations>
             <Grid>
                 <dev:BlurEffectControl BlurAmount="3"/>
                 <Button x:Name="ScreenshotButton"
