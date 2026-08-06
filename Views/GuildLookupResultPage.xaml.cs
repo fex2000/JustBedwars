@@ -1,4 +1,4 @@
-﻿using JustBedwars.Models;
+using JustBedwars.Models;
 using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,20 +16,20 @@ namespace JustBedwars.Views
 {
     public class GuildLookupParameter
     {
-        public string Query { get; set; }
-        public string Type { get; set; }
+        public string Query { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 
     public sealed partial class GuildLookupResultPage : Page
     {
-        private string _query;
-        private string _type;
+        private string _query = string.Empty;
+        private string _type = string.Empty;
         private int _currentTab = 0;
         private bool _navigationAllowed = false;
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
         private readonly AptabaseClient _aptabaseClient;
-        private Guild guild;
+        private Guild? guild;
 
         public GuildLookupResultPage()
         {
@@ -47,7 +47,7 @@ namespace JustBedwars.Views
             {
                 _query = args.Query;
                 _type = args.Type;
-                LoadGuildDataAsync();
+                _ = LoadGuildDataAsync();
             }
         }
 
@@ -142,7 +142,7 @@ namespace JustBedwars.Views
 
             if (RankFilter.SelectedItem is SegmentedItem selectedItem)
             {
-                string selectedRank = selectedItem.Content.ToString();
+                string selectedRank = selectedItem.Content?.ToString() ?? string.Empty;
                 if (selectedRank == "All")
                 {
                     MembersListView.ItemsSource = guild.Members;
@@ -167,7 +167,7 @@ namespace JustBedwars.Views
             if (e.ClickedItem is GuildRank clickedRank)
             {
                 var rankName = clickedRank.Name;
-                var filterItem = RankFilter.Items.Cast<SegmentedItem>().FirstOrDefault(i => i.Content.ToString() == rankName);
+                var filterItem = RankFilter.Items.Cast<SegmentedItem>().FirstOrDefault(i => i.Content?.ToString() == rankName);
                 if (filterItem != null)
                 {
                     RankFilter.SelectedItem = filterItem;

@@ -40,7 +40,7 @@ namespace JustBedwars.Services
             _settingsService.SettingChanged += OnSettingChanged;
         }
 
-        private void OnSettingChanged(object sender, string key)
+        private void OnSettingChanged(object? sender, string key)
         {
             if (key == EnableLogReaderLoggingSettingName)
             {

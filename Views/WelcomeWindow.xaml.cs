@@ -40,12 +40,14 @@ namespace JustBedwars.Views
             _settingsService = settingsService;
             InitializeComponent();
             ExtendsContentIntoTitleBar = true;
-            var presenter = AppWindow.Presenter as OverlappedPresenter;
-            presenter.IsMinimizable = false;
-            presenter.IsMaximizable = false;
-            presenter.IsResizable = false;
-            presenter.SetBorderAndTitleBar(false, false);
-            AppWindow.SetPresenter(presenter);
+            if (AppWindow.Presenter is OverlappedPresenter presenter)
+            {
+                presenter.IsMinimizable = false;
+                presenter.IsMaximizable = false;
+                presenter.IsResizable = false;
+                presenter.SetBorderAndTitleBar(false, false);
+                AppWindow.SetPresenter(presenter);
+            }
             AppWindow.Resize(new SizeInt32(1000, 700));
 
             ContentGrid.Lights.Add(new HoverLight());

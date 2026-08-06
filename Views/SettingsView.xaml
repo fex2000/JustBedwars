@@ -71,7 +71,7 @@
             <!-- Advanced Settings -->
             <toolkit:SettingsExpander Header="JustBedwars">
                 <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                           Text="{x:Bind Version, Mode=OneWay}" />
+                           Text="{x:Bind Version, Mode=OneTime}" />
                 <toolkit:SettingsExpander.Items>
                     <toolkit:SettingsCard HorizontalContentAlignment="Left"
                                           ContentAlignment="Left">

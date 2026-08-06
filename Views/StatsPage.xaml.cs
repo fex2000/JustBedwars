@@ -472,8 +472,8 @@ namespace JustBedwars.Views
                 if (bitmapImage.PixelWidth == 0)
                 {
                     var tcs = new TaskCompletionSource<bool>();
-                    RoutedEventHandler onOpened = null;
-                    ExceptionRoutedEventHandler onFailed = null;
+                    RoutedEventHandler? onOpened = null;
+                    ExceptionRoutedEventHandler? onFailed = null;
 
                     onOpened = (s, e) => {
                         bitmapImage.ImageOpened -= onOpened;

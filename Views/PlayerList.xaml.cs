@@ -14,7 +14,7 @@ namespace JustBedwars.Views
 {
     public sealed partial class PlayerList : Page
     {
-        private LogReader _logReader;
+        private LogReader? _logReader;
         private readonly HypixelApi _hypixelApi;
         private readonly SettingsService _settingsService;
         private readonly ObservableCollection<Player> _players = new ObservableCollection<Player>();

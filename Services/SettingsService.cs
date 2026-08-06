@@ -9,9 +9,9 @@ namespace JustBedwars.Services
     public class SettingsService
     {
         private readonly string _filePath;
-        private Dictionary<string, object> _settings;
+        private Dictionary<string, object?> _settings = new();
 
-        public event EventHandler<string> SettingChanged;
+        public event EventHandler<string>? SettingChanged;
 
         public SettingsService()
         {
@@ -27,11 +27,11 @@ namespace JustBedwars.Services
             if (File.Exists(_filePath))
             {
                 var json = File.ReadAllText(_filePath);
-                _settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(json) ?? new Dictionary<string, object>();
+                _settings = JsonConvert.DeserializeObject<Dictionary<string, object?>>(json) ?? new Dictionary<string, object?>();
             }
             else
             {
-                _settings = new Dictionary<string, object>();
+                _settings = new Dictionary<string, object?>();
             }
         }
 
@@ -41,12 +41,12 @@ namespace JustBedwars.Services
             File.WriteAllText(_filePath, json);
         }
 
-        public object GetValue(string key)
+        public object? GetValue(string key)
         {
             return _settings.TryGetValue(key, out var value) ? value : null;
         }
 
-        public void SetValue(string key, object value)
+        public void SetValue(string key, object? value)
         {
             _settings[key] = value;
             Save();

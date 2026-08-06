@@ -14,7 +14,7 @@ namespace JustBedwars.Services
         private readonly object _logHistoryLock = new object();
         private readonly object _fileLock = new object();
         private bool _isSavingToFile = false;
-        private string _logFilePath;
+        private string? _logFilePath;
 
         public event Action<string> LogAdded = delegate { };
         public event Action<string> EmulatePlayerJoined = delegate { };
@@ -70,13 +70,16 @@ namespace JustBedwars.Services
                 try
                 {
                     var logDirectory = Path.GetDirectoryName(filePath);
-                    Directory.CreateDirectory(logDirectory);
-
-                    if (enableLogHistory && File.Exists(filePath))
+                    if (!string.IsNullOrEmpty(logDirectory))
                     {
-                        var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-                        var historyFilePath = Path.Combine(logDirectory, $"{timestamp}.log.tz");
-                        File.Move(filePath, historyFilePath);
+                        Directory.CreateDirectory(logDirectory);
+
+                        if (enableLogHistory && File.Exists(filePath))
+                        {
+                            var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                            var historyFilePath = Path.Combine(logDirectory, $"{timestamp}.log.tz");
+                            File.Move(filePath, historyFilePath);
+                        }
                     }
 
                     // Delete old log file

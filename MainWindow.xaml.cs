@@ -41,9 +41,9 @@ namespace JustBedwars
 
         private AptabaseClient _aptabaseClient;
 
-        WindowsSystemDispatcherQueueHelper m_wsdqHelper;
-        DesktopAcrylicController m_acrylicController;
-        SystemBackdropConfiguration m_configurationSource;
+        WindowsSystemDispatcherQueueHelper? m_wsdqHelper;
+        DesktopAcrylicController? m_acrylicController;
+        SystemBackdropConfiguration? m_configurationSource;
 
         [DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);
@@ -79,9 +79,9 @@ namespace JustBedwars
 
         public void OpenStatsPage(string username)
         {
-            if (ContentFrame.CurrentSourcePageType == typeof(StatsPage))
+            if (ContentFrame.CurrentSourcePageType == typeof(StatsPage) && ContentFrame.Content is StatsPage statsPage)
             {
-                (ContentFrame.Content as StatsPage).LoadPlayerStats(username);
+                statsPage.LoadPlayerStats(username);
             }
             else
             {
@@ -92,7 +92,7 @@ namespace JustBedwars
 
 
         public bool isOnTop;
-        private Type preTopPage;
+        private Type? preTopPage;
 
         private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
@@ -121,10 +121,13 @@ namespace JustBedwars
             {
                 NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo, _settingsService);
             }
-            else if (args.InvokedItemContainer != null)
+            else if (args.InvokedItemContainer?.Tag != null)
             {
-                Type navPageType = Type.GetType(args.InvokedItemContainer.Tag.ToString());
-                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
+                Type? navPageType = Type.GetType(args.InvokedItemContainer.Tag.ToString()!);
+                if (navPageType != null)
+                {
+                    NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
+                }
             }
         }
 
@@ -138,16 +141,19 @@ namespace JustBedwars
             {
                 NavView_Navigate(typeof(Views.SettingsView), args.RecommendedNavigationTransitionInfo, _settingsService);
             }
-            else if (args.SelectedItemContainer != null)
+            else if (args.SelectedItemContainer?.Tag != null)
             {
-                Type navPageType = Type.GetType(args.SelectedItemContainer.Tag.ToString());
-                NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
+                Type? navPageType = Type.GetType(args.SelectedItemContainer.Tag.ToString()!);
+                if (navPageType != null)
+                {
+                    NavView_Navigate(navPageType, args.RecommendedNavigationTransitionInfo, null);
+                }
             }
         }
 
         private void NavView_Navigate(
             Type navPageType,
-            NavigationTransitionInfo transitionInfo, object parameter = null)
+            NavigationTransitionInfo transitionInfo, object? parameter = null)
         {
             // Get the page type before navigation so you can prevent duplicate
             // entries in the backstack.
@@ -193,11 +199,11 @@ namespace JustBedwars
             {
                 var selectedItem = NavView.MenuItems
                     .OfType<NavigationViewItem>()
-                    .FirstOrDefault(i => i.Tag.Equals(ContentFrame.SourcePageType.FullName.ToString()));
+                    .FirstOrDefault(i => i.Tag != null && i.Tag.Equals(ContentFrame.SourcePageType.FullName));
                 if (selectedItem != null)
                 {
                     NavView.SelectedItem = selectedItem;
-                    NavView.Header = ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
+                    NavView.Header = selectedItem.Content?.ToString();
                 }
             }
         }
@@ -274,10 +280,13 @@ namespace JustBedwars
                     m_acrylicController = null;
                 }
                 SystemBackdrop = new MicaBackdrop();
-                if(preTopPage == typeof(SettingsView))
-                    NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo(), _settingsService);
-                else
-                    NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
+                if (preTopPage != null)
+                {
+                    if (preTopPage == typeof(SettingsView))
+                        NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo(), _settingsService);
+                    else
+                        NavView_Navigate(preTopPage, new DrillInNavigationTransitionInfo());
+                }
                 NavView.IsPaneOpen = false;
                 Thickness otThickness = new Thickness();
                 otThickness.Right = AppWindow.TitleBar.RightInset;
@@ -391,17 +400,20 @@ namespace JustBedwars
                 titleAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
                 contentAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
                 buttonAnimation.InsertKeyFrame(1, new Vector3(0f, 0f, 0f));
-                tempPresenter.SetBorderAndTitleBar(true, true);
+                tempPresenter?.SetBorderAndTitleBar(true, true);
             }
             else
             {
                 titleAnimation.InsertKeyFrame(1, new Vector3(0f, -32f, 0f));
                 contentAnimation.InsertKeyFrame(1, new Vector3(0f, -28f, 0f));
                 buttonAnimation.InsertKeyFrame(1, new Vector3(0f, -32f, 0f));
-                tempPresenter.SetBorderAndTitleBar(true, false);
+                tempPresenter?.SetBorderAndTitleBar(true, false);
             }
 
-            AppWindow.SetPresenter(tempPresenter);
+            if (tempPresenter != null)
+            {
+                AppWindow.SetPresenter(tempPresenter);
+            }
 
             titleVisual.StartAnimation("Translation", titleAnimation);
             contentVisual.StartAnimation("Translation", contentAnimation);
@@ -420,9 +432,9 @@ namespace JustBedwars
         }
 
         [DllImport("CoreMessaging.dll")]
-        private static extern int CreateDispatcherQueueController([In] DispatcherQueueOptions options, [In, Out, MarshalAs(UnmanagedType.IUnknown)] ref object dispatcherQueueController);
+        private static extern int CreateDispatcherQueueController([In] DispatcherQueueOptions options, [In, Out, MarshalAs(UnmanagedType.IUnknown)] ref object? dispatcherQueueController);
 
-        object m_dispatcherQueueController = null;
+        object? m_dispatcherQueueController = null;
         public void EnsureWindowsSystemDispatcherQueueController()
         {
             if (Windows.System.DispatcherQueue.GetForCurrentThread() != null)

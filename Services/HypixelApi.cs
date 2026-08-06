@@ -83,41 +83,45 @@ namespace JustBedwars.Services
                 DebugService.Instance.Log($"[HypixelApi] Response: {response.Substring(0, Math.Min(response.Length, 100))}...");
                 var json = JObject.Parse(response);
 
-                if (json["success"] != null && !(bool)json["success"])
+                if ((bool?)json["success"] == false)
                 {
                     DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
                     return null;
                 }
 
-                if (json["guild"] == null)
+                var guildObj = json["guild"];
+                if (guildObj == null)
                 {
                     DebugService.Instance.Log("[HypixelApi] Guild not found.");
                     return null;
                 }
 
+                var membersToken = guildObj["members"] as JArray;
+                var ranksToken = guildObj["ranks"] as JArray;
+
                 var guild = new Guild
                 {
-                    Id = (string)json["guild"]["_id"],
-                    Name = (string)json["guild"]["name"],
-                    Exp = (long)json["guild"]["exp"],
-                    Tag = (string)json["guild"]["tag"],
-                    Created = (long)json["guild"]["created"],
-                    Description = (string)json["guild"]["description"],
-                    PreferredGames = json["guild"]["preferredGames"]?.ToObject<List<string>>() ?? new List<string>(),
-                    ExpByGameType = json["guild"]["guildExpByGameType"]?.ToObject<Dictionary<string, long>>() ?? new Dictionary<string, long>(),
-                    OnlinePlayers = (int?)json["guild"]?["achievements"]?["ONLINE_PLAYERS"] ?? 0,
-                    Members = json["guild"]["members"].Select(m => new GuildMember
+                    Id = (string?)guildObj["_id"] ?? string.Empty,
+                    Name = (string?)guildObj["name"] ?? string.Empty,
+                    Exp = (long?)guildObj["exp"] ?? 0,
+                    Tag = (string?)guildObj["tag"] ?? string.Empty,
+                    Created = (long?)guildObj["created"] ?? 0,
+                    Description = (string?)guildObj["description"] ?? string.Empty,
+                    PreferredGames = guildObj["preferredGames"]?.ToObject<List<string>>() ?? new List<string>(),
+                    ExpByGameType = guildObj["guildExpByGameType"]?.ToObject<Dictionary<string, long>>() ?? new Dictionary<string, long>(),
+                    OnlinePlayers = (int?)guildObj["achievements"]?["ONLINE_PLAYERS"] ?? 0,
+                    Members = membersToken?.Select(m => new GuildMember
                     {
-                        Uuid = (string)m["uuid"],
-                        Rank = (string)m["rank"],
-                        Joined = (long)m["joined"]
-                    }).ToList(),
-                    Ranks = json["guild"]["ranks"].Select(r => new GuildRank
+                        Uuid = (string?)m["uuid"] ?? string.Empty,
+                        Rank = (string?)m["rank"] ?? string.Empty,
+                        Joined = (long?)m["joined"] ?? 0
+                    }).ToList() ?? new List<GuildMember>(),
+                    Ranks = ranksToken?.Select(r => new GuildRank
                     {
-                        Name = (string)r["name"],
-                        Priority = (int)r["priority"],
-                        Tag = (string)r["tag"]
-                    }).ToList()
+                        Name = (string?)r["name"] ?? string.Empty,
+                        Priority = (int?)r["priority"] ?? 0,
+                        Tag = (string?)r["tag"] ?? string.Empty
+                    }).ToList() ?? new List<GuildRank>()
                 };
 
                 guild.Level = GetGuildLevel(guild.Exp);
@@ -141,7 +145,7 @@ namespace JustBedwars.Services
             }
         }
 
-        public async Task GetNamesForGuildMembers(List<GuildMember> members, IProgress<double> progress)
+        public async Task GetNamesForGuildMembers(List<GuildMember> members, IProgress<double>? progress)
         {
             var uuidsToFetch = members.Where(m => string.IsNullOrEmpty(m.Name)).Select(m => m.Uuid).ToList();
             var names = await GetUsernamesFromUuids(uuidsToFetch, progress);
@@ -244,7 +248,7 @@ namespace JustBedwars.Services
                 }
                 else
                 {
-                    if (json["success"] != null && !(bool)json["success"])
+                    if ((bool?)json["success"] == false)
                     {
                         DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
                         var errorplayer = new Player
@@ -370,20 +374,18 @@ namespace JustBedwars.Services
                 _apiStopwatch.Restart();
                 var json = JObject.Parse(response);
 
-                if (json["success"] != null && !(bool)json["success"])
+                if ((bool?)json["success"] == false)
                 {
                     DebugService.Instance.Log($"[HypixelApi] API call failed: {json["cause"]}");
                     return new List<LeaderboardEntry>();
                 }
 
                 var leaders = new List<LeaderboardEntry>();
-                var bedwarsLeaderboards = json["leaderboards"]?["BEDWARS"];
-                if (bedwarsLeaderboards != null)
+                if (json["leaderboards"]?["BEDWARS"] is JArray bedwarsLeaderboards)
                 {
-                    var board = bedwarsLeaderboards.FirstOrDefault(b => (string)b["path"] == boardPath);
-                    if (board != null)
+                    var board = bedwarsLeaderboards.FirstOrDefault(b => (string?)b["path"] == boardPath);
+                    if (board?["leaders"]?.ToObject<List<string>>() is List<string> leaderUuids)
                     {
-                        var leaderUuids = board["leaders"].ToObject<List<string>>();
                         int rank = 1;
                         foreach (var uuid in leaderUuids)
                         {
@@ -416,7 +418,7 @@ namespace JustBedwars.Services
             }
         }
 
-        public async Task GetNamesForLeaderboardEntries(List<LeaderboardEntry> entries, IProgress<double> progress)
+        public async Task GetNamesForLeaderboardEntries(List<LeaderboardEntry> entries, IProgress<double>? progress)
         {
             var uuidsToFetch = entries.Where(e => string.IsNullOrEmpty(e.Name)).Select(e => e.Uuid).ToList();
             var names = await GetUsernamesFromUuids(uuidsToFetch, progress);
@@ -433,7 +435,7 @@ namespace JustBedwars.Services
             }
         }
 
-        private async Task<Dictionary<string, string>> GetUsernamesFromUuids(List<string> uuids, IProgress<double> progress)
+        private async Task<Dictionary<string, string>> GetUsernamesFromUuids(List<string> uuids, IProgress<double>? progress)
         {
             var names = new Dictionary<string, string>();
             var uuidsToFetch = new List<string>();
@@ -477,15 +479,18 @@ namespace JustBedwars.Services
                                 var response = await responseMessage.Content.ReadAsStringAsync();
 
                                 var json = JObject.Parse(response);
-                                var name = (string)json["data"]["player"]["username"];
+                                var name = (string?)json["data"]?["player"]?["username"];
 
-                                lock (progressLock)
+                                if (name != null)
                                 {
-                                    var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
-                                    _uuidCache.Add(uuid, name, policy);
-                                    names[uuid] = name;
+                                    lock (progressLock)
+                                    {
+                                        var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(1) };
+                                        _uuidCache.Add(uuid, name, policy);
+                                        names[uuid] = name;
+                                    }
+                                    return;
                                 }
-                                return;
                             }
                             catch (TaskCanceledException)
                             {

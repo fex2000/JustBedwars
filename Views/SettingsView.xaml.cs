@@ -18,19 +18,22 @@ namespace JustBedwars.Views
         private const string SaveDebugLogsSettingName = "SaveDebugLogs";
         private const string EnableLogHistorySettingName = "EnableLogHistory";
         private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
-        private SettingsService _settingsService;
+        private SettingsService _settingsService = new SettingsService();
         public string Version { get; }
 
         public SettingsView()
         {
             InitializeComponent();
-            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}";
+            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0"}";
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            _settingsService = e.Parameter as SettingsService;
+            if (e.Parameter is SettingsService settingsService)
+            {
+                _settingsService = settingsService;
+            }
             LoadApiKey();
             LoadLogFilePath();
             LoadPlayerSorting();

@@ -90,8 +90,8 @@ namespace JustBedwars.Views
             var selectedItem = (SegmentedItem)SearchTypeSegmented.SelectedItem;
             if (selectedItem == null) return;
 
-            string endpoint = null;
-            switch (selectedItem.Content.ToString())
+            string? endpoint = null;
+            switch (selectedItem.Content?.ToString())
             {
                 case "Member Name":
                     endpoint = $"http://185.194.216.210:3000/api/justbedwars/v2/autocomplete?query={query}&limit=10&mode=name";
@@ -128,7 +128,7 @@ namespace JustBedwars.Views
             var selectedItem = (SegmentedItem)SearchTypeSegmented.SelectedItem;
             if (selectedItem == null) return;
 
-            var type = selectedItem.Content.ToString();
+            var type = selectedItem.Content?.ToString() ?? string.Empty;
 
             Frame.Navigate(typeof(GuildLookupResultPage), new GuildLookupParameter { Query = query, Type = type }, new DrillInNavigationTransitionInfo());
         }

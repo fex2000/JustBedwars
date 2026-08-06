@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -23,7 +23,7 @@ namespace JustBedwars.Services
             _httpClient.DefaultRequestHeaders.Add("App-Key", appKey);
         }
 
-        public async Task TrackEvent(string eventName, object props = null)
+        public async Task TrackEvent(string eventName, object? props = null)
         {
             if (!(_settingsService.GetValue("SendUsageStats") as bool? ?? false))
             {
