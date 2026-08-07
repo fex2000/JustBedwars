@@ -1,469 +1,464 @@
-
-using JustBedwars.Services;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.ComponentModel;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 
-namespace JustBedwars.Models
+namespace JustBedwars.Models;
+
+public class Player : INotifyPropertyChanged
 {
-    public class Player : INotifyPropertyChanged
+    private double _bblr;
+
+    private int _beds;
+
+    private int _bedsLost;
+
+    private long _bedwarsExperience;
+
+    private int _deaths;
+
+    private int _finaldeaths;
+
+    private int _finals;
+
+    private long _firstlogin;
+
+    private double _fkdr;
+
+    private bool _isExpanded;
+
+    private bool _isLoading;
+
+    private double _kdr;
+
+    private int _kills;
+
+    private int _losses;
+
+    private long _networkExp;
+
+    private string? _playerTag;
+
+    private string? _playeruuid;
+
+    private int _star;
+
+    private string? _username;
+
+    private int _wins;
+
+    private double _wlr;
+
+    public string? Username
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private string? _username;
-        public string? Username
+        get => _username;
+        set
         {
-            get => _username;
-            set
+            if (_username != value)
             {
-                if (_username != value)
-                {
-                    _username = value;
-                    OnPropertyChanged(nameof(Username));
-                }
+                _username = value;
+                OnPropertyChanged(nameof(Username));
             }
         }
+    }
 
-        private int _star;
-        public int Star
+    public int Star
+    {
+        get => _star;
+        set
         {
-            get => _star;
-            set
+            if (_star != value)
             {
-                if (_star != value)
-                {
-                    _star = value;
-                    OnPropertyChanged(nameof(Star));
-                }
+                _star = value;
+                OnPropertyChanged(nameof(Star));
             }
         }
+    }
 
-        private long _firstlogin;
-        public long FirstLogin
+    public long FirstLogin
+    {
+        get => _firstlogin;
+        set
         {
-            get => _firstlogin;
-            set
+            if (_firstlogin != value)
             {
-                if (_firstlogin != value)
-                {
-                    _firstlogin = value;
-                    OnPropertyChanged(nameof(FirstLogin));
-                    OnPropertyChanged(nameof(FirstLoginDate));
-                }
+                _firstlogin = value;
+                OnPropertyChanged(nameof(FirstLogin));
+                OnPropertyChanged(nameof(FirstLoginDate));
             }
         }
+    }
 
-        public string FirstLoginDate
+    public string FirstLoginDate
+    {
+        get
         {
-            get
+            if (_firstlogin == 0) return string.Empty;
+            return DateTimeOffset.FromUnixTimeMilliseconds(_firstlogin).ToString("dd.MM.yyyy");
+        }
+    }
+
+    public double FKDR
+    {
+        get => _fkdr;
+        set
+        {
+            if (_fkdr != value)
             {
-                if (_firstlogin == 0)
-                {
-                    return string.Empty;
-                }
-                return DateTimeOffset.FromUnixTimeMilliseconds(_firstlogin).ToString("dd.MM.yyyy");
+                _fkdr = value;
+                OnPropertyChanged(nameof(FKDR));
             }
         }
+    }
 
-        private double _fkdr;
-        public double FKDR
+    public double BBLR
+    {
+        get => _bblr;
+        set
         {
-            get => _fkdr;
-            set
+            if (_bblr != value)
             {
-                if (_fkdr != value)
-                {
-                    _fkdr = value;
-                    OnPropertyChanged(nameof(FKDR));
-                }
+                _bblr = value;
+                OnPropertyChanged(nameof(BBLR));
             }
         }
+    }
 
-        private double _bblr;
-        public double BBLR
+    public double WLR
+    {
+        get => _wlr;
+        set
         {
-            get => _bblr;
-            set
+            if (_wlr != value)
             {
-                if (_bblr != value)
-                {
-                    _bblr = value;
-                    OnPropertyChanged(nameof(BBLR));
-                }
+                _wlr = value;
+                OnPropertyChanged(nameof(WLR));
             }
         }
+    }
 
-        private double _wlr;
-        public double WLR
+    public double KDR
+    {
+        get => _kdr;
+        set
         {
-            get => _wlr;
-            set
+            if (_kdr != value)
             {
-                if (_wlr != value)
-                {
-                    _wlr = value;
-                    OnPropertyChanged(nameof(WLR));
-                }
+                _kdr = value;
+                OnPropertyChanged(nameof(KDR));
             }
         }
+    }
 
-        private double _kdr;
-        public double KDR
+    public int Finals
+    {
+        get => _finals;
+        set
         {
-            get => _kdr;
-            set
+            if (_finals != value)
             {
-                if (_kdr != value)
-                {
-                    _kdr = value;
-                    OnPropertyChanged(nameof(KDR));
-                }
+                _finals = value;
+                OnPropertyChanged(nameof(Finals));
             }
         }
+    }
 
-        private int _finals;
-        public int Finals
+    public int FinalDeaths
+    {
+        get => _finaldeaths;
+        set
         {
-            get => _finals;
-            set
+            if (_finaldeaths != value)
             {
-                if (_finals != value)
-                {
-                    _finals = value;
-                    OnPropertyChanged(nameof(Finals));
-                }
+                _finaldeaths = value;
+                OnPropertyChanged(nameof(FinalDeaths));
             }
         }
+    }
 
-        private int _finaldeaths;
-        public int FinalDeaths
+    public int Kills
+    {
+        get => _kills;
+        set
         {
-            get => _finaldeaths;
-            set
+            if (_kills != value)
             {
-                if (_finaldeaths != value)
-                {
-                    _finaldeaths = value;
-                    OnPropertyChanged(nameof(FinalDeaths));
-                }
+                _kills = value;
+                OnPropertyChanged(nameof(Kills));
             }
         }
+    }
 
-        private int _kills;
-        public int Kills
+    public int Deaths
+    {
+        get => _deaths;
+        set
         {
-            get => _kills;
-            set
+            if (_deaths != value)
             {
-                if (_kills != value)
-                {
-                    _kills = value;
-                    OnPropertyChanged(nameof(Kills));
-                }
+                _deaths = value;
+                OnPropertyChanged(nameof(Deaths));
             }
         }
+    }
 
-        private int _deaths;
-        public int Deaths
+    public int Wins
+    {
+        get => _wins;
+        set
         {
-            get => _deaths;
-            set
+            if (_wins != value)
             {
-                if (_deaths != value)
-                {
-                    _deaths = value;
-                    OnPropertyChanged(nameof(Deaths));
-                }
+                _wins = value;
+                OnPropertyChanged(nameof(Wins));
             }
         }
+    }
 
-        private int _wins;
-        public int Wins
+    public int Losses
+    {
+        get => _losses;
+        set
         {
-            get => _wins;
-            set
+            if (_losses != value)
             {
-                if (_wins != value)
-                {
-                    _wins = value;
-                    OnPropertyChanged(nameof(Wins));
-                }
+                _losses = value;
+                OnPropertyChanged(nameof(Losses));
             }
         }
+    }
 
-        private int _losses;
-        public int Losses
+    public int Beds
+    {
+        get => _beds;
+        set
         {
-            get => _losses;
-            set
+            if (_beds != value)
             {
-                if (_losses != value)
-                {
-                    _losses = value;
-                    OnPropertyChanged(nameof(Losses));
-                }
+                _beds = value;
+                OnPropertyChanged(nameof(Beds));
             }
         }
+    }
 
-        private int _beds;
-        public int Beds
+    public int BedsLost
+    {
+        get => _bedsLost;
+        set
         {
-            get => _beds;
-            set
+            if (_bedsLost != value)
             {
-                if (_beds != value)
-                {
-                    _beds = value;
-                    OnPropertyChanged(nameof(Beds));
-                }
+                _bedsLost = value;
+                OnPropertyChanged(nameof(BedsLost));
             }
         }
+    }
 
-        private int _bedsLost;
-        public int BedsLost
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
         {
-            get => _bedsLost;
-            set
+            if (_isLoading != value)
             {
-                if (_bedsLost != value)
-                {
-                    _bedsLost = value;
-                    OnPropertyChanged(nameof(BedsLost));
-                }
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
             }
         }
+    }
 
-        private bool _isLoading;
-        public bool IsLoading
+    public string? PlayerTag
+    {
+        get => _playerTag;
+        set
         {
-            get => _isLoading;
-            set
+            if (_playerTag != value)
             {
-                if (_isLoading != value)
-                {
-                    _isLoading = value;
-                    OnPropertyChanged(nameof(IsLoading));
-                }
+                _playerTag = value;
+                OnPropertyChanged(nameof(PlayerTag));
             }
         }
+    }
 
-        private string? _playerTag;
-        public string? PlayerTag
+    public string? PlayerUUID
+    {
+        get => _playeruuid;
+        set
         {
-            get => _playerTag;
-            set
+            if (_playeruuid != value)
             {
-                if (_playerTag != value)
-                {
-                    _playerTag = value;
-                    OnPropertyChanged(nameof(PlayerTag));
-                }
+                _playeruuid = value;
+                OnPropertyChanged(nameof(PlayerUUID));
             }
         }
+    }
 
-        private string? _playeruuid;
-        public string? PlayerUUID
+    public long BedwarsExperience
+    {
+        get => _bedwarsExperience;
+        set
         {
-            get => _playeruuid;
-            set
+            if (_bedwarsExperience != value)
             {
-                if (_playeruuid != value)
-                {
-                    _playeruuid = value;
-                    OnPropertyChanged(nameof(PlayerUUID));
-                }
+                _bedwarsExperience = value;
+                OnPropertyChanged(nameof(BedwarsExperience));
+                OnPropertyChanged(nameof(BedwarsLevelProgress));
             }
         }
+    }
 
-        private long _bedwarsExperience;
-        public long BedwarsExperience
+    public long NetworkExp
+    {
+        get => _networkExp;
+        set
         {
-            get => _bedwarsExperience;
-            set
+            if (_networkExp != value)
             {
-                if (_bedwarsExperience != value)
-                {
-                    _bedwarsExperience = value;
-                    OnPropertyChanged(nameof(BedwarsExperience));
-                    OnPropertyChanged(nameof(BedwarsLevelProgress));
-                }
+                _networkExp = value;
+                OnPropertyChanged(nameof(NetworkExp));
+                OnPropertyChanged(nameof(HypixelLevelProgress));
+                OnPropertyChanged(nameof(HypixelLevel));
             }
         }
+    }
 
-        private long _networkExp;
-        public long NetworkExp
+    public double BedwarsLevelProgress
+    {
+        get
         {
-            get => _networkExp;
-            set
-            {
-                if (_networkExp != value)
-                {
-                    _networkExp = value;
-                    OnPropertyChanged(nameof(NetworkExp));
-                    OnPropertyChanged(nameof(HypixelLevelProgress));
-                    OnPropertyChanged(nameof(HypixelLevel));
-                }
-            }
+            if (BedwarsExperience == 0) return 0;
+            return GetBedWarsLevelPercentage(BedwarsExperience) * 100;
         }
+    }
 
-        public double BedwarsLevelProgress
+    public double HypixelLevelProgress
+    {
+        get
         {
-            get
-            {
-                if (BedwarsExperience == 0) return 0;
-                return GetBedWarsLevelPercentage(BedwarsExperience) * 100;
-            }
+            if (NetworkExp == 0) return 0;
+            var progress = Math.Sqrt(2 * NetworkExp + 30625) / 50 - 2.5;
+            return (progress - Math.Truncate(progress)) * 100;
         }
+    }
 
-        public double HypixelLevelProgress
+    public int HypixelLevel
+    {
+        get
         {
-            get
-            {
-                if (NetworkExp == 0) return 0;
-                double progress = (Math.Sqrt((2 * NetworkExp) + 30625) / 50) - 2.5;
-                return (progress - Math.Truncate(progress)) * 100;
-            }
+            if (NetworkExp == 0) return 0;
+            var progress = Math.Sqrt(2 * NetworkExp + 30625) / 50 - 2.5;
+            return (int)Math.Truncate(progress);
         }
+    }
 
-        public int HypixelLevel
+    public Visibility IsLoaderVisible
+    {
+        get
         {
-            get
-            {
-                if (NetworkExp == 0) return 0;
-                double progress = (Math.Sqrt((2 * NetworkExp) + 30625) / 50) - 2.5;
-                return (int)Math.Truncate(progress);
-            }
-        }
-
-        private static double GetBedWarsLevelPercentage(double exp)
-        {
-            int level = 100 * (int)(exp / 487000);
-            exp = exp % 487000;
-            if (exp < 500) return level + exp / 500;
-            if (exp < 1500) return level + (exp - 500) / 1000;
-            if (exp < 3500) return level + (exp - 1500) / 2000;
-            if (exp < 7000) return level + (exp - 3500) / 3500;
-            exp -= 7000;
-            return ((level + exp / 5000) - Math.Truncate(level + exp / 5000));
-        }
-
-        public Visibility IsLoaderVisible
-        {
-            get
-            {
-                if (_isLoading == false)
-                    return Visibility.Collapsed;
-                else
-                    return Visibility.Visible;
-            }
-        }
-
-        public Visibility IsContentVisible
-        {
-            get
-            {
-                if (_isLoading == false)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Collapsed;
-            }
-        }
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private bool _isExpanded;
-        public bool IsExpanded
-        {
-            get => _isExpanded;
-            set
-            {
-                if (_isExpanded != value)
-                {
-                    _isExpanded = value;
-                    OnPropertyChanged(nameof(IsExpanded));
-                    OnPropertyChanged(nameof(IsCollapsedContentVisible));
-                    OnPropertyChanged(nameof(IsExpandedContentVisible));
-                }
-            }
-        }
-
-        public double StatOpacity
-        {
-            get
-            {
-                if (PlayerTag == "NICK" || PlayerTag == "ERROR")
-                    return 0.2;
-                return 1;
-            }
-        }
-
-        public Visibility TagCardVisibility
-        {
-            get
-            {
-                if (IsContentVisible != Visibility.Visible || PlayerTag == "" || PlayerTag == "-")
-                    return Visibility.Collapsed;
-                return Visibility.Visible;
-            }
-        }
-
-        public Visibility UnknownStatsVisibility
-        {
-            get
-            {
-                if (PlayerTag == "NICK" || PlayerTag == "ERROR")
-                    return Visibility.Visible;
+            if (!_isLoading)
                 return Visibility.Collapsed;
-            }
+            return Visibility.Visible;
         }
+    }
 
-        public Visibility IsCollapsedContentVisible
+    public Visibility IsContentVisible
+    {
+        get
         {
-            get
+            if (!_isLoading)
+                return Visibility.Visible;
+            return Visibility.Collapsed;
+        }
+    }
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded != value)
             {
-                if (_isExpanded == true)
-                    return Visibility.Collapsed;
-                else
-                    return Visibility.Visible;
+                _isExpanded = value;
+                OnPropertyChanged(nameof(IsExpanded));
+                OnPropertyChanged(nameof(IsCollapsedContentVisible));
+                OnPropertyChanged(nameof(IsExpandedContentVisible));
             }
         }
+    }
 
-        public Visibility IsExpandedContentVisible
+    public double StatOpacity
+    {
+        get
         {
-            get
-            {
-                if (_isExpanded == true)
-                    return Visibility.Visible;
-                else
-                    return Visibility.Collapsed;
-            }
+            if (PlayerTag == "NICK" || PlayerTag == "ERROR")
+                return 0.2;
+            return 1;
         }
+    }
 
-        public BitmapImage PlayerImageFace
+    public Visibility TagCardVisibility
+    {
+        get
         {
-            get
-            {
-                return new BitmapImage(new Uri($"https://skins.jbw.fexei.at/bust/{_username}"));
-            }
+            if (IsContentVisible != Visibility.Visible || PlayerTag == "" || PlayerTag == "-")
+                return Visibility.Collapsed;
+            return Visibility.Visible;
         }
+    }
 
-        public BitmapImage PlayerImageIcon
+    public Visibility UnknownStatsVisibility
+    {
+        get
         {
-            get
-            {
-                return new BitmapImage(new Uri($"https://skins.jbw.fexei.at/face/{_username}"));
-            }
+            if (PlayerTag == "NICK" || PlayerTag == "ERROR")
+                return Visibility.Visible;
+            return Visibility.Collapsed;
         }
+    }
 
-        public double Score
+    public Visibility IsCollapsedContentVisible
+    {
+        get
         {
-            get {
-                return Star * Math.Pow(FKDR, 2) * Math.Pow(WLR, 1.2) * Math.Pow(BBLR, 1.1) * (1 + Finals / 1000.0 + Kills / 2000.0 + Beds / 500.0 + Wins / 1000.0);
-            }
+            if (_isExpanded)
+                return Visibility.Collapsed;
+            return Visibility.Visible;
         }
+    }
+
+    public Visibility IsExpandedContentVisible
+    {
+        get
+        {
+            if (_isExpanded)
+                return Visibility.Visible;
+            return Visibility.Collapsed;
+        }
+    }
+
+    public BitmapImage PlayerImageFace => new(new Uri($"https://skins.jbw.fexei.at/bust/{_username}"));
+
+    public BitmapImage PlayerImageIcon => new(new Uri($"https://skins.jbw.fexei.at/face/{_username}"));
+
+    public double Score => Star * Math.Pow(FKDR, 2) * Math.Pow(WLR, 1.2) * Math.Pow(BBLR, 1.1) *
+                           (1 + Finals / 1000.0 + Kills / 2000.0 + Beds / 500.0 + Wins / 1000.0);
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private static double GetBedWarsLevelPercentage(double exp)
+    {
+        var level = 100 * (int)(exp / 487000);
+        exp = exp % 487000;
+        if (exp < 500) return level + exp / 500;
+        if (exp < 1500) return level + (exp - 500) / 1000;
+        if (exp < 3500) return level + (exp - 1500) / 2000;
+        if (exp < 7000) return level + (exp - 3500) / 3500;
+        exp -= 7000;
+        return level + exp / 5000 - Math.Truncate(level + exp / 5000);
+    }
+
+    protected void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

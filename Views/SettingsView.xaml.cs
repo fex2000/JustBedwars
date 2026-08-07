@@ -1,204 +1,193 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using Windows.Storage.Pickers;
 using JustBedwars.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using Windows.Storage.Pickers;
 using WinRT.Interop;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
-namespace JustBedwars.Views
+namespace JustBedwars.Views;
+
+public sealed partial class SettingsView : Page
 {
-    public sealed partial class SettingsView : Page
+    private const string ApiKeySettingName = "HypixelApiKey";
+    private const string LogFileSettingName = "LogFilePath";
+    private const string PlayerSortingSettingName = "PlayerSorting";
+    private const string SaveDebugLogsSettingName = "SaveDebugLogs";
+    private const string EnableLogHistorySettingName = "EnableLogHistory";
+    private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
+    private SettingsService _settingsService = new();
+
+    public SettingsView()
     {
-        private const string ApiKeySettingName = "HypixelApiKey";
-        private const string LogFileSettingName = "LogFilePath";
-        private const string PlayerSortingSettingName = "PlayerSorting";
-        private const string SaveDebugLogsSettingName = "SaveDebugLogs";
-        private const string EnableLogHistorySettingName = "EnableLogHistory";
-        private const string EnableLogReaderLoggingSettingName = "EnableLogReaderLogging";
-        private SettingsService _settingsService = new SettingsService();
-        public string Version { get; }
+        InitializeComponent();
+        Version = $"Version {Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0"}";
+    }
 
-        public SettingsView()
+    public string Version { get; }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        if (e.Parameter is SettingsService settingsService) _settingsService = settingsService;
+        LoadApiKey();
+        LoadLogFilePath();
+        LoadPlayerSorting();
+        LoadSaveDebugLogsSetting();
+        LoadEnableLogHistorySetting();
+        LoadEnableLogReaderLoggingSetting();
+        LoadUsageSetting();
+    }
+
+    private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+    {
+        SaveApiKey();
+    }
+
+    private void LoadApiKey()
+    {
+        var apiKey = _settingsService.GetValue(ApiKeySettingName);
+        if (apiKey != null) ApiKeyPasswordBox.Password = (string)apiKey;
+    }
+
+    private void SaveApiKey()
+    {
+        _settingsService.SetValue(ApiKeySettingName, ApiKeyPasswordBox.Password);
+    }
+
+    private async void SelectLogFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".log");
+
+        var hwnd = WindowNative.GetWindowHandle(App.Window);
+        InitializeWithWindow.Initialize(picker, hwnd);
+
+        var file = await picker.PickSingleFileAsync();
+        if (file != null)
         {
-            InitializeComponent();
-            Version = $"Version {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0"}";
+            LogFilePathTextBox.Text = file.Path;
+            SaveLogFilePath(file.Path);
         }
+    }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            if (e.Parameter is SettingsService settingsService)
-            {
-                _settingsService = settingsService;
-            }
-            LoadApiKey();
-            LoadLogFilePath();
-            LoadPlayerSorting();
-            LoadSaveDebugLogsSetting();
-            LoadEnableLogHistorySetting();
-            LoadEnableLogReaderLoggingSetting();
-            LoadUsageSetting();
-        }
+    private void LoadLogFilePath()
+    {
+        var logFilePath = _settingsService.GetValue(LogFileSettingName);
+        if (logFilePath != null) LogFilePathTextBox.Text = (string)logFilePath;
+    }
 
-        private void ApiKeyPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            SaveApiKey();
-        }
+    private void SaveLogFilePath(string path)
+    {
+        _settingsService.SetValue(LogFileSettingName, path);
+    }
 
-        private void LoadApiKey()
-        {
-            var apiKey = _settingsService.GetValue(ApiKeySettingName);
-            if (apiKey != null)
-            {
-                ApiKeyPasswordBox.Password = (string)apiKey;
-            }
-        }
+    private void OpenDebugWindow_Click(object sender, RoutedEventArgs e)
+    {
+        var debugWindow = new DebugWindow();
+        debugWindow.Activate();
+    }
 
-        private void SaveApiKey()
-        {
-            _settingsService.SetValue(ApiKeySettingName, ApiKeyPasswordBox.Password);
-        }
+    private void SortingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        SavePlayerSorting();
+    }
 
-        private async void SelectLogFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            var picker = new FileOpenPicker();
-            picker.FileTypeFilter.Add(".log");
+    private void LoadPlayerSorting()
+    {
+        var sorting = _settingsService.GetValue(PlayerSortingSettingName);
+        if (sorting != null)
+            SortingComboBox.SelectedItem = sorting;
+        else
+            SortingComboBox.SelectedItem = "JustBedwars Score";
+    }
 
-            var hwnd = WindowNative.GetWindowHandle(App.Window);
-            InitializeWithWindow.Initialize(picker, hwnd);
+    private void SavePlayerSorting()
+    {
+        if (SortingComboBox.SelectedItem != null)
+            _settingsService.SetValue(PlayerSortingSettingName, SortingComboBox.SelectedItem.ToString());
+    }
 
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
-            {
-                LogFilePathTextBox.Text = file.Path;
-                SaveLogFilePath(file.Path);
-            }
-        }
+    private void SaveDebugLogsToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        var isOn = ((ToggleSwitch)sender).IsOn;
+        _settingsService.SetValue(SaveDebugLogsSettingName, isOn);
+        UpdateDebugServiceLogging();
+    }
 
-        private void LoadLogFilePath()
-        {
-            var logFilePath = _settingsService.GetValue(LogFileSettingName);
-            if (logFilePath != null)
-            {
-                LogFilePathTextBox.Text = (string)logFilePath;
-            }
-        }
+    private void LoadSaveDebugLogsSetting()
+    {
+        var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName);
+        SaveDebugLogsToggle.IsOn = saveDebugLogs as bool? ?? true;
+    }
 
-        private void SaveLogFilePath(string path)
-        {
-            _settingsService.SetValue(LogFileSettingName, path);
-        }
+    private void EnableLogHistoryToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        var isOn = ((ToggleSwitch)sender).IsOn;
+        _settingsService.SetValue(EnableLogHistorySettingName, isOn);
+        UpdateDebugServiceLogging();
+    }
 
-        private void OpenDebugWindow_Click(object sender, RoutedEventArgs e)
-        {
-            var debugWindow = new DebugWindow();
-            debugWindow.Activate();
-        }
+    private void LoadEnableLogHistorySetting()
+    {
+        var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName);
+        EnableLogHistoryToggle.IsOn = enableLogHistory as bool? ?? true;
+    }
 
-        private void SortingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SavePlayerSorting();
-        }
+    private void UpdateDebugServiceLogging()
+    {
+        var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName) as bool? ?? true;
+        var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName) as bool? ?? true;
+        var logFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "JustBedwars", "logs");
+        var logFilePath = Path.Combine(logFolderPath, "latest.log");
+        DebugService.Instance.SetFileLogging(saveDebugLogs, logFilePath, enableLogHistory);
+    }
 
-        private void LoadPlayerSorting()
-        {
-            var sorting = _settingsService.GetValue(PlayerSortingSettingName);
-            if (sorting != null)
-            {
-                SortingComboBox.SelectedItem = sorting;
-            }
-            else
-            {
-                SortingComboBox.SelectedItem = "JustBedwars Score";
-            }
-        }
+    private void OpenLogFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        var logFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "JustBedwars");
+        Process.Start("explorer.exe", logFolderPath);
+    }
 
-        private void SavePlayerSorting()
-        {
-            if (SortingComboBox.SelectedItem != null)
-            {
-                _settingsService.SetValue(PlayerSortingSettingName, SortingComboBox.SelectedItem.ToString());
-            }
-        }
+    private void EnableLogReaderLoggingToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        var isOn = ((ToggleSwitch)sender).IsOn;
+        _settingsService.SetValue(EnableLogReaderLoggingSettingName, isOn);
+    }
 
-        private void SaveDebugLogsToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var isOn = ((ToggleSwitch)sender).IsOn;
-            _settingsService.SetValue(SaveDebugLogsSettingName, isOn);
-            UpdateDebugServiceLogging();
-        }
+    private void LoadEnableLogReaderLoggingSetting()
+    {
+        var enableLogReaderLogging = _settingsService.GetValue(EnableLogReaderLoggingSettingName);
+        EnableLogReaderLoggingToggle.IsOn = enableLogReaderLogging as bool? ?? true;
+    }
 
-        private void LoadSaveDebugLogsSetting()
-        {
-            var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName);
-            SaveDebugLogsToggle.IsOn = saveDebugLogs as bool? ?? true;
-        }
+    private async void ResetWelcomeStateButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _settingsService.SetValue("FirstLaunch", true);
 
-        private void EnableLogHistoryToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var isOn = ((ToggleSwitch)sender).IsOn;
-            _settingsService.SetValue(EnableLogHistorySettingName, isOn);
-            UpdateDebugServiceLogging();
-        }
+        App.Window!.AppWindow.Hide();
+        var welcomeWindow = new WelcomeWindow(_settingsService);
+        await welcomeWindow.RunSetup();
+        welcomeWindow.Close();
+        await Task.Delay(150);
+        App.Window!.AppWindow.Show();
+    }
 
-        private void LoadEnableLogHistorySetting()
-        {
-            var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName);
-            EnableLogHistoryToggle.IsOn = enableLogHistory as bool? ?? true;
-        }
-
-        private void UpdateDebugServiceLogging()
-        {
-            var saveDebugLogs = _settingsService.GetValue(SaveDebugLogsSettingName) as bool? ?? true;
-            var enableLogHistory = _settingsService.GetValue(EnableLogHistorySettingName) as bool? ?? true;
-            string logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "logs");
-            string logFilePath = System.IO.Path.Combine(logFolderPath, "latest.log");
-            DebugService.Instance.SetFileLogging(saveDebugLogs, logFilePath, enableLogHistory);
-        }
-
-        private void OpenLogFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            string logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars");
-            Process.Start("explorer.exe", logFolderPath);
-        }
-
-        private void EnableLogReaderLoggingToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var isOn = ((ToggleSwitch)sender).IsOn;
-            _settingsService.SetValue(EnableLogReaderLoggingSettingName, isOn);
-        }
-
-        private void LoadEnableLogReaderLoggingSetting()
-        {
-            var enableLogReaderLogging = _settingsService.GetValue(EnableLogReaderLoggingSettingName);
-            EnableLogReaderLoggingToggle.IsOn = enableLogReaderLogging as bool? ?? true;
-        }
-
-        private async void ResetWelcomeStateButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _settingsService.SetValue("FirstLaunch", true);
-
-            App.Window!.AppWindow.Hide();
-            var welcomeWindow = new WelcomeWindow(_settingsService);
-            await welcomeWindow.RunSetup();
-            welcomeWindow.Close();
-            await Task.Delay(150);
-            App.Window!.AppWindow.Show();
-        }
-
-        private void LoadUsageSetting()
-        {
-            UsageToggleSwitch.IsOn = _settingsService.GetValue("SendUsageStats") as bool? ?? false;
-        }
+    private void LoadUsageSetting()
+    {
+        UsageToggleSwitch.IsOn = _settingsService.GetValue("SendUsageStats") as bool? ?? false;
+    }
 
 
-        private void UsageToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
-        {
-            var isOn = ((ToggleSwitch)sender).IsOn;
-            _settingsService.SetValue("SendUsageStats", isOn);
-        }
+    private void UsageToggleSwitch_OnToggled(object sender, RoutedEventArgs e)
+    {
+        var isOn = ((ToggleSwitch)sender).IsOn;
+        _settingsService.SetValue("SendUsageStats", isOn);
     }
 }

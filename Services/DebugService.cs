@@ -3,114 +3,111 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace JustBedwars.Services
+namespace JustBedwars.Services;
+
+public class DebugService
 {
-    public class DebugService
+    private readonly object _fileLock = new();
+
+    private readonly List<string> _logHistory = new();
+    private readonly object _logHistoryLock = new();
+    private bool _isSavingToFile;
+    private string? _logFilePath;
+    public static DebugService Instance { get; } = new();
+
+    public event Action<string> LogAdded = delegate { };
+    public event Action<string> EmulatePlayerJoined = delegate { };
+    public event Action<string> EmulatePlayerLeft = delegate { };
+
+    public void Log(string message)
     {
-        private static readonly DebugService _instance = new DebugService();
-        public static DebugService Instance => _instance;
+        var logEntry = $"[{DateTime.Now:HH:mm:ss}] {message}";
 
-        private readonly List<string> _logHistory = new List<string>();
-        private readonly object _logHistoryLock = new object();
-        private readonly object _fileLock = new object();
-        private bool _isSavingToFile = false;
-        private string? _logFilePath;
-
-        public event Action<string> LogAdded = delegate { };
-        public event Action<string> EmulatePlayerJoined = delegate { };
-        public event Action<string> EmulatePlayerLeft = delegate { };
-
-        public void Log(string message)
+        lock (_logHistoryLock)
         {
-            string logEntry = $"[{DateTime.Now:HH:mm:ss}] {message}";
+            _logHistory.Add(logEntry);
+        }
 
-            lock (_logHistoryLock)
+        Debug.WriteLine(logEntry);
+
+        LogAdded?.Invoke(logEntry);
+
+        if (_isSavingToFile && !string.IsNullOrEmpty(_logFilePath))
+            try
             {
-                _logHistory.Add(logEntry);
-            }
-
-            Debug.WriteLine(logEntry);
-
-            LogAdded?.Invoke(logEntry);
-
-            if (_isSavingToFile && !string.IsNullOrEmpty(_logFilePath))
-            {
-                try
+                lock (_fileLock)
                 {
-                    lock (_fileLock)
+                    using (var writer = new StreamWriter(_logFilePath, true))
                     {
-                        using (StreamWriter writer = new StreamWriter(_logFilePath, true))
-                        {
-                            writer.WriteLine(logEntry);
-                        }
+                        writer.WriteLine(logEntry);
                     }
                 }
-                catch (Exception ex)
-                {
-                    // Swallow exception to prevent task from crashing
-                    Console.WriteLine($"[DebugService] Failed to write to log file: {ex.Message}");
-                }
             }
-        }
-
-        public List<string> GetLogHistory()
-        {
-            lock (_logHistoryLock)
+            catch (Exception ex)
             {
-                return new List<string>(_logHistory);
+                // Swallow exception to prevent task from crashing
+                Console.WriteLine($"[DebugService] Failed to write to log file: {ex.Message}");
             }
-        }
+    }
 
-        public void SetFileLogging(bool enable, string filePath, bool enableLogHistory)
+    public List<string> GetLogHistory()
+    {
+        lock (_logHistoryLock)
         {
-            _isSavingToFile = enable;
-            if (enable && !string.IsNullOrEmpty(filePath))
+            return new List<string>(_logHistory);
+        }
+    }
+
+    public void SetFileLogging(bool enable, string filePath, bool enableLogHistory)
+    {
+        _isSavingToFile = enable;
+        if (enable && !string.IsNullOrEmpty(filePath))
+        {
+            _logFilePath = filePath;
+            try
             {
-                _logFilePath = filePath;
-                try
+                var logDirectory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(logDirectory))
                 {
-                    var logDirectory = Path.GetDirectoryName(filePath);
-                    if (!string.IsNullOrEmpty(logDirectory))
+                    Directory.CreateDirectory(logDirectory);
+
+                    if (enableLogHistory && File.Exists(filePath))
                     {
-                        Directory.CreateDirectory(logDirectory);
-
-                        if (enableLogHistory && File.Exists(filePath))
-                        {
-                            var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-                            var historyFilePath = Path.Combine(logDirectory, $"{timestamp}.log.tz");
-                            File.Move(filePath, historyFilePath);
-                        }
-                    }
-
-                    // Delete old log file
-                    var oldLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JustBedwars", "debug.log");
-                    if(File.Exists(oldLogFile))
-                        File.Delete(oldLogFile);
-
-                    lock (_fileLock)
-                    {
-                        lock (_logHistoryLock)
-                        {
-                            File.WriteAllLines(_logFilePath, _logHistory);
-                        }
+                        var timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                        var historyFilePath = Path.Combine(logDirectory, $"{timestamp}.log.tz");
+                        File.Move(filePath, historyFilePath);
                     }
                 }
-                catch (Exception ex)
+
+                // Delete old log file
+                var oldLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "JustBedwars", "debug.log");
+                if (File.Exists(oldLogFile))
+                    File.Delete(oldLogFile);
+
+                lock (_fileLock)
                 {
-                    // Swallow exception
-                    Console.WriteLine($"[DebugService] Failed to initialize log file: {ex.Message}");
+                    lock (_logHistoryLock)
+                    {
+                        File.WriteAllLines(_logFilePath, _logHistory);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                // Swallow exception
+                Console.WriteLine($"[DebugService] Failed to initialize log file: {ex.Message}");
+            }
         }
+    }
 
-        public void OnEmulatePlayerJoined(string username)
-        {
-            EmulatePlayerJoined?.Invoke(username);
-        }
+    public void OnEmulatePlayerJoined(string username)
+    {
+        EmulatePlayerJoined?.Invoke(username);
+    }
 
-        public void OnEmulatePlayerLeft(string username)
-        {
-            EmulatePlayerLeft?.Invoke(username);
-        }
+    public void OnEmulatePlayerLeft(string username)
+    {
+        EmulatePlayerLeft?.Invoke(username);
     }
 }

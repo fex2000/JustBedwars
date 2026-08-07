@@ -1,67 +1,68 @@
 using System;
+using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace JustBedwars.Services
+namespace JustBedwars.Services;
+
+public class AptabaseClient
 {
-    public class AptabaseClient
+    private readonly HttpClient _httpClient;
+    private readonly string _sessionId;
+    private readonly SettingsService _settingsService;
+
+    public AptabaseClient(string hostUrl, string appKey, SettingsService settingsService)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _sessionId;
-        private readonly SettingsService _settingsService;
+        _sessionId = Guid.NewGuid().ToString().ToLowerInvariant();
+        _settingsService = settingsService;
 
-        public AptabaseClient(string hostUrl, string appKey, SettingsService settingsService)
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri(hostUrl.TrimEnd('/') + "/api/v0/events");
+
+        _httpClient.DefaultRequestHeaders.Add("App-Key", appKey);
+    }
+
+    public async Task TrackEvent(string eventName, object? props = null)
+    {
+        if (!(_settingsService.GetValue("SendUsageStats") as bool? ?? false))
         {
-            _sessionId = Guid.NewGuid().ToString().ToLowerInvariant();
-            _settingsService = settingsService;
-
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(hostUrl.TrimEnd('/') + "/api/v0/events");
-
-            _httpClient.DefaultRequestHeaders.Add("App-Key", appKey);
+            DebugService.Instance.Log($"[Tracking] Skipped event {eventName} due to disabled usage statistics");
+            return;
         }
 
-        public async Task TrackEvent(string eventName, object? props = null)
+        DebugService.Instance.Log($"[Tracking] Sent event {eventName} to {_httpClient.BaseAddress}");
+        var eventData = new
         {
-            if (!(_settingsService.GetValue("SendUsageStats") as bool? ?? false))
+            timestamp = DateTime.UtcNow.ToString("O"),
+            sessionId = _sessionId,
+            eventName,
+            systemProps = new
             {
-                DebugService.Instance.Log($"[Tracking] Skipped event {eventName} due to disabled usage statistics");
-                return;
-            }
-            DebugService.Instance.Log($"[Tracking] Sent event {eventName} to {_httpClient.BaseAddress}");
-            var eventData = new
-            {
-                timestamp = DateTime.UtcNow.ToString("O"),
-                sessionId = _sessionId,
-                eventName = eventName,
-                systemProps = new
-                {
-                    osName = "Windows",
-                    osVersion = Environment.OSVersion.Version.ToString(),
-                    locale = System.Globalization.CultureInfo.CurrentCulture.Name,
-                    appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(),
-                    sdkVersion = "justbedwars-tracker-1.0",
+                osName = "Windows",
+                osVersion = Environment.OSVersion.Version.ToString(),
+                locale = CultureInfo.CurrentCulture.Name,
+                appVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(),
+                sdkVersion = "justbedwars-tracker-1.0",
 #if DEBUG
-                    isDebug = true,
+                isDebug = true,
 #else
                     isDebug = false,
 #endif
-                },
-                props = props ?? new {}
-            };
+            },
+            props = props ?? new { }
+        };
 
-            var payload = new[] { eventData };
+        var payload = new[] { eventData };
 
-            try
-            {
-                var result = await _httpClient.PostAsJsonAsync("", payload);
-            }
-            catch
-            {
-                // 
-            }
+        try
+        {
+            var result = await _httpClient.PostAsJsonAsync("", payload);
+        }
+        catch
+        {
+            // 
         }
     }
 }
