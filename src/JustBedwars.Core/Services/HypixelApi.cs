@@ -558,27 +558,27 @@ public class HypixelApi
         await _errorDialogSemaphore.WaitAsync();
         try
         {
-            if (App.Window?.DispatcherQueue.HasThreadAccess ?? false)
+            if (CoreEnvironment.MainWindow?.DispatcherQueue.HasThreadAccess ?? false)
             {
                 var dialog = new ContentDialog
                 {
                     Title = "Error",
                     Content = message,
                     CloseButtonText = "OK",
-                    XamlRoot = App.Window?.Content.XamlRoot
+                    XamlRoot = CoreEnvironment.MainWindow?.Content.XamlRoot
                 };
                 await dialog.ShowAsync();
             }
             else
             {
-                App.Window?.DispatcherQueue.TryEnqueue(async () =>
+                CoreEnvironment.MainWindow?.DispatcherQueue.TryEnqueue(async () =>
                 {
                     var dialog = new ContentDialog
                     {
                         Title = "Error",
                         Content = message,
                         CloseButtonText = "OK",
-                        XamlRoot = App.Window?.Content.XamlRoot
+                        XamlRoot = CoreEnvironment.MainWindow?.Content.XamlRoot
                     };
                     await dialog.ShowAsync();
                 });
