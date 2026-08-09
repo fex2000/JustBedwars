@@ -16,7 +16,7 @@ public class UpdateService
     private const string GitHubApiUrl = "https://api.github.com/repos/fex2000/JustBedwars/releases/latest";
     private const string DownloadUrl = "https://fex2000.github.io/JustBedwars/download/JustBedwars.exe";
 
-    public static async Task CheckForUpdates()
+    public static async Task CheckForUpdates(Version currentVersion)
     {
         try
         {
@@ -29,8 +29,6 @@ public class UpdateService
 
             if (Version.TryParse(latestVersionStr, out var latestVersion))
             {
-                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
                 if (latestVersion > currentVersion) await ShowUpdateDialog();
             }
         }
@@ -42,8 +40,7 @@ public class UpdateService
 
     private static async Task ShowUpdateDialog()
     {
-        var instance = (App)Application.Current;
-        var aptabaseClient = instance.AptabaseClient;
+        var aptabaseClient = CoreEnvironment.AptabaseClient;
 
         var infoText = new TextBlock
         {
@@ -75,10 +72,10 @@ public class UpdateService
             CloseButtonText = "Later"
         };
 
-        if (App.Window?.Content?.XamlRoot is not null)
+        if (CoreEnvironment.MainWindow?.Content?.XamlRoot is not null)
         {
             var downloadStarted = false;
-            updateDialog.XamlRoot = App.Window.Content.XamlRoot;
+            updateDialog.XamlRoot = CoreEnvironment.MainWindow.Content.XamlRoot;
 
             downloadButton.Click += async (_, _) =>
             {
@@ -90,7 +87,8 @@ public class UpdateService
                 downloadButton.Progress = 0;
                 downloadButton.IsIndeterminate = true;
 
-                _ = aptabaseClient.TrackEvent("UpdateDownloading");
+                if (aptabaseClient is not null)
+                    _ = aptabaseClient.TrackEvent("UpdateDownloading");
 
                 try
                 {
@@ -153,7 +151,7 @@ public class UpdateService
 
             var result = await updateDialog.ShowAsync();
 
-            if (result == ContentDialogResult.None)
+            if (result == ContentDialogResult.None && aptabaseClient is not null)
                 _ = aptabaseClient.TrackEvent("UpdateDismissed");
         }
     }

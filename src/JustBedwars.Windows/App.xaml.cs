@@ -27,6 +27,7 @@ public partial class App : Application
         InitializeComponent();
         _settingsService = new SettingsService();
         AptabaseClient = new AptabaseClient("https://stat.fexei.at", "A-SH-5040461685", _settingsService);
+        CoreEnvironment.AptabaseClient = AptabaseClient;
         UnhandledException += App_UnhandledException;
 
         // Ensure file logging is enabled if the setting is on
@@ -71,6 +72,7 @@ public partial class App : Application
             }
 
         Window = new MainWindow(_settingsService, AptabaseClient);
+        CoreEnvironment.MainWindow = Window;
         Window.Activate();
 
         _ = AptabaseClient.TrackEvent("AppLaunch");
