@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Windows.Graphics;
-using Windows.System;
 using DevWinUI;
 using JustBedwars.Services;
 using JustBedwars.Views;
@@ -19,6 +12,14 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Windows.Graphics;
+using Windows.System;
 using WinRT;
 using WinRT.Interop;
 
@@ -49,7 +50,7 @@ public sealed partial class MainWindow : Window
         presenter.PreferredMinimumWidth = 900;
         presenter.PreferredMinimumHeight = 620;
         AppWindow.SetPresenter(presenter);
-        _ = UpdateService.CheckForUpdates();
+        _ = UpdateService.CheckForUpdates(Assembly.GetExecutingAssembly().GetName().Version!);
 
         _aptabaseClient = aptabaseClient;
         _settingsService = settingsService;

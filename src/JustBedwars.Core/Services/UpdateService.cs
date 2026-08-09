@@ -16,7 +16,7 @@ public class UpdateService
     private const string GitHubApiUrl = "https://api.github.com/repos/fex2000/JustBedwars/releases/latest";
     private const string DownloadUrl = "https://fex2000.github.io/JustBedwars/download/JustBedwars.exe";
 
-    public static async Task CheckForUpdates()
+    public static async Task CheckForUpdates(Version currentVersion)
     {
         try
         {
@@ -29,8 +29,6 @@ public class UpdateService
 
             if (Version.TryParse(latestVersionStr, out var latestVersion))
             {
-                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-
                 if (latestVersion > currentVersion) await ShowUpdateDialog();
             }
         }

@@ -106,7 +106,7 @@ public sealed partial class PlayerList : Page
 
     public async void OnPlayerJoined(string username)
     {
-        NoPlayerMessage.Visibility = Visibility.Collapsed;
+        DispatcherQueue.TryEnqueue(() => NoPlayerMessage.Visibility = Visibility.Collapsed);
         var props = new
         {
             username,
