@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
+#if WINDOWS
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+#endif
 
 namespace JustBedwars.Models;
 
@@ -263,6 +265,11 @@ public class Player : INotifyPropertyChanged
             {
                 _isLoading = value;
                 OnPropertyChanged(nameof(IsLoading));
+#if WINDOWS
+                OnPropertyChanged(nameof(IsLoaderVisible));
+                OnPropertyChanged(nameof(IsContentVisible));
+                OnPropertyChanged(nameof(TagCardVisibility));
+#endif
             }
         }
     }
@@ -276,6 +283,10 @@ public class Player : INotifyPropertyChanged
             {
                 _playerTag = value;
                 OnPropertyChanged(nameof(PlayerTag));
+#if WINDOWS
+                OnPropertyChanged(nameof(TagCardVisibility));
+                OnPropertyChanged(nameof(UnknownStatsVisibility));
+#endif
             }
         }
     }
@@ -351,6 +362,7 @@ public class Player : INotifyPropertyChanged
         }
     }
 
+#if WINDOWS
     public Visibility IsLoaderVisible
     {
         get
@@ -370,6 +382,7 @@ public class Player : INotifyPropertyChanged
             return Visibility.Collapsed;
         }
     }
+#endif
 
     public bool IsExpanded
     {
@@ -380,8 +393,10 @@ public class Player : INotifyPropertyChanged
             {
                 _isExpanded = value;
                 OnPropertyChanged(nameof(IsExpanded));
+#if WINDOWS
                 OnPropertyChanged(nameof(IsCollapsedContentVisible));
                 OnPropertyChanged(nameof(IsExpandedContentVisible));
+#endif
             }
         }
     }
@@ -396,6 +411,7 @@ public class Player : INotifyPropertyChanged
         }
     }
 
+#if WINDOWS
     public Visibility TagCardVisibility
     {
         get
@@ -439,6 +455,7 @@ public class Player : INotifyPropertyChanged
     public BitmapImage PlayerImageFace => new(new Uri($"https://skins.jbw.fexei.at/bust/{_username}"));
 
     public BitmapImage PlayerImageIcon => new(new Uri($"https://skins.jbw.fexei.at/face/{_username}"));
+#endif
 
     public double Score => Star * Math.Pow(FKDR, 2) * Math.Pow(WLR, 1.2) * Math.Pow(BBLR, 1.1) *
                            (1 + Finals / 1000.0 + Kills / 2000.0 + Beds / 500.0 + Wins / 1000.0);

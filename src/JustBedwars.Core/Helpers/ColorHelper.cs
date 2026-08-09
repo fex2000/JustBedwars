@@ -1,3 +1,4 @@
+#if WINDOWS
 using Windows.UI;
 using Microsoft.UI.Xaml;
 
@@ -143,3 +144,4 @@ public enum StatLevel
     Legend,
     God
 }
+#endif

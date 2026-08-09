@@ -4,9 +4,11 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+#if WINDOWS
 using DevWinUI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace JustBedwars.Services;
@@ -40,6 +42,7 @@ public class UpdateService
 
     private static async Task ShowUpdateDialog()
     {
+#if WINDOWS
         var aptabaseClient = CoreEnvironment.AptabaseClient;
 
         var infoText = new TextBlock
@@ -154,5 +157,9 @@ public class UpdateService
             if (result == ContentDialogResult.None && aptabaseClient is not null)
                 _ = aptabaseClient.TrackEvent("UpdateDismissed");
         }
+#else
+        DebugService.Instance.Log("[UpdateService] Update check triggered on non-Windows platform. Automatic update installer is only supported on Windows.");
+        await Task.CompletedTask;
+#endif
     }
 }

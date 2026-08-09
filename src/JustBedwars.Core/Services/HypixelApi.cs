@@ -8,7 +8,9 @@ using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
 using JustBedwars.Models;
+#if WINDOWS
 using Microsoft.UI.Xaml.Controls;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace JustBedwars.Services;
@@ -558,31 +560,39 @@ public class HypixelApi
         await _errorDialogSemaphore.WaitAsync();
         try
         {
-            if (CoreEnvironment.MainWindow?.DispatcherQueue.HasThreadAccess ?? false)
+#if WINDOWS
+            if (CoreEnvironment.MainWindow is Microsoft.UI.Xaml.Window win)
             {
-                var dialog = new ContentDialog
-                {
-                    Title = "Error",
-                    Content = message,
-                    CloseButtonText = "OK",
-                    XamlRoot = CoreEnvironment.MainWindow?.Content.XamlRoot
-                };
-                await dialog.ShowAsync();
-            }
-            else
-            {
-                CoreEnvironment.MainWindow?.DispatcherQueue.TryEnqueue(async () =>
+                if (win.DispatcherQueue.HasThreadAccess)
                 {
                     var dialog = new ContentDialog
                     {
                         Title = "Error",
                         Content = message,
                         CloseButtonText = "OK",
-                        XamlRoot = CoreEnvironment.MainWindow?.Content.XamlRoot
+                        XamlRoot = win.Content.XamlRoot
                     };
                     await dialog.ShowAsync();
-                });
+                }
+                else
+                {
+                    win.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        var dialog = new ContentDialog
+                        {
+                            Title = "Error",
+                            Content = message,
+                            CloseButtonText = "OK",
+                            XamlRoot = win.Content.XamlRoot
+                        };
+                        await dialog.ShowAsync();
+                    });
+                }
             }
+#else
+            DebugService.Instance.Log($"[HypixelApi Error] {message}");
+            await Task.CompletedTask;
+#endif
         }
         finally
         {
