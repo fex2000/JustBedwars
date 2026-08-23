@@ -6,12 +6,24 @@ public static class Program
 {
     public static int Main(string[] args)
     {
-        // Test compilation of GLib.Functions.IdleAdd with a SourceFunc delegate
-        GLib.Functions.IdleAdd(0, () =>
+#if DEBUG
+        if (OperatingSystem.IsLinux())
         {
-            Console.WriteLine("Hello from idle");
-            return false;
-        });
-        return 0;
+            Environment.SetEnvironmentVariable("GSK_RENDERER", "cairo");
+        }
+#endif
+
+        var app = Adw.Application.New("at.fexei.jbw.gtk", Gio.ApplicationFlags.FlagsNone);
+
+        app.OnActivate += (sender, e) =>
+        {
+            // Splash
+            Console.WriteLine("\n     ██╗██╗   ██╗███████╗████████╗██████╗ ███████╗██████╗ ██╗    ██╗ █████╗ ██████╗ ███████╗\r\n     ██║██║   ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██║    ██║██╔══██╗██╔══██╗██╔════╝\r\n     ██║██║   ██║███████╗   ██║   ██████╔╝█████╗  ██║  ██║██║ █╗ ██║███████║██████╔╝███████╗\r\n██   ██║██║   ██║╚════██║   ██║   ██╔══██╗██╔══╝  ██║  ██║██║███╗██║██╔══██║██╔══██╗╚════██║\r\n╚█████╔╝╚██████╔╝███████║   ██║   ██████╔╝███████╗██████╔╝╚███╔███╔╝██║  ██║██║  ██║███████║\r\n ╚════╝  ╚═════╝ ╚══════╝   ╚═╝   ╚═════╝ ╚══════╝╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝\r\n                                                                                            ");
+
+            var window = MainWindow.New(app);
+            window.Present();
+        };
+
+        return app.Run(args);
     }
 }

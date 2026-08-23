@@ -3,12 +3,12 @@ JustBedwars is a Hypixel Bedwars Companion App for finding Player Stats.
 It was strongly inspired by [Abyss Overlay](https://github.com/Chit132/abyss-overlay) and is basically just a recreation of it running on WinUI with some extra features and optimization with how Hypixel hides usernames while waiting. 
 
 # Installation
-Go to [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening a file.  
+Go [Here](https://fex2000.github.io/JustBedwars/) and click "Download Installer", after there, I hope you have the knowledge of opening an .exe.  
 Only Windows 11 (and maybe 10, but untested) on x64 is supported.
 
 # Usage
-1. Set your log file location (usually %appdata%\\.minecraft\\logs\\latest.log)
-2. Start playing bedwars, run /who after the round started and see all players in your round get listed.
+1. On the welcome screen, set the location of your log file
+2. Join a round of BedWars and after it starts run `/who`
 
 # Features
 - Showing stats of players in your current round
@@ -19,5 +19,5 @@ Only Windows 11 (and maybe 10, but untested) on x64 is supported.
 - Showing information about a guild
 
 # Linux/Mac Support?
-Not for now.  
-It is possible using Uno Platform but would take significant changes to make the windowing (Always-On-Top mode) work and the application currently uses some WinUI-Only libraries that would need to be replaced.
+Linux is currently under development as a native GTK App. If you have the required libraries installed, just clone the repo and use `dotnet run ./src/JustBedwars.GTK` to test the current version.  
+GTK also work works on Mac, but you would need to build it yourself and install GTK4 + Adwaita. It also isn't tested, most features probably won't work at all.

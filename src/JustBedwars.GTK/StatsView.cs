@@ -80,7 +80,7 @@ public static class StatsView
 
         // Group 2: Combat Stats
         var combatGroup = Adw.PreferencesGroup.New();
-        combatGroup.Title = "Combat & Performance Stats";
+        combatGroup.Title = "Combat &amp; Performance Stats";
         statsContainer.Append(combatGroup);
 
         var fkdrRow = Adw.ActionRow.New();

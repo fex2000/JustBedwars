@@ -7,7 +7,7 @@ public static class MainWindow
     public static Adw.ApplicationWindow New(Adw.Application application)
     {
         var window = Adw.ApplicationWindow.New(application);
-        window.Title = "JustBedwars (Linux)";
+        window.Title = "JustBedwars Linux Beta";
         window.SetDefaultSize(800, 600);
 
         // Layout vertical box
@@ -53,7 +53,7 @@ public static class MainWindow
         stack.AddTitled(statsView, "stats_page", "Stats Page");
         stack.AddTitled(settingsView, "settings", "Settings");
 
-        window.Child = mainBox;
+        window.SetContent(mainBox);
         return window;
     }
 }
