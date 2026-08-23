@@ -1,19 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+	  <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net10.0-windows10.0.22621.0;net10.0</TargetFrameworks>
+	  <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net10.0</TargetFrameworks>
+    <TargetPlatformMinVersion Condition="$(TargetFramework.StartsWith('net10.0-windows'))">10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>JustBedwars</RootNamespace>
-    <UseWinUI>true</UseWinUI>
+    <UseWinUI Condition="$(TargetFramework.StartsWith('net10.0-windows'))">true</UseWinUI>
     <Nullable>enable</Nullable>
     <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers Condition="$(TargetFramework.StartsWith('net10.0-windows'))">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0-windows'))">
     <PackageReference Include="DevWinUI" Version="10.0.0" />
     <PackageReference Include="DevWinUI.Base" Version="10.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Runtime.Caching" Version="10.0.9" />
   </ItemGroup>
