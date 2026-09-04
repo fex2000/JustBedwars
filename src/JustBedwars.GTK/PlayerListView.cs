@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using JustBedwars.Models;
 using JustBedwars.Services;
@@ -11,22 +13,27 @@ public static class PlayerListView
 {
     private static readonly HypixelApi _hypixelApi = new();
     private static readonly SettingsService _settingsService = new();
+    private static readonly HttpClient _httpClient = new();
     private static LogReader? _logReader;
     private static readonly List<Player> _players = new();
     private static Gtk.ListBox? _listBox;
-    private static Gtk.Label? _placeholderLabel;
+    private static Gtk.Box? _emptyStateBox;
+    private static string _avatarCacheDir = "";
 
     private static void RunOnMainThread(Action action)
     {
         GLib.Functions.IdleAdd(0, () =>
         {
             action();
-            return false; // Run once
+            return false;
         });
     }
 
     public static Gtk.Widget Create()
     {
+        _avatarCacheDir = Path.Combine(Path.GetTempPath(), "JustBedwarsCache");
+        Directory.CreateDirectory(_avatarCacheDir);
+
         var mainBox = Gtk.Box.New(Gtk.Orientation.Vertical, 15);
         mainBox.SetMarginStart(15);
         mainBox.SetMarginEnd(15);
@@ -47,41 +54,36 @@ public static class PlayerListView
         headerBox.Append(clearBtn);
         mainBox.Append(headerBox);
 
-        // Manual Add Player Box
-        var addBox = Gtk.Box.New(Gtk.Orientation.Horizontal, 10);
-        var addEntry = Gtk.Entry.New();
-        addEntry.PlaceholderText = "Add player manually...";
-        addEntry.Hexpand = true;
-        addBox.Append(addEntry);
+        // Empty State Container with Troubleshooting Tips
+        _emptyStateBox = Gtk.Box.New(Gtk.Orientation.Vertical, 10);
+        _emptyStateBox.Hexpand = true;
+        _emptyStateBox.Vexpand = true;
+        _emptyStateBox.Valign = Gtk.Align.Center;
 
-        var addBtn = Gtk.Button.NewWithLabel("Add");
-        addBtn.OnClicked += (sender, args) =>
-        {
-            var name = addEntry.Text_;
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                AddPlayer(name);
-                addEntry.Text_ = "";
-            }
-        };
-        addEntry.OnActivate += (sender, args) =>
-        {
-            var name = addEntry.Text_;
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                AddPlayer(name);
-                addEntry.Text_ = "";
-            }
-        };
-        addBox.Append(addBtn);
-        mainBox.Append(addBox);
+        var emptyMsgLabel = Gtk.Label.New("Join a bedwars round and after it starts run '/who' to list players here!");
+        emptyMsgLabel.Justify = Gtk.Justification.Center;
+        emptyMsgLabel.UseMarkup = true;
+        emptyMsgLabel.Label_ = "<span size='large'>Join a bedwars round and after it starts run '/who' to list players here!</span>";
+        _emptyStateBox.Append(emptyMsgLabel);
 
-        // Placeholder for Empty State
-        _placeholderLabel = Gtk.Label.New("No players in current round.\nRun /who in-game to populate, or add a player manually.");
-        _placeholderLabel.Hexpand = true;
-        _placeholderLabel.Vexpand = true;
-        _placeholderLabel.Justify = Gtk.Justification.Center;
-        mainBox.Append(_placeholderLabel);
+        var expander = Gtk.Expander.New("Troubleshooting Tips");
+        expander.Halign = Gtk.Align.Center;
+        expander.WidthRequest = 450;
+
+        var tipsBox = Gtk.Box.New(Gtk.Orientation.Vertical, 6);
+        tipsBox.SetMarginStart(10);
+        tipsBox.SetMarginEnd(10);
+        tipsBox.SetMarginTop(10);
+        tipsBox.SetMarginBottom(10);
+
+        tipsBox.Append(Gtk.Label.New("• Check if the log file path in settings is set correctly"));
+        tipsBox.Append(Gtk.Label.New("• Check if there are no mods/client that modify log format"));
+        tipsBox.Append(Gtk.Label.New("• Ensure Minecraft language is set to English"));
+        tipsBox.Append(Gtk.Label.New("• Works on Hypixel (and bedwarspractice.club)"));
+        expander.Child = tipsBox;
+
+        _emptyStateBox.Append(expander);
+        mainBox.Append(_emptyStateBox);
 
         // Scrollable ListBox for Players
         var scrolledWindow = Gtk.ScrolledWindow.New();
@@ -91,6 +93,19 @@ public static class PlayerListView
 
         _listBox = Gtk.ListBox.New();
         scrolledWindow.Child = _listBox;
+
+        _listBox.OnRowActivated += (sender, args) =>
+        {
+            if (args.Row is Gtk.ListBoxRow row && !string.IsNullOrEmpty(row.Name))
+            {
+                var player = _players.FirstOrDefault(p => p.Username == row.Name);
+                if (player != null)
+                {
+                    player.IsExpanded = !player.IsExpanded;
+                    RebuildList();
+                }
+            }
+        };
 
         // Load API and LogReader
         LoadApiKey();
@@ -172,7 +187,6 @@ public static class PlayerListView
         _players.Add(player);
         RebuildList();
 
-        // Asynchronously fetch stats
         Task.Run(async () =>
         {
             var apiKey = _settingsService.GetValue("HypixelApiKey") as string;
@@ -278,7 +292,6 @@ public static class PlayerListView
     {
         if (_listBox == null) return;
 
-        // Clear existing children from ListBox
         while (_listBox.GetFirstChild() is Gtk.Widget child)
         {
             _listBox.Remove(child);
@@ -286,24 +299,71 @@ public static class PlayerListView
 
         foreach (var player in _players)
         {
-            var row = Adw.ActionRow.New();
+            var row = Gtk.ListBoxRow.New();
+            row.Name = player.Username;
+
+            var actionRow = Adw.ActionRow.New();
             var starText = player.Star > 0 ? $"[★{player.Star}]" : "";
-            row.Title = $"{player.Username} {starText}";
+            actionRow.Title = $"{player.Username} {starText}";
+
+            // Face image suffix
+            var avatarImage = Gtk.Image.New();
+            avatarImage.SetPixelSize(28);
+            actionRow.AddPrefix(avatarImage);
+
+            if (!string.IsNullOrEmpty(player.Username))
+            {
+                var username = player.Username;
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        var avatarFile = Path.Combine(_avatarCacheDir, $"{username}_face.png");
+                        if (!File.Exists(avatarFile))
+                        {
+                            var bytes = await _httpClient.GetByteArrayAsync($"https://skins.jbw.fexei.at/face/{username}");
+                            await File.WriteAllBytesAsync(avatarFile, bytes);
+                        }
+                        RunOnMainThread(() =>
+                        {
+                            if (File.Exists(avatarFile))
+                            {
+                                avatarImage.SetFromFile(avatarFile);
+                            }
+                        });
+                    }
+                    catch
+                    {
+                        // Ignore avatar fetch error
+                    }
+                });
+            }
 
             if (player.IsLoading)
             {
-                row.Subtitle = "Loading player metrics...";
-                var spinnerLabel = Gtk.Label.New("Loading...");
-                row.AddSuffix(spinnerLabel);
+                actionRow.Subtitle = "Loading player metrics...";
+                var spinner = Gtk.Spinner.New();
+                spinner.Start();
+                actionRow.AddSuffix(spinner);
             }
             else
             {
-                row.Subtitle = $"FKDR: {player.FKDR:F2} | WLR: {player.WLR:F2} | BBLR: {player.BBLR:F2} | Score: {player.Score:F0}";
+                if (player.IsExpanded)
+                {
+                    actionRow.Subtitle = $"FKDR: {player.FKDR:F2} | WLR: {player.WLR:F2} | BBLR: {player.BBLR:F2} | KDR: {player.KDR:F2}\n" +
+                                         $"Finals: {player.Finals} | Wins: {player.Wins} | Beds: {player.Beds} | Kills: {player.Kills}";
+                }
+                else
+                {
+                    actionRow.Subtitle = $"FKDR: {player.FKDR:F2} | WLR: {player.WLR:F2} | BBLR: {player.BBLR:F2} | Score: {player.Score:F0}";
+                }
+
                 var tag = string.IsNullOrEmpty(player.PlayerTag) || player.PlayerTag == "-" ? "Score: " + player.Score.ToString("F0") : player.PlayerTag;
                 var tagLabel = Gtk.Label.New(tag);
-                row.AddSuffix(tagLabel);
+                actionRow.AddSuffix(tagLabel);
             }
 
+            row.SetChild(actionRow);
             _listBox.Append(row);
         }
 
@@ -312,9 +372,9 @@ public static class PlayerListView
 
     private static void UpdatePlaceholderVisibility()
     {
-        if (_placeholderLabel != null)
+        if (_emptyStateBox != null)
         {
-            _placeholderLabel.Visible = _players.Count == 0;
+            _emptyStateBox.Visible = _players.Count == 0;
         }
         if (_listBox != null)
         {
