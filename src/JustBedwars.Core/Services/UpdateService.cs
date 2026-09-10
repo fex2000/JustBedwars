@@ -16,10 +16,14 @@ namespace JustBedwars.Services;
 public class UpdateService
 {
     private const string GitHubApiUrl = "https://api.github.com/repos/fex2000/JustBedwars/releases/latest";
-    private const string DownloadUrl = "https://fex2000.github.io/JustBedwars/download/JustBedwars.exe";
+    private const string DownloadUrl = "https://github.com/fex2000/JustBedwars/releases/latest/download/JustBedwars.exe";
 
-    public static async Task CheckForUpdates(Version currentVersion)
+    public static Version? CurrentVersion;
+    public static Version? LatestVersion;
+
+    public static async Task<bool> CheckForUpdates(Version currentVersion)
     {
+        CurrentVersion = currentVersion;
         try
         {
             using var client = new HttpClient();
@@ -31,135 +35,116 @@ public class UpdateService
 
             if (Version.TryParse(latestVersionStr, out var latestVersion))
             {
-                if (latestVersion > currentVersion) await ShowUpdateDialog();
+                LatestVersion = latestVersion;
+                if (latestVersion > currentVersion) return true;
             }
         }
         catch (Exception ex)
         {
             DebugService.Instance.Log($"[UpdateService] Error checking for updates: {ex.Message}");
         }
+
+        return false;
     }
 
-    private static async Task ShowUpdateDialog()
-    {
 #if WINDOWS
+    public static async Task ShowUpdateDialog(Window updateWindow)
+    {
         var aptabaseClient = CoreEnvironment.AptabaseClient;
 
         var infoText = new TextBlock
         {
             Text =
-                "Please update to the newest version for the best experience. Updates may be required because of Backend changes.",
+                "Please wait while the update is being downloaded.",
             TextWrapping = TextWrapping.WrapWholeWords
         };
 
-        var downloadButton = new ProgressButton
+        var progressBar = new ProgressBar()
         {
-            Content = "Download now",
-            CheckedContent = "Downloading...",
-            Progress = 0,
-            IsIndeterminate = false,
-            HorizontalAlignment = HorizontalAlignment.Stretch
+            IsIndeterminate = true
         };
-
+        
         var dialogContent = new StackPanel
         {
             Spacing = 12
         };
         dialogContent.Children.Add(infoText);
-        dialogContent.Children.Add(downloadButton);
+        dialogContent.Children.Add(progressBar);
 
         var updateDialog = new ContentDialog
         {
-            Title = "Update Available",
+            Title = "Getting Ready",
             Content = dialogContent,
-            CloseButtonText = "Later"
+            Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style
         };
 
-        if (CoreEnvironment.MainWindow?.Content?.XamlRoot is not null)
+        if (updateWindow.Content.XamlRoot is not null)
         {
             var downloadStarted = false;
-            updateDialog.XamlRoot = CoreEnvironment.MainWindow.Content.XamlRoot;
+            updateDialog.XamlRoot = updateWindow.Content.XamlRoot;
 
-            downloadButton.Click += async (_, _) =>
+            if (downloadStarted) return;
+            downloadStarted = true;
+            _ = updateDialog.ShowAsync();
+
+            progressBar.Value = 0;
+            progressBar.IsIndeterminate = true;
+
+            if (aptabaseClient is not null)
+                _ = aptabaseClient.TrackEvent("UpdateDownloading");
+
+            try
             {
-                if (downloadStarted) return;
-                downloadStarted = true;
-
-                downloadButton.IsChecked = true;
-                downloadButton.IsEnabled = false;
-                downloadButton.Progress = 0;
-                downloadButton.IsIndeterminate = true;
-
-                if (aptabaseClient is not null)
-                    _ = aptabaseClient.TrackEvent("UpdateDownloading");
-
-                try
+                var tempPath = Path.Combine(Path.GetTempPath(), "JustBedwars_update.exe");
+                updateDialog.Title = "Downloading...";
+                using (var client = new HttpClient())
                 {
-                    var tempPath = Path.Combine(Path.GetTempPath(), "JustBedwars_update.exe");
-
-                    using (var client = new HttpClient())
+                    using (var response =
+                           await client.GetAsync(DownloadUrl, HttpCompletionOption.ResponseHeadersRead))
                     {
-                        using (var response =
-                               await client.GetAsync(DownloadUrl, HttpCompletionOption.ResponseHeadersRead))
+                        response.EnsureSuccessStatusCode();
+                        var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                        var downloadedBytes = 0L;
+
+                        progressBar.IsIndeterminate = totalBytes <= 0;
+
+                        using (var contentStream = await response.Content.ReadAsStreamAsync())
+                        using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write,
+                                   FileShare.None, 8192, true))
                         {
-                            response.EnsureSuccessStatusCode();
-                            var totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                            var downloadedBytes = 0L;
-
-                            downloadButton.IsIndeterminate = totalBytes <= 0;
-
-                            using (var contentStream = await response.Content.ReadAsStreamAsync())
-                            using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write,
-                                       FileShare.None, 8192, true))
+                            var buffer = new byte[8192];
+                            var bytesRead = 0;
+                            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                             {
-                                var buffer = new byte[8192];
-                                var bytesRead = 0;
-                                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                                {
-                                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                                    downloadedBytes += bytesRead;
-                                    if (totalBytes != -1)
-                                        downloadButton.Progress = (double)downloadedBytes / totalBytes * 100;
-                                }
+                                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                                downloadedBytes += bytesRead;
+                                DebugService.Instance.Log($"[UpdateService] Downloaded {downloadedBytes} Bytes");
+                                if (totalBytes != -1)
+                                    progressBar.Value = (double)downloadedBytes / totalBytes * 100;
                             }
                         }
                     }
-
-                    infoText.Text = "Download complete. Please continue in the new window to finish the installation.";
-                    downloadButton.Progress = 100;
-                    downloadButton.Content = "Installer started";
-                    downloadButton.CheckedContent = "Installer started";
-
-
-                    var processStartInfo = new ProcessStartInfo
-                    {
-                        FileName = tempPath,
-                        UseShellExecute = true,
-                        Arguments = "/NOCANCEL /NORESTARTAPPLICATIONS /CLOSEAPPLICATIONS /SP-"
-                    };
-                    Process.Start(processStartInfo);
                 }
-                catch (Exception ex)
+
+                infoText.Text = "Download complete. Please continue in the new window to finish the installation.";
+
+
+                var processStartInfo = new ProcessStartInfo
                 {
-                    infoText.Text = $"An error occurred during download: {ex.Message}";
-                    downloadButton.IsChecked = false;
-                    downloadButton.IsEnabled = true;
-                    downloadButton.Content = "Retry download";
-                    downloadButton.CheckedContent = "Downloading...";
-                    downloadButton.Progress = 0;
-                    downloadButton.IsIndeterminate = false;
-                    downloadStarted = false;
-                }
-            };
-
-            var result = await updateDialog.ShowAsync();
-
-            if (result == ContentDialogResult.None && aptabaseClient is not null)
-                _ = aptabaseClient.TrackEvent("UpdateDismissed");
+                    FileName = tempPath,
+                    UseShellExecute = true,
+                    Arguments = "/NOCANCEL /NORESTARTAPPLICATIONS /CLOSEAPPLICATIONS /SP-"
+                };
+                Process.Start(processStartInfo);
+            }
+            catch (Exception ex)
+            {
+                infoText.Text = $"An error occurred during download: {ex.Message}\n\n JustBedwars Updater will now exit. Please retry downloading from GitHub.";
+                await Task.Delay(10000);
+                CoreEnvironment.MainWindow!.AppWindow.Show();
+                updateWindow.Close();
+            }
         }
-#else
-        DebugService.Instance.Log("[UpdateService] Update check triggered on non-Windows platform. Automatic update installer is only supported on Windows.");
-        await Task.CompletedTask;
-#endif
     }
+#endif
 }

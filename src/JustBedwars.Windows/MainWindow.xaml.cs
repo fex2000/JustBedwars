@@ -50,7 +50,7 @@ public sealed partial class MainWindow : Window
         presenter.PreferredMinimumWidth = 900;
         presenter.PreferredMinimumHeight = 620;
         AppWindow.SetPresenter(presenter);
-        _ = UpdateService.CheckForUpdates(Assembly.GetExecutingAssembly().GetName().Version!);
+        _ = CheckUpdate();
 
         _aptabaseClient = aptabaseClient;
         _settingsService = settingsService;
@@ -60,6 +60,22 @@ public sealed partial class MainWindow : Window
 
     [DllImport("user32.dll")]
     private static extern bool GetCursorPos(out POINT lpPoint);
+
+    private async Task CheckUpdate()
+    {
+        if (await UpdateService.CheckForUpdates(Assembly.GetExecutingAssembly().GetName().Version!))
+        {
+            try
+            {
+                UpdateWindow updateWindow = new();
+                updateWindow.Activate();
+            }
+            catch
+            {
+                //
+            }
+        }
+    }
 
     private void AppWindowOnClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {

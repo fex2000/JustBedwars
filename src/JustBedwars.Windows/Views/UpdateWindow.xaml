@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="JustBedwars.Views.UpdateWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:JustBedwars.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:devWinUi="using:DevWinUI"
+    mc:Ignorable="d"
+    Title="JustBedwars Updater">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <TitleBar Grid.Row="0"
+                  x:Name="TitleBar"
+                  Title="JustBedwars"
+                  Subtitle="Updater"
+                  Height="48"/>
+
+        <Grid Margin="4" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border>
+                <StackPanel Padding="6">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Version " FontSize="16"/>
+                        <TextBlock x:Name="NewVersion"
+                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                   FontSize="16"/>
+                        <TextBlock Text="is now avaliable" FontSize="16"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="You're on version "/>
+                        <TextBlock x:Name="CurrentVersion"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Grid.Row="1">
+                <Grid Margin="12">
+                    <ScrollView>
+                        <controls:MarkdownTextBlock x:Name="Changelog"
+                                                    Visibility="Collapsed"/>
+                    </ScrollView>
+                    <ProgressRing IsActive="True"
+                                  IsIndeterminate="True"
+                                  x:Name="ChangelogLoadingIndicator"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0"
+                Grid.Row="2">
+            <animations:Implicit.ShowAnimations>
+                <animations:TranslationAnimation From="0,64,0"
+                                                 To="0"
+                                                 Duration="0:0:1.2"
+                                                 Delay="0:0:0.5"/>
+            </animations:Implicit.ShowAnimations>
+            <Grid ColumnDefinitions="*, *"
+                  VerticalAlignment="Center"
+                  Padding="16"
+                  ColumnSpacing="4">
+                <Button Click="DismissButton_OnClick"
+                        x:Name="DismissButton"
+                        Content="Dismiss"
+                        HorizontalAlignment="Stretch"/>
+                <devWinUi:BubbleButton Click="InstallButton_OnClick"
+                                       x:Name="InstallButton"
+                                       Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                       Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                       Content="Install"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Stretch">
+                    <devWinUi:BubbleButton.Resources>
+                        <!-- Extra stuff because BubbleButton breaks with AccentButtonStyle -->
+                        <StaticResource x:Key="ButtonBackground"
+                                        ResourceKey="AccentFillColorDefaultBrush"/>
+                        <StaticResource x:Key="ButtonBackgroundPointerOver"
+                                        ResourceKey="AccentFillColorSecondaryBrush"/>
+                        <StaticResource x:Key="ButtonBackgroundPressed"
+                                        ResourceKey="AccentFillColorTertiaryBrush"/>
+                        <StaticResource x:Key="ButtonBackgroundDisabled"
+                                        ResourceKey="AccentFillColorDisabledBrush"/>
+                        <StaticResource x:Key="ButtonForeground"
+                                        ResourceKey="TextOnAccentFillColorPrimaryBrush"/>
+                        <StaticResource x:Key="ButtonForegroundPointerOver"
+                                        ResourceKey="TextOnAccentFillColorPrimaryBrush"/>
+                        <StaticResource x:Key="ButtonForegroundPressed"
+                                        ResourceKey="TextOnAccentFillColorSecondaryBrush"/>
+                        <StaticResource x:Key="ButtonForegroundDisabled"
+                                        ResourceKey="TextOnAccentFillColorDisabled"/>
+                        <StaticResource x:Key="ButtonBorderBrush"
+                                        ResourceKey="AccentControlElevationBorderBrush"/>
+                        <StaticResource x:Key="ButtonBorderBrushPointerOver"
+                                        ResourceKey="AccentControlElevationBorderBrush"/>
+                        <StaticResource x:Key="ButtonBorderBrushPressed"
+                                        ResourceKey="ControlFillColorTransparentBrush"/>
+                        <StaticResource x:Key="ButtonBorderBrushDisabled"
+                                        ResourceKey="ControlFillColorTransparentBrush"/>
+                    </devWinUi:BubbleButton.Resources>
+                </devWinUi:BubbleButton>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

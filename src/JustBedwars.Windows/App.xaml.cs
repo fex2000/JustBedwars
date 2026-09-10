@@ -77,7 +77,7 @@ public partial class App : Application
 
         _ = AptabaseClient.TrackEvent("AppLaunch");
 
-        if (welcomeWindow is not null)
-            welcomeWindow!.Close();
+        if (welcomeWindow != null)
+            welcomeWindow.Close();
     }
 }

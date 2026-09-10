@@ -8,9 +8,9 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="src/JustBedwars.Core/JustBedwars.Core.csproj">
-    <Platform Solution="*|ARM64" Project="ARM64" />
-    <Platform Solution="*|x64" Project="x64" />
-    <Platform Solution="*|x86" Project="x86" />
+    <Platform Solution="*|ARM64" Project="AnyCPU" />
+    <Platform Solution="*|x64" Project="AnyCPU" />
+    <Platform Solution="*|x86" Project="AnyCPU" />
   </Project>
   <Project Path="src/JustBedwars.Windows/JustBedwars.Windows.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
@@ -22,5 +22,6 @@
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
+    <Build Solution="*|*" Project="false" />
   </Project>
 </Solution>

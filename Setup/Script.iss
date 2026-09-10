@@ -3,9 +3,9 @@
 #define MyAppName "JustBedwars"
 #define MyAppPublisher "fex2000"
 #define MyAppURL "https://fex2000.github.io/JustBedwars"
-#define MyAppExeName "JustBedwars.exe"
+#define MyAppExeName "JustBedwars.Windows.exe"
 #define MyAppId "{72E500CC-2A2D-4DE6-8EF7-391DB4CC78E3}"
-#define MyAppVersion GetVersionNumbersString(MyPublishDir + "\\" + MyAppExeName)
+#define MyAppVersion GetVersionNumbersString("D:\Code\JustBedwars\Setup\Source" + "\\" + MyAppExeName)
 
 [Setup]
 AppId={{#MyAppId}

@@ -1,13 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
 	  <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net10.0-windows10.0.22621.0;net10.0</TargetFrameworks>
 	  <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net10.0</TargetFrameworks>
     <TargetPlatformMinVersion Condition="$(TargetFramework.StartsWith('net10.0-windows'))">10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>JustBedwars</RootNamespace>
     <UseWinUI Condition="$(TargetFramework.StartsWith('net10.0-windows'))">true</UseWinUI>
+    <Win2DWarnNoPlatform>true</Win2DWarnNoPlatform>
     <Nullable>enable</Nullable>
-    <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers Condition="$(TargetFramework.StartsWith('net10.0-windows'))">win-x86;win-x64;win-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net10.0-windows'))">

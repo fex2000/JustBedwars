@@ -14,9 +14,9 @@
     <Nullable>enable</Nullable>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <WindowsPackageType>None</WindowsPackageType>
-    <Version>1.8.0</Version>
-    <AssemblyVersion>1.8.0.0</AssemblyVersion>
-    <FileVersion>1.8.0.0</FileVersion>
+    <Version>1.9.0</Version>
+    <AssemblyVersion>1.9.0.0</AssemblyVersion>
+    <FileVersion>1.9.0.0</FileVersion>
   </PropertyGroup>
   <!-- Pages -->
   <ItemGroup>
@@ -24,6 +24,7 @@
     <None Remove="Views\PlayerList.xaml" />
     <None Remove="Views\SettingsView.xaml" />
     <None Remove="Views\StatsPage.xaml" />
+    <None Remove="Views\UpdateWindow.xaml" />
     <None Remove="Views\WelcomeWindow.xaml" />
   </ItemGroup>
   <!-- Images -->
@@ -65,6 +66,7 @@
     <ProjectReference Include="..\JustBedwars.Core\JustBedwars.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.Controls.MarkdownTextBlock" Version="0.1.260617-build.2640" />
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Controls.TitleBar" Version="0.1.260617-build.2640" />
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.250828-build.2223" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.2.251219" />
@@ -72,12 +74,17 @@
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
     <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.2.251219" />
-    <PackageReference Include="DevWinUI" Version="10.0.0" />
-    <PackageReference Include="DevWinUI.Base" Version="10.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.9" />
+    <PackageReference Include="DevWinUI" Version="10.4.1" />
+    <PackageReference Include="DevWinUI.Base" Version="10.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
     <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.4.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\UpdateWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\WelcomeWindow.xaml">
@@ -102,7 +109,7 @@
     <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
     <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
+    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
     <UserSecretsId>ed90fab6-e048-422d-92b8-b9eb6e8bdb16</UserSecretsId>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
