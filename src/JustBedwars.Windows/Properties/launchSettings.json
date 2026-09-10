@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "JustBedwars (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "JustBedwars (Unpackaged)": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}
